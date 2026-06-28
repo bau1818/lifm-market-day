@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Market Day</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#F4EFE3;--card:#FFFFFF;
+  --green:#2E7D4F;--green-deep:#1E5638;--green-soft:#E2EFE4;
+  --wheat:#D69A3C;--wheat-soft:#F6E7C8;
+  --tomato:#D2553F;--tomato-soft:#F8E0D8;
+  --ink:#24302A;--ink-soft:#6C7A6F;--line:#E7E0CF;--line-2:#EFEADD;
+  --shadow:0 2px 4px rgba(36,48,42,.05), 0 8px 24px rgba(36,48,42,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;font-weight:600;line-height:1.12}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+:focus-visible{outline:3px solid var(--wheat);outline-offset:2px;border-radius:8px}
+
+.frame{max-width:500px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(36,48,42,.08)}
+.scroll{flex:1;overflow-y:auto;padding:0 18px 110px}
+
+.appbar{position:sticky;top:0;z-index:30;background:var(--bg);padding:18px 18px 12px;display:flex;align-items:center;gap:12px}
+.appbar .logo{width:42px;height:42px;border-radius:13px;flex:none;background:linear-gradient(150deg,var(--green),var(--green-deep));display:grid;place-items:center;color:#fff}
+.appbar .logo svg{width:24px;height:24px}
+.appbar .title{line-height:1.05}
+.appbar .title b{font-family:'Fraunces',serif;font-size:21px;font-weight:600;display:block}
+.appbar .title small{font-size:11px;color:var(--ink-soft);font-weight:600;letter-spacing:.02em}
+.appbar .back{width:42px;height:42px;border-radius:13px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--ink);flex:none}
+.appbar .back svg{width:20px;height:20px}
+
+.hello{padding:4px 2px 16px}
+.hello .eye{font-size:13px;color:var(--ink-soft);font-weight:700}
+.hello h1{font-size:27px;margin-top:3px}
+
+.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.card.tap{cursor:pointer;transition:transform .1s}
+.card.tap:active{transform:scale(.985)}
+
+.bigday{padding:0;overflow:hidden}
+.bigday .hd{padding:18px 18px 14px;color:#fff;position:relative}
+.bigday .hd .when{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.92}
+.bigday .hd h2{color:#fff;font-size:25px;margin:5px 0 2px}
+.bigday .hd .sub{font-size:14px;opacity:.95;font-weight:600}
+.bigday .bd{padding:16px 18px 18px}
+
+.tents{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px}
+.tent{width:26px;height:22px;flex:none}
+.spotline{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.spotline .n{font-family:'Fraunces',serif;font-size:18px;font-weight:600}
+.spotline .n.full{color:var(--tomato)}
+.spotline .rest{font-size:14px;color:var(--ink-soft);font-weight:600}
+
+.coming{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.crow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line-2)}
+.crow:first-child{border-top:none}
+.crow .dot{width:11px;height:11px;border-radius:50%;flex:none}
+.crow .nm{flex:1;font-weight:700;font-size:15px}
+.crow .pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.02em}
+.pill.paid{background:var(--green-soft);color:var(--green-deep)}
+.pill.owes{background:var(--wheat-soft);color:#8a5d18}
+.crow .x{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:var(--ink-soft);flex:none}
+.crow .x:active{background:var(--tomato-soft);color:var(--tomato)}
+.crow .x svg{width:16px;height:16px}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;border-radius:15px;background:var(--green);color:#fff;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(46,125,79,.25);transition:transform .08s,filter .12s}
+.btn:active{transform:translateY(1px);filter:brightness(.96)}
+.btn svg{width:19px;height:19px}
+.btn.soft{background:var(--card);color:var(--green-deep);box-shadow:var(--shadow)}
+.btn.wheat{background:var(--wheat);box-shadow:0 4px 12px rgba(214,154,60,.28)}
+.btn.line{background:transparent;color:var(--ink-soft);box-shadow:none;font-weight:700}
+.btn.danger{background:var(--tomato);box-shadow:0 4px 12px rgba(210,85,63,.25)}
+.btn.sm{padding:11px 16px;font-size:14px;width:auto;border-radius:12px}
+
+.section-title{font-size:15px;font-weight:800;color:var(--ink-soft);letter-spacing:.02em;margin:22px 2px 10px;text-transform:uppercase}
+.section-title span{font-size:13px}
+
+.daycard{display:flex;align-items:center;gap:14px;padding:15px 16px}
+.daycard .date{text-align:center;flex:none;width:50px}
+.daycard .date .d{font-family:'Fraunces',serif;font-size:24px;font-weight:600;line-height:1}
+.daycard .date .m{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--ink-soft);letter-spacing:.05em}
+.daycard .info{flex:1;min-width:0}
+.daycard .info b{font-size:16px;font-weight:800;display:block}
+.daycard .info .meta{font-size:13px;color:var(--ink-soft);font-weight:600}
+.daycard .right{text-align:right;flex:none}
+.daycard .right .spots{font-family:'Fraunces',serif;font-size:17px;font-weight:600}
+.daycard .right .spots.full{color:var(--tomato)}
+.daycard .right small{font-size:11px;color:var(--ink-soft);font-weight:700;display:block}
+.daycard .chev{color:var(--line);flex:none}
+.daycard .chev svg{width:20px;height:20px}
+
+.list .row{display:flex;align-items:center;gap:13px;padding:15px 16px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin-bottom:10px}
+.list .row .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.list .row .main{flex:1;min-width:0}
+.list .row .main b{font-size:16px;font-weight:800;display:block}
+.list .row .main .meta{font-size:13px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .row .edit{color:var(--ink-soft);flex:none;padding:8px;border-radius:10px}
+.list .row .edit:active{background:var(--line-2)}
+.list .row .edit svg{width:18px;height:18px}
+
+.check{width:30px;height:30px;border-radius:10px;border:2.5px solid var(--line);flex:none;display:grid;place-items:center;background:#fff;color:transparent;transition:.12s}
+.check.on{background:var(--green);border-color:var(--green);color:#fff}
+.check svg{width:17px;height:17px}
+.todo .main b.done{text-decoration:line-through;color:var(--ink-soft);font-weight:600}
+
+.empty{text-align:center;padding:50px 24px;color:var(--ink-soft)}
+.empty .ic{width:64px;height:64px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;margin:0 auto 16px;color:var(--green)}
+.empty .ic svg{width:30px;height:30px}
+.empty b{display:block;font-family:'Fraunces',serif;font-size:19px;color:var(--ink);margin-bottom:6px}
+.empty p{font-size:14px;margin:0 0 18px;font-weight:600}
+
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:40}
+.tabs .inner{max-width:500px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(36,48,42,.06)}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:14px;color:var(--ink-soft);font-weight:800;font-size:11.5px}
+.tabs button svg{width:24px;height:24px}
+.tabs button.on{color:var(--green)}
+.tabs button.on .ico{background:var(--green-soft)}
+.tabs button .ico{width:52px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background .15s}
+
+.fab{position:fixed;bottom:84px;right:0;left:0;z-index:35;pointer-events:none}
+.fab .inner{max-width:500px;margin:0 auto;display:flex;justify-content:flex-end;padding:0 18px}
+.fab button{pointer-events:auto;width:60px;height:60px;border-radius:20px;background:var(--green);color:#fff;box-shadow:0 8px 22px rgba(46,125,79,.4);display:grid;place-items:center}
+.fab button:active{transform:translateY(2px)}
+.fab button svg{width:28px;height:28px}
+
+.scrim{position:fixed;inset:0;background:rgba(30,45,35,.46);z-index:60;display:flex;align-items:flex-end;justify-content:center;animation:fade .18s}
+@keyframes fade{from{opacity:0}}
+.sheet{background:var(--bg);width:100%;max-width:500px;border-radius:26px 26px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:rise .24s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:translateY(100%)}}
+.sheet .grip{width:42px;height:5px;border-radius:3px;background:var(--line);margin:6px auto 16px}
+.sheet h3{font-size:22px;margin-bottom:4px}
+.sheet .lead{font-size:14px;color:var(--ink-soft);font-weight:600;margin-bottom:18px}
+.fld{margin-bottom:15px}
+.fld label{display:block;font-size:13px;font-weight:800;color:var(--ink-soft);margin-bottom:7px;letter-spacing:.02em}
+.fld input,.fld textarea{width:100%;padding:14px 15px;border:2px solid var(--line);border-radius:14px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);font-weight:600}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--green)}
+.fld textarea{resize:none;min-height:70px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:10px 14px;border-radius:13px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
+.chip .d{width:11px;height:11px;border-radius:50%}
+.chip.on{border-color:var(--green);background:var(--green-soft);color:var(--green-deep)}
+.sheet .acts{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.pickrow{display:flex;align-items:center;gap:13px;padding:14px 15px;background:#fff;border-radius:15px;box-shadow:var(--shadow);margin-bottom:9px}
+.pickrow .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.pickrow .nm{flex:1;font-weight:800;font-size:15px}
+.pickrow .nm small{display:block;font-size:12px;color:var(--ink-soft);font-weight:600}
+.pickrow .go{width:34px;height:34px;border-radius:11px;background:var(--green-soft);color:var(--green-deep);display:grid;place-items:center;flex:none}
+.pickrow .go svg{width:18px;height:18px}
+
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--green-deep);color:#fff;padding:13px 22px;border-radius:14px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(30,86,56,.35);opacity:0;transition:.25s;z-index:80;pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---- passcode gate + splash ---- */
+.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;max-width:500px;margin:0 auto;text-align:center}
+.gate .logo{width:74px;height:74px;border-radius:22px;background:linear-gradient(150deg,var(--green),var(--green-deep));display:grid;place-items:center;color:#fff;margin-bottom:20px;box-shadow:0 10px 30px rgba(46,125,79,.3)}
+.gate .logo svg{width:40px;height:40px}
+.gate h1{font-size:30px;margin-bottom:4px}
+.gate p{color:var(--ink-soft);font-weight:600;margin:0 0 26px}
+.gate .box{width:100%;max-width:330px}
+.gate input{width:100%;padding:16px;border:2px solid var(--line);border-radius:15px;background:#fff;font-family:inherit;font-size:17px;font-weight:700;text-align:center;color:var(--ink);letter-spacing:.04em}
+.gate input:focus{outline:none;border-color:var(--green)}
+.gate .err{color:var(--tomato);font-weight:700;font-size:14px;margin:12px 0 0;min-height:18px}
+.gate .btn{margin-top:14px}
+.gate .spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.syncpill{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;opacity:0;transition:.2s;pointer-events:none}
+.syncpill.show{opacity:.92}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="gate"><div class="spin"></div></div></div>
+<div id="toast" class="toast"></div>
+<div id="sync" class="syncpill"></div>
+<script>
+/* =====================================================================
+   MARKET DAY  —  shared, passcode-gated farmers-market app
+   Data lives in one shared store on Netlify. Everyone with the passcode
+   sees and edits the same copy.
+   ===================================================================== */
+const API='/api/data';
+const PASS_KEY='md-pass';
+let PASS=null;
+
+/* ---- icons ---- */
+const I={
+  tent:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 10v0M12 3l9 7M4 10v11h16V10M12 10v11"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3 5 9l-2-2M21 6 11 16l-3-3M21 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8"/></svg>',
+  tick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  go:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+};
+function tentSVG(filled){
+  const fill=filled?'var(--green)':'none', stroke=filled?'var(--green)':'var(--line)';
+  return `<svg class="tent" viewBox="0 0 26 22" fill="${fill}" stroke="${stroke}" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 2 9h22zM4 9v11h18V9M13 9v11"/></svg>`;
+}
+
+/* ---- categories (settings, not sample data) ---- */
+const CATS=[
+  {id:'produce',name:'Produce',color:'#3F8B57'},
+  {id:'baked',name:'Baked',color:'#D69A3C'},
+  {id:'coffee',name:'Coffee',color:'#8A5A33'},
+  {id:'prepared',name:'Food',color:'#D2553F'},
+  {id:'flowers',name:'Flowers',color:'#C76F9C'},
+  {id:'crafts',name:'Crafts',color:'#3E7C92'},
+  {id:'pantry',name:'Pantry',color:'#7C6BB0'}
+];
+function cat(id){return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
+const CAP={produce:4,baked:2,coffee:1,prepared:3,flowers:2,crafts:4,pantry:3};
+
+/* ---- fresh, empty starting data (your real markets only) ---- */
+function freshState(){
+  return {
+    seasonEnd:'2026-11-01',
+    markets:[
+      {id:'hunt',name:'Huntington',full:'Huntington Village',where:'Elm Street parking lot, 228 Main St',weekday:0,time:'8:00am – 12:30pm',spots:18,color:'#2E7D4F',start:'2026-06-07'},
+      {id:'baby',name:'Babylon',full:'Babylon Village',where:'The Gazebo, 244 W Main St',weekday:0,time:'8:00am – 12:30pm',spots:16,color:'#3E7C92',start:'2026-06-07'},
+      {id:'ronk',name:'Ronkonkoma',full:'Station Yards',where:'9 Hawkins Ave, Ronkonkoma',weekday:2,time:'5:00pm – 8:00pm',spots:14,color:'#D69A3C',start:'2026-06-16'}
+    ],
+    vendors:[],
+    bookings:[],
+    todos:[]
+  };
+}
+
+let S=null;
+let ui={view:'days',m:null,date:null,sheet:null};
+function bid(){return 'b'+Math.random().toString(36).slice(2,9);}
+function uid(p){return (p||'x')+Math.random().toString(36).slice(2,9);}
+
+/* ---- shared storage via the function ---- */
+async function apiGet(pass){
+  try{
+    const r=await fetch(API,{headers:{'x-passcode':pass}});
+    if(r.status===401) return {ok:false,auth:false};
+    if(!r.ok) return {ok:false};
+    const j=await r.json();
+    return {ok:true,state:j.state};
+  }catch(e){ return {ok:false}; }
+}
+let saving=false, saveAgain=false;
+async function save(){
+  if(!PASS) return;
+  if(saving){ saveAgain=true; return; }       // simple coalescing
+  saving=true; showSync('Saving…');
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'x-passcode':PASS,'content-type':'application/json'},body:JSON.stringify({state:S})});
+    showSync(r.ok?'Saved':'Couldn\u2019t save');
+  }catch(e){ showSync('Offline — will retry'); }
+  saving=false;
+  if(saveAgain){ saveAgain=false; save(); }
+}
+
+/* ---- dates ---- */
+const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parse(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function t0(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function until(s){return Math.round((parse(s)-t0())/864e5);}
+function nice(s){const d=parse(s);return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate();}
+function nextDates(m,n){
+  const out=[],end=parse(S?S.seasonEnd:'2026-11-01');
+  let d=new Date(Math.max(t0().getTime(),parse(m.start).getTime()));d.setHours(0,0,0,0);
+  let g=0;while(d.getDay()!==m.weekday&&g++<8)d.setDate(d.getDate()+1);
+  while(d<=end&&out.length<(n||20)){out.push(iso(d));d.setDate(d.getDate()+7);}
+  return out;
+}
+function allDays(n){
+  let r=[];S.markets.forEach(m=>nextDates(m,5).forEach(date=>r.push({m:m.id,date})));
+  r.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);return r.slice(0,n||12);
+}
+const market=id=>S.markets.find(m=>m.id===id);
+const vendor=id=>S.vendors.find(v=>v.id===id);
+const dayBookings=(mid,date)=>S.bookings.filter(b=>b.m===mid&&b.date===date);
+function spotsLeft(mid,date){const m=market(mid);return m.spots-dayBookings(mid,date).length;}
+function catCount(mid,date,c){return dayBookings(mid,date).filter(b=>{const v=vendor(b.v);return v&&v.cat===c;}).length;}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const app=document.getElementById('app');
+function render(){
+  app.innerHTML=`<div class="frame">${barFor()}<div class="scroll">${VIEW[ui.view]()}</div>${fab()}${tabbar()}</div>${ui.sheet?sheetHTML():''}`;
+}
+function barFor(){
+  if(ui.view==='day'||ui.view==='addv'){
+    const m=market(ui.m);
+    const t=ui.view==='day'?m.name:'Add a vendor';
+    const s=ui.view==='day'?nice(ui.date):(m.name+' · '+nice(ui.date));
+    return `<div class="appbar"><button class="back" data-a="back" aria-label="Back">${I.back}</button>
+      <div class="title"><b>${t}</b><small>${s}</small></div></div>`;
+  }
+  return `<div class="appbar"><div class="logo">${I.tent}</div>
+    <div class="title"><b>Market Day</b><small>Long Island Farmers Markets</small></div></div>`;
+}
+function tabbar(){
+  if(ui.view==='addv') return '';
+  const root=ui.view==='day'?'days':ui.view;
+  const tab=(v,icon,label)=>`<button class="${root===v?'on':''}" data-a="tab" data-v="${v}"><span class="ico">${icon}</span><span>${label}</span></button>`;
+  return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Market Days')}${tab('vendors',I.people,'Vendors')}${tab('todos',I.check,'To-Do')}</div></div>`;
+}
+function fab(){
+  if(ui.view==='vendors') return fabBtn('add-vendor');
+  if(ui.view==='todos') return fabBtn('add-todo');
+  return '';
+}
+function fabBtn(a){return `<div class="fab"><div class="inner"><button data-a="${a}" aria-label="Add">${I.plus}</button></div></div>`;}
+
+const VIEW={};
+VIEW.days=function(){
+  const days=allDays(12);
+  if(!days.length) return emptyState(I.cal,'Season\u2019s over','No more market days are scheduled.');
+  const first=days[0],rest=days.slice(1);
+  const m=market(first.m);
+  const booked=dayBookings(first.m,first.date),left=spotsLeft(first.m,first.date);
+  const dd=until(first.date);
+  const when=dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' · '+dd+' days away';
+  const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  const preview=booked.slice(0,4).map(b=>{const v=vendor(b.v);const c=cat(v.cat);
+    return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${v.name}</span>
+      <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('');
+  const greet=(()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening';})();
+  return `
+  <div class="hello"><div class="eye">${greet} 👋</div><h1>Here\u2019s what\u2019s next</h1></div>
+  <div class="card bigday tap" data-a="open-day" data-m="${first.m}" data-date="${first.date}">
+    <div class="hd" style="background:${m.color}"><div class="when">${when}</div><h2>${m.name}</h2><div class="sub">${m.time}</div></div>
+    <div class="bd">
+      <div class="tents">${tents}</div>
+      <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">· ${booked.length} coming</span></div>
+      <div class="coming">${preview||`<div class="crow"><span class="nm" style="color:var(--ink-soft);font-weight:600">No vendors yet — tap to add some</span></div>`}</div>
+    </div>
+  </div>
+  <div class="section-title">Coming up</div>
+  ${rest.map(r=>{const mk=market(r.m);const l=spotsLeft(r.m,r.date);const d=parse(r.date);
+    return `<div class="card tap daycard" data-a="open-day" data-m="${r.m}" data-date="${r.date}">
+      <div class="date"><div class="d">${d.getDate()}</div><div class="m">${MON[d.getMonth()]}</div></div>
+      <div class="info"><b>${mk.name}</b><div class="meta">${mk.time}</div></div>
+      <div class="right"><div class="spots ${l<=0?'full':''}">${l<=0?'Full':l}</div><small>${l<=0?'':'spots left'}</small></div>
+      <span class="chev">${I.chev}</span></div>`;}).join('')}
+  <div style="height:8px"></div>`;
+};
+VIEW.day=function(){
+  const m=market(ui.m),date=ui.date;
+  const booked=dayBookings(ui.m,date).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
+  const left=spotsLeft(ui.m,date);
+  const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  return `
+  <div class="card" style="margin-top:6px">
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
+      <span style="color:var(--green);margin-top:2px">${I.pin}</span>
+      <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${m.where}</div></div>
+    </div>
+    <div class="tents" style="margin-top:12px">${tents}</div>
+    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">· ${booked.length} of ${m.spots}</span></div>
+  </div>
+  <button class="btn" data-a="goto-add" style="margin:4px 0 18px">${I.plus} Add a vendor to this day</button>
+  <div class="section-title">Who\u2019s coming <span>(${booked.length})</span></div>
+  ${booked.length? `<div class="list">${booked.map(b=>{const v=vendor(b.v);const c=cat(v.cat);
+    return `<div class="row"><span class="dot" style="background:${c.color}"></span>
+      <div class="main"><b>${v.name}</b><div class="meta">${c.name}</div></div>
+      <button class="pill ${b.paid?'paid':'owes'}" data-a="toggle-paid" data-id="${b.id}" style="border:none">${b.paid?'Paid':'Owes'}</button>
+      <button class="x" data-a="remove-booking" data-id="${b.id}" aria-label="Remove">${I.x}</button></div>`;}).join('')}</div>`
+    : emptyState(I.people,'No vendors yet','Tap the button above to add your first vendor to this day.')}
+  <div style="height:10px"></div>`;
+};
+VIEW.addv=function(){
+  const here=new Set(dayBookings(ui.m,ui.date).map(b=>b.v));
+  const avail=S.vendors.filter(v=>!here.has(v.id));
+  const full=spotsLeft(ui.m,ui.date)<=0;
+  return `
+  ${full?`<div class="card" style="background:var(--tomato-soft);box-shadow:none;color:#8a3322;font-weight:700;margin-top:6px">This market day is full. Remove a vendor first, or add more spots in the market settings.</div>`:''}
+  <div class="section-title" style="margin-top:14px">Tap a vendor to add them</div>
+  ${avail.length? avail.map(v=>{const c=cat(v.cat);
+    return `<div class="pickrow"><span class="dot" style="background:${c.color}"></span>
+      <div class="nm">${v.name}<small>${c.name}</small></div>
+      <button class="go" data-a="pick-vendor" data-id="${v.id}" aria-label="Add ${v.name}">${I.go}</button></div>`;}).join('')
+    : (S.vendors.length? `<div class="empty" style="padding:30px 10px"><p style="font-weight:600">Everyone in your list is already here.</p></div>`
+       : `<div class="empty" style="padding:30px 10px"><p style="font-weight:600">Your vendor list is empty. Add someone first.</p></div>`)}
+  <button class="btn soft" data-a="add-vendor" style="margin-top:8px">${I.plus} Add someone new to your list</button>
+  <div style="height:10px"></div>`;
+};
+VIEW.vendors=function(){
+  const list=S.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  return `
+  <div class="hello"><div class="eye">Your people</div><h1>Vendors</h1></div>
+  ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);
+    return `<div class="row"><span class="dot" style="background:${c.color}"></span>
+      <div class="main"><b>${v.name}</b><div class="meta">${c.name}${v.phone?' · '+v.phone:v.email?' · '+v.email:''}</div></div>
+      <button class="edit" data-a="edit-vendor" data-id="${v.id}" aria-label="Edit ${v.name}">${I.edit}</button></div>`;}).join('')}</div>`
+    : emptyState(I.people,'No vendors yet','Add the makers and farmers who sell at your markets.')}
+  <div style="height:10px"></div>`;
+};
+VIEW.todos=function(){
+  const open=S.todos.filter(t=>!t.done),done=S.todos.filter(t=>t.done);
+  const row=t=>`<div class="row todo">
+    <button class="check ${t.done?'on':''}" data-a="toggle-todo" data-id="${t.id}" aria-label="Mark done">${t.done?I.tick:''}</button>
+    <div class="main"><b class="${t.done?'done':''}" style="font-weight:800">${t.title}</b></div>
+    <button class="edit" data-a="edit-todo" data-id="${t.id}" aria-label="Edit">${I.edit}</button></div>`;
+  return `
+  <div class="hello"><div class="eye">Before market day</div><h1>To-Do</h1></div>
+  ${S.todos.length===0? emptyState(I.check,'All clear','Add reminders for things to do before market day.'):''}
+  ${open.length?`<div class="list">${open.map(row).join('')}</div>`:''}
+  ${done.length?`<div class="section-title">Done</div><div class="list">${done.map(row).join('')}</div>`:''}
+  <div style="height:10px"></div>`;
+};
+function emptyState(icon,title,text){return `<div class="empty"><div class="ic">${icon}</div><b>${title}</b><p>${text}</p></div>`;}
+
+/* ---- sheets ---- */
+function sheetHTML(){return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>${ui.sheet.body}</div></div>`;}
+function fld(label,name,val,type,ph){return `<div class="fld"><label>${label}</label><input name="${name}" type="${type||'text'}" value="${(val??'').toString().replace(/"/g,'&quot;')}" placeholder="${ph||''}"/></div>`;}
+function openVendor(v){
+  const chips=CATS.map(c=>`<button type="button" class="chip ${(v?v.cat:'produce')===c.id?'on':''}" data-a="pickcat" data-c="${c.id}"><span class="d" style="background:${c.color}"></span>${c.name}</button>`).join('');
+  ui.catPick=v?v.cat:'produce';
+  ui.sheet={type:'vendor',id:v?v.id:null,body:`
+    <h3>${v?'Edit vendor':'New vendor'}</h3>
+    <div class="lead">${v?'Update their details.':'Add someone who sells at your markets.'}</div>
+    ${fld('Name','name',v?v.name:'','text','e.g. Sunny Acres Farm')}
+    <div class="fld"><label>What do they sell?</label><div class="chips" id="catchips">${chips}</div></div>
+    ${fld('Phone','phone',v?v.phone:'','tel','Optional')}
+    ${fld('Email','email',v?v.email:'','email','Optional')}
+    <div class="fld"><label>Notes</label><textarea name="notes" placeholder="Anything to remember">${v?v.notes||'':''}</textarea></div>
+    <div class="acts"><button class="btn" data-a="save-vendor">${v?'Save changes':'Add vendor'}</button>
+    ${v?`<button class="btn danger" data-a="del-vendor" data-id="${v.id}">Delete vendor</button>`:''}
+    <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+function openTodo(t){
+  ui.sheet={type:'todo',id:t?t.id:null,body:`
+    <h3>${t?'Edit to-do':'New to-do'}</h3><div class="lead">Something to take care of before market day.</div>
+    ${fld('What needs doing?','title',t?t.title:'','text','e.g. Order more tents')}
+    <div class="acts"><button class="btn" data-a="save-todo">${t?'Save':'Add to-do'}</button>
+    ${t?`<button class="btn danger" data-a="del-todo" data-id="${t.id}">Delete</button>`:''}
+    <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+function confirmCat(vendorId,cName,n){
+  ui.sheet={type:'confirmcat',body:`
+    <h3>Add another ${cName.toLowerCase()} vendor?</h3>
+    <div class="lead">You already have ${n} ${cName.toLowerCase()} vendor${n===1?'':'s'} booked for this day. That\u2019s usually plenty — add another anyway?</div>
+    <div class="acts"><button class="btn wheat" data-a="force-add" data-id="${vendorId}">Yes, add anyway</button>
+    <button class="btn line" data-a="closesheet">No, never mind</button></div>`};
+  render();
+}
+function confirmRemove(bookingId,name){
+  ui.sheet={type:'confirmrm',body:`
+    <h3>Remove ${name}?</h3><div class="lead">They\u2019ll be taken off this market day. You can always add them back.</div>
+    <div class="acts"><button class="btn danger" data-a="do-remove" data-id="${bookingId}">Yes, remove</button>
+    <button class="btn line" data-a="closesheet">Keep them</button></div>`};
+  render();
+}
+
+/* ---- events ---- */
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-a]'); if(!el) return;
+  const a=el.dataset.a;
+  if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; render(); sc(); return; }
+  if(a==='back'){ ui.view=ui.view==='addv'?'day':'days'; ui.sheet=null; render(); sc(); return; }
+  if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; render(); sc(); return; }
+  if(a==='goto-add'){ ui.view='addv'; render(); sc(); return; }
+  if(a==='pick-vendor'){ await tryAdd(el.dataset.id,false); return; }
+  if(a==='force-add'){ await tryAdd(el.dataset.id,true); return; }
+  if(a==='toggle-paid'){ const b=S.bookings.find(x=>x.id===el.dataset.id); if(b){b.paid=!b.paid; render(); save(); toast(b.paid?'Marked paid':'Marked as owes');} return; }
+  if(a==='remove-booking'){ const b=S.bookings.find(x=>x.id===el.dataset.id); const v=b?vendor(b.v):null; confirmRemove(el.dataset.id,v?v.name:'this vendor'); return; }
+  if(a==='do-remove'){ S.bookings=S.bookings.filter(x=>x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Removed'); return; }
+  if(a==='add-vendor'){ openVendor(null); return; }
+  if(a==='edit-vendor'){ openVendor(vendor(el.dataset.id)); return; }
+  if(a==='pickcat'){ ui.catPick=el.dataset.c; document.querySelectorAll('#catchips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.c===el.dataset.c)); return; }
+  if(a==='save-vendor'){ await saveVendor(); return; }
+  if(a==='del-vendor'){ S.vendors=S.vendors.filter(x=>x.id!==el.dataset.id); S.bookings=S.bookings.filter(b=>b.v!==el.dataset.id); ui.sheet=null; render(); save(); toast('Vendor deleted'); return; }
+  if(a==='add-todo'){ openTodo(null); return; }
+  if(a==='edit-todo'){ openTodo(S.todos.find(t=>t.id===el.dataset.id)); return; }
+  if(a==='toggle-todo'){ const t=S.todos.find(x=>x.id===el.dataset.id); if(t){t.done=!t.done; render(); save();} return; }
+  if(a==='save-todo'){ await saveTodo(); return; }
+  if(a==='del-todo'){ S.todos=S.todos.filter(x=>x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Deleted'); return; }
+  if(a==='closesheet'){ ui.sheet=null; render(); return; }
+  if(a==='scrim'){ if(!e.target.closest('.sheet')){ ui.sheet=null; render(); } return; }
+  if(a==='do-login'){ doLogin(); return; }
+});
+function gf(name){const f=document.querySelector(`[name="${name}"]`);return f?f.value.trim():'';}
+async function tryAdd(vendorId,force){
+  const v=vendor(vendorId); if(!v) return;
+  if(spotsLeft(ui.m,ui.date)<=0){ toast('This day is full'); return; }
+  const c=cat(v.cat),n=catCount(ui.m,ui.date,v.cat);
+  if(n>=(CAP[v.cat]||99)&&!force){ confirmCat(vendorId,c.name,n); return; }
+  S.bookings.push({id:bid(),m:ui.m,date:ui.date,v:vendorId,paid:false});
+  ui.sheet=null; ui.view='day'; render(); sc(); save(); toast(v.name+' added');
+}
+async function saveVendor(){
+  const name=gf('name'); if(!name){ toast('Please add a name'); return; }
+  const data={name,cat:ui.catPick||'produce',phone:gf('phone'),email:gf('email'),notes:gf('notes')};
+  if(ui.sheet.id){ Object.assign(vendor(ui.sheet.id),data); toast('Saved'); }
+  else { S.vendors.push({id:uid('v'),...data}); toast(name+' added'); }
+  ui.sheet=null; render(); save();
+}
+async function saveTodo(){
+  const title=gf('title'); if(!title){ toast('Please add a task'); return; }
+  if(ui.sheet.id){ S.todos.find(t=>t.id===ui.sheet.id).title=title; toast('Saved'); }
+  else { S.todos.unshift({id:uid('t'),title,done:false}); toast('Added'); }
+  ui.sheet=null; render(); save();
+}
+
+let tt; function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000);}
+let st; function showSync(m){const s=document.getElementById('sync');s.textContent=m;s.classList.add('show');clearTimeout(st);st=setTimeout(()=>s.classList.remove('show'),1400);}
+function sc(){const s=document.querySelector('.scroll');if(s)s.scrollTop=0;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ui.sheet){ui.sheet=null;render();}});
+
+/* refresh shared data when the app regains focus, so both people stay in sync */
+window.addEventListener('focus',async()=>{
+  if(!PASS||ui.sheet) return;
+  const res=await apiGet(PASS);
+  if(res.ok&&res.state){ S=res.state; render(); }
+});
+
+/* =====================================================================
+   LOGIN GATE
+   ===================================================================== */
+function gateScreen(msg,busy){
+  app.innerHTML=`<div class="gate">
+    <div class="logo">${I.tent}</div>
+    <h1>Market Day</h1>
+    <p>Long Island Farmers Markets</p>
+    <div class="box">
+      ${busy?'<div class="spin"></div>':`
+        <input id="pass" type="password" inputmode="text" autocomplete="off" placeholder="Enter passcode" />
+        <div class="err">${msg||''}</div>
+        <button class="btn" data-a="do-login">Open</button>`}
+    </div>
+  </div>`;
+  if(!busy){ const i=document.getElementById('pass'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); }); } }
+}
+async function doLogin(){
+  const i=document.getElementById('pass'); const val=i?i.value.trim():'';
+  if(!val){ gateScreen('Type the passcode to open.'); return; }
+  gateScreen('',true);
+  const res=await apiGet(val);
+  if(res.ok){
+    PASS=val; try{ localStorage.setItem(PASS_KEY,val); }catch(e){}
+    S=res.state||freshState();
+    ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
+    S.seasonEnd=S.seasonEnd||'2026-11-01';
+    if(!res.state){ await save(); }   // first run: store the starting markets
+    ui.view='days'; render();
+  } else if(res.auth===false){
+    gateScreen('That passcode didn\u2019t work. Try again.');
+  } else {
+    gateScreen('Couldn\u2019t connect. Check your internet and try again.');
+  }
+}
+
+/* ---- boot ---- */
+(async function(){
+  let saved=null; try{ saved=localStorage.getItem(PASS_KEY); }catch(e){}
+  if(saved){
+    gateScreen('',true);
+    const res=await apiGet(saved);
+    if(res.ok){
+      PASS=saved; S=res.state||freshState();
+      ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
+      S.seasonEnd=S.seasonEnd||'2026-11-01';
+      if(!res.state){ await save(); }
+      render(); return;
+    }
+    try{ localStorage.removeItem(PASS_KEY); }catch(e){}
+  }
+  gateScreen();
+})();
+</script>
+</body>
+</html>
