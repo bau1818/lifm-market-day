@@ -1,199 +1,248 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Market Day</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#C00000"/>
+<title>Market Day · Long Island Farmers Markets</title>
+<link rel="icon" href="logo.png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&display=swap');
-
 :root{
-  --bg:#F4EFE3;--card:#FFFFFF;
-  --green:#2E7D4F;--green-deep:#1E5638;--green-soft:#E2EFE4;
-  --wheat:#D69A3C;--wheat-soft:#F6E7C8;
-  --tomato:#D2553F;--tomato-soft:#F8E0D8;
-  --ink:#24302A;--ink-soft:#6C7A6F;--line:#E7E0CF;--line-2:#EFEADD;
-  --shadow:0 2px 4px rgba(36,48,42,.05), 0 8px 24px rgba(36,48,42,.07);
+  --red:#C00000; --red-deep:#A30000; --red-ink:#7a0000;
+  --black:#171310; --ink:#211b15; --ink-soft:#8a7f72;
+  --cream:#FBF6EC; --card:#ffffff; --line:#EBE1D1; --oat:#F4EDDE;
+  --ok:#2E7D4F; --warn:#B7791F; --bad:#C0392B; --tomato-soft:#fbe3de;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;font-weight:600;line-height:1.12}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-:focus-visible{outline:3px solid var(--wheat);outline-offset:2px;border-radius:8px}
+body{background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--red-deep)}
+.wrap{max-width:500px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;overflow:hidden}
+.frame{min-height:100vh;display:flex;flex-direction:column}
+.scroll{flex:1;overflow-y:auto;padding:14px 16px 110px}
+button{font-family:inherit}
 
-.frame{max-width:500px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(36,48,42,.08)}
-.scroll{flex:1;overflow-y:auto;padding:0 18px 110px}
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;gap:11px;padding:12px 16px 11px;background:#fff;border-bottom:3px solid var(--red)}
+.topbar .brandlogo{height:34px;width:auto;display:block}
+.topbar .ttl{display:flex;flex-direction:column;line-height:1}
+.topbar .ttl b{font-family:"Anton";font-weight:400;font-size:19px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink)}
+.topbar .ttl small{font-family:"Oswald";font-weight:600;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--red);margin-top:3px}
 
-.appbar{position:sticky;top:0;z-index:30;background:var(--bg);padding:18px 18px 12px;display:flex;align-items:center;gap:12px}
-.appbar .logo{width:42px;height:42px;border-radius:13px;flex:none;background:linear-gradient(150deg,var(--green),var(--green-deep));display:grid;place-items:center;color:#fff}
-.appbar .logo svg{width:24px;height:24px}
-.appbar .title{line-height:1.05}
-.appbar .title b{font-family:'Fraunces',serif;font-size:21px;font-weight:600;display:block}
-.appbar .title small{font-size:11px;color:var(--ink-soft);font-weight:600;letter-spacing:.02em}
-.appbar .back{width:42px;height:42px;border-radius:13px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--ink);flex:none}
+/* appbar for sub-screens */
+.appbar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:3px solid var(--red)}
+.appbar .back{width:38px;height:38px;border:none;background:var(--oat);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer}
 .appbar .back svg{width:20px;height:20px}
+.appbar .title{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.appbar .title b{font-family:"Anton";font-weight:400;font-size:18px;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appbar .title small{color:var(--ink-soft);font-weight:600;font-size:12.5px;margin-top:2px}
 
-.hello{padding:4px 2px 16px}
-.hello .eye{font-size:13px;color:var(--ink-soft);font-weight:700}
-.hello h1{font-size:27px;margin-top:3px}
+/* ---------- headers ---------- */
+.hello{margin:4px 2px 16px}
+.eye{font-family:"Oswald";text-transform:uppercase;letter-spacing:.14em;font-weight:600;font-size:12px;color:var(--red)}
+.hello h1{font-family:"Anton";font-weight:400;font-size:33px;line-height:1.02;letter-spacing:.5px;text-transform:uppercase;margin:5px 0 0;color:var(--ink)}
+.hello h1 span{color:var(--ink-soft)}
+.section-title{font-family:"Oswald";text-transform:uppercase;letter-spacing:.09em;font-weight:600;font-size:13px;color:var(--ink);margin:20px 2px 9px}
+.section-title span{color:var(--ink-soft);font-weight:600}
 
-.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
-.card.tap{cursor:pointer;transition:transform .1s}
-.card.tap:active{transform:scale(.985)}
-
-.bigday{padding:0;overflow:hidden}
-.bigday .hd{padding:18px 18px 14px;color:#fff;position:relative}
-.bigday .hd .when{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.92}
-.bigday .hd h2{color:#fff;font-size:25px;margin:5px 0 2px}
-.bigday .hd .sub{font-size:14px;opacity:.95;font-weight:600}
-.bigday .bd{padding:16px 18px 18px}
-
-.tents{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px}
-.tent{width:26px;height:22px;flex:none}
-.spotline{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.spotline .n{font-family:'Fraunces',serif;font-size:18px;font-weight:600}
-.spotline .n.full{color:var(--tomato)}
-.spotline .rest{font-size:14px;color:var(--ink-soft);font-weight:600}
-
-.coming{display:flex;flex-direction:column;gap:2px;margin-top:6px}
-.crow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line-2)}
-.crow:first-child{border-top:none}
-.crow .dot{width:11px;height:11px;border-radius:50%;flex:none}
-.crow .nm{flex:1;font-weight:700;font-size:15px}
-.crow .pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.02em}
-.pill.paid{background:var(--green-soft);color:var(--green-deep)}
-.pill.owes{background:var(--wheat-soft);color:#8a5d18}
-.crow .x{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:var(--ink-soft);flex:none}
-.crow .x:active{background:var(--tomato-soft);color:var(--tomato)}
-.crow .x svg{width:16px;height:16px}
-
-.btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;border-radius:15px;background:var(--green);color:#fff;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(46,125,79,.25);transition:transform .08s,filter .12s}
-.btn:active{transform:translateY(1px);filter:brightness(.96)}
-.btn svg{width:19px;height:19px}
-.btn.soft{background:var(--card);color:var(--green-deep);box-shadow:var(--shadow)}
-.btn.wheat{background:var(--wheat);box-shadow:0 4px 12px rgba(214,154,60,.28)}
-.btn.line{background:transparent;color:var(--ink-soft);box-shadow:none;font-weight:700}
-.btn.danger{background:var(--tomato);box-shadow:0 4px 12px rgba(210,85,63,.25)}
-.btn.sm{padding:11px 16px;font-size:14px;width:auto;border-radius:12px}
-
-.section-title{font-size:15px;font-weight:800;color:var(--ink-soft);letter-spacing:.02em;margin:22px 2px 10px;text-transform:uppercase}
-.section-title span{font-size:13px}
-
-.daycard{display:flex;align-items:center;gap:14px;padding:15px 16px}
-.daycard .date{text-align:center;flex:none;width:50px}
-.daycard .date .d{font-family:'Fraunces',serif;font-size:24px;font-weight:600;line-height:1}
-.daycard .date .m{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--ink-soft);letter-spacing:.05em}
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 1px 2px rgba(120,80,20,.04)}
+.tap{cursor:pointer}
+.bigday{padding:0;overflow:hidden;border:none;box-shadow:0 8px 24px rgba(140,20,20,.16)}
+.bigday .hd{padding:16px 18px 14px;color:#fff;background:var(--red)}
+.bigday .when{font-family:"Oswald";text-transform:uppercase;letter-spacing:.13em;font-weight:600;font-size:11.5px;opacity:.92}
+.bigday h2{font-family:"Anton";font-weight:400;font-size:27px;letter-spacing:.5px;text-transform:uppercase;margin:3px 0 2px}
+.bigday .sub{font-weight:600;font-size:13.5px;opacity:.95}
+.bigday .bd{padding:14px 16px 16px}
+.tents{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.tent{width:23px;height:20px}
+.spotline{display:flex;align-items:baseline;gap:7px;margin-bottom:11px}
+.spotline .n{font-family:"Oswald";font-weight:700;font-size:16px;color:var(--ink)}
+.spotline .n.full{color:var(--red)}
+.spotline .rest{color:var(--ink-soft);font-weight:600;font-size:13px}
+.coming{display:flex;flex-direction:column;gap:8px}
+.crow{display:flex;align-items:center;gap:9px}
+.dot{width:11px;height:11px;border-radius:4px;flex:none}
+.crow .nm{flex:1;font-weight:700;font-size:14.5px}
+.pill{font-family:"Oswald";font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
+.pill.paid{background:#e6f4ea;color:var(--ok)}
+.pill.owes{background:#fdead2;color:#9a6512}
+.daycard{display:flex;align-items:center;gap:13px;padding:13px 14px}
+.daycard .date{width:46px;text-align:center;flex:none}
+.daycard .date .d{font-family:"Anton";font-size:23px;line-height:1;color:var(--red)}
+.daycard .date .m{font-family:"Oswald";text-transform:uppercase;font-size:11px;letter-spacing:.08em;color:var(--ink-soft);font-weight:600}
 .daycard .info{flex:1;min-width:0}
-.daycard .info b{font-size:16px;font-weight:800;display:block}
-.daycard .info .meta{font-size:13px;color:var(--ink-soft);font-weight:600}
-.daycard .right{text-align:right;flex:none}
-.daycard .right .spots{font-family:'Fraunces',serif;font-size:17px;font-weight:600}
-.daycard .right .spots.full{color:var(--tomato)}
-.daycard .right small{font-size:11px;color:var(--ink-soft);font-weight:700;display:block}
-.daycard .chev{color:var(--line);flex:none}
-.daycard .chev svg{width:20px;height:20px}
+.daycard .info b{font-weight:800;font-size:16px}
+.daycard .meta{color:var(--ink-soft);font-weight:600;font-size:13px;margin-top:1px}
+.daycard .right{text-align:center;flex:none}
+.daycard .spots{font-family:"Anton";font-size:20px;color:var(--ink);line-height:1}
+.daycard .spots.full{color:var(--red);font-size:14px;font-family:"Oswald";font-weight:700}
+.daycard .right small{color:var(--ink-soft);font-weight:600;font-size:10.5px}
+.daycard .chev{color:var(--ink-soft);flex:none}
+.chev svg{width:20px;height:20px}
 
-.list .row{display:flex;align-items:center;gap:13px;padding:15px 16px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin-bottom:10px}
-.list .row .dot{width:13px;height:13px;border-radius:50%;flex:none}
-.list .row .main{flex:1;min-width:0}
-.list .row .main b{font-size:16px;font-weight:800;display:block}
-.list .row .main .meta{font-size:13px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.list .row .edit{color:var(--ink-soft);flex:none;padding:8px;border-radius:10px}
-.list .row .edit:active{background:var(--line-2)}
-.list .row .edit svg{width:18px;height:18px}
+/* ---------- rows / lists ---------- */
+.list{display:flex;flex-direction:column;gap:9px}
+.row{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px}
+.row .main{flex:1;min-width:0}
+.row .main b{font-weight:800;font-size:15.5px;display:block;line-height:1.15}
+.row .meta{color:var(--ink-soft);font-weight:600;font-size:13px;margin-top:2px}
+.row .x{width:32px;height:32px;border:none;background:var(--oat);border-radius:9px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.row .x svg{width:17px;height:17px}
+.row .edit{width:34px;height:34px;border:none;background:var(--oat);border-radius:10px;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.row .edit svg{width:18px;height:18px}
+button.pill{border:none;cursor:pointer}
+.rowflags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.spill{display:inline-block;font-family:"Oswald";font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:#eee;color:#666;white-space:nowrap}
+.spill.ok{background:#e6f4ea;color:var(--ok)}.spill.warn{background:#fbeccd;color:#9a6a12}.spill.bad{background:var(--tomato-soft);color:var(--bad)}
+b.ok{color:var(--ok)}b.warn{color:#9a6a12}b.bad{color:var(--bad)}
 
-.check{width:30px;height:30px;border-radius:10px;border:2.5px solid var(--line);flex:none;display:grid;place-items:center;background:#fff;color:transparent;transition:.12s}
-.check.on{background:var(--green);border-color:var(--green);color:#fff}
-.check svg{width:17px;height:17px}
-.todo .main b.done{text-decoration:line-through;color:var(--ink-soft);font-weight:600}
+/* search + inbox banner */
+.searchwrap{margin:2px 0 12px}
+.search{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;font:inherit;font-weight:600}
+.search:focus{outline:none;border-color:var(--red)}
+.inboxbar{display:flex;align-items:center;gap:10px;width:100%;border:none;background:var(--red);color:#fff;font-weight:800;font-size:14.5px;padding:13px 14px;border-radius:14px;margin:0 0 13px;cursor:pointer;box-shadow:0 6px 16px rgba(140,20,20,.18)}
+.inboxbar svg{width:21px;height:21px;flex:none}
+.inboxbar span{flex:1;text-align:left}
 
-.empty{text-align:center;padding:50px 24px;color:var(--ink-soft)}
-.empty .ic{width:64px;height:64px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;margin:0 auto 16px;color:var(--green)}
-.empty .ic svg{width:30px;height:30px}
-.empty b{display:block;font-family:'Fraunces',serif;font-size:19px;color:var(--ink);margin-bottom:6px}
-.empty p{font-size:14px;margin:0 0 18px;font-weight:600}
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;background:var(--red);color:#fff;font-weight:800;font-size:15.5px;padding:14px;border-radius:13px;cursor:pointer;box-shadow:0 4px 12px rgba(140,20,20,.18)}
+.btn svg{width:19px;height:19px}
+.btn.soft{background:var(--oat);color:var(--ink);box-shadow:none}
+.btn.line{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn.danger{background:#fff;color:var(--bad);border:1.5px solid var(--tomato-soft);box-shadow:none}
 
-.tabs{position:fixed;bottom:0;left:0;right:0;z-index:40}
-.tabs .inner{max-width:500px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(36,48,42,.06)}
-.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:14px;color:var(--ink-soft);font-weight:800;font-size:11.5px}
-.tabs button svg{width:24px;height:24px}
-.tabs button.on{color:var(--green)}
-.tabs button.on .ico{background:var(--green-soft)}
-.tabs button .ico{width:52px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background .15s}
-
-.fab{position:fixed;bottom:84px;right:0;left:0;z-index:35;pointer-events:none}
-.fab .inner{max-width:500px;margin:0 auto;display:flex;justify-content:flex-end;padding:0 18px}
-.fab button{pointer-events:auto;width:60px;height:60px;border-radius:20px;background:var(--green);color:#fff;box-shadow:0 8px 22px rgba(46,125,79,.4);display:grid;place-items:center}
-.fab button:active{transform:translateY(2px)}
-.fab button svg{width:28px;height:28px}
-
-.scrim{position:fixed;inset:0;background:rgba(30,45,35,.46);z-index:60;display:flex;align-items:flex-end;justify-content:center;animation:fade .18s}
-@keyframes fade{from{opacity:0}}
-.sheet{background:var(--bg);width:100%;max-width:500px;border-radius:26px 26px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:rise .24s cubic-bezier(.2,.8,.2,1)}
-@keyframes rise{from{transform:translateY(100%)}}
-.sheet .grip{width:42px;height:5px;border-radius:3px;background:var(--line);margin:6px auto 16px}
-.sheet h3{font-size:22px;margin-bottom:4px}
-.sheet .lead{font-size:14px;color:var(--ink-soft);font-weight:600;margin-bottom:18px}
-.fld{margin-bottom:15px}
-.fld label{display:block;font-size:13px;font-weight:800;color:var(--ink-soft);margin-bottom:7px;letter-spacing:.02em}
-.fld input,.fld textarea{width:100%;padding:14px 15px;border:2px solid var(--line);border-radius:14px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);font-weight:600}
-.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--green)}
-.fld textarea{resize:none;min-height:70px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:10px 14px;border-radius:13px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
-.chip .d{width:11px;height:11px;border-radius:50%}
-.chip.on{border-color:var(--green);background:var(--green-soft);color:var(--green-deep)}
-.sheet .acts{display:flex;flex-direction:column;gap:10px;margin-top:22px}
-.pickrow{display:flex;align-items:center;gap:13px;padding:14px 15px;background:#fff;border-radius:15px;box-shadow:var(--shadow);margin-bottom:9px}
-.pickrow .dot{width:13px;height:13px;border-radius:50%;flex:none}
+/* pick rows (add vendor) */
+.pickrow{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:8px}
 .pickrow .nm{flex:1;font-weight:800;font-size:15px}
-.pickrow .nm small{display:block;font-size:12px;color:var(--ink-soft);font-weight:600}
-.pickrow .go{width:34px;height:34px;border-radius:11px;background:var(--green-soft);color:var(--green-deep);display:grid;place-items:center;flex:none}
-.pickrow .go svg{width:18px;height:18px}
+.pickrow .nm small{display:block;color:var(--ink-soft);font-weight:600;font-size:12.5px;margin-top:1px}
+.pickrow .go{width:38px;height:38px;border:none;background:var(--red);color:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.pickrow .go svg{width:19px;height:19px}
 
-.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--green-deep);color:#fff;padding:13px 22px;border-radius:14px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(30,86,56,.35);opacity:0;transition:.25s;z-index:80;pointer-events:none;max-width:90%;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- vendor hub ---------- */
+.vhero{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin:4px 0 16px;box-shadow:0 4px 14px rgba(140,20,20,.07)}
+.vtop{display:flex;align-items:center;gap:12px}
+.dot.big{width:18px;height:18px;border-radius:6px}
+.vname{font-family:"Anton";font-weight:400;font-size:23px;line-height:1.05;letter-spacing:.3px;text-transform:uppercase}
+.vsub{color:var(--ink-soft);font-weight:600;font-size:13.5px;margin-top:3px}
+.vchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.qarow{display:flex;gap:8px;margin-top:14px}
+.qa{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;text-decoration:none;background:var(--oat);color:var(--ink);border:none;border-radius:13px;padding:11px 4px;font-weight:800;font-size:11.5px;cursor:pointer}
+.qa svg{width:20px;height:20px;color:var(--red)}
+.hubsec{margin:0 0 16px}
+.hubt{display:flex;align-items:center;gap:8px;font-family:"Oswald";font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:0 2px 8px}
+.hubt .cnt{background:var(--oat);color:var(--ink-soft);border-radius:999px;padding:1px 9px;font-size:12px}
+.addlink{margin-left:auto;border:none;background:none;color:var(--red);font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:none}
+.kv>span{color:var(--ink-soft);font-weight:600;font-size:13.5px;flex:none}
+.kv b,.kv a{font-weight:700;font-size:14px;text-align:right;word-break:break-word}
+.kv a{color:var(--red-deep);text-decoration:none}
+.muted{color:var(--ink-soft);font-weight:600;font-size:13.5px;padding:3px 0}
+.docrow,.histrow,.payrow{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+.docrow:last-child,.histrow:last-child,.payrow:last-child{border-bottom:none}
+.di{color:var(--red);flex:none}.di svg{width:21px;height:21px}
+.dm,.hm,.pm{flex:1;min-width:0}
+.dm b,.hm b,.pm b{display:block;font-weight:800;font-size:15px;line-height:1.2}
+.dm small,.hm small,.pm small{color:var(--ink-soft);font-weight:600;font-size:12.5px;display:block;margin-top:1px}
+.mini{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 11px;font-weight:800;font-size:12px;cursor:pointer;flex:none;color:var(--red-deep)}
+.ci{width:27px;height:27px;border-radius:8px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:#fff;padding:0}
+.ci.on{background:var(--ok);border-color:var(--ok)}
+.ci svg{width:15px;height:15px}
+.paytotals{display:flex;gap:10px;margin-bottom:7px}
+.paytotals>div{flex:1;background:var(--oat);border-radius:11px;padding:9px 11px}
+.paytotals span{display:block;font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;color:var(--ink-soft);font-weight:600}
+.paytotals b{font-family:"Anton";font-weight:400;font-size:19px;color:var(--ink)}
+.linkbox{background:#fff;border:1.5px dashed var(--red);border-radius:11px;padding:11px 13px;font-weight:700;font-size:13.5px;color:var(--red-deep);word-break:break-all;cursor:pointer}
 
-/* ---- passcode gate + splash ---- */
-.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;max-width:500px;margin:0 auto;text-align:center}
-.gate .logo{width:74px;height:74px;border-radius:22px;background:linear-gradient(150deg,var(--green),var(--green-deep));display:grid;place-items:center;color:#fff;margin-bottom:20px;box-shadow:0 10px 30px rgba(46,125,79,.3)}
-.gate .logo svg{width:40px;height:40px}
-.gate h1{font-size:30px;margin-bottom:4px}
-.gate p{color:var(--ink-soft);font-weight:600;margin:0 0 26px}
-.gate .box{width:100%;max-width:330px}
-.gate input{width:100%;padding:16px;border:2px solid var(--line);border-radius:15px;background:#fff;font-family:inherit;font-size:17px;font-weight:700;text-align:center;color:var(--ink);letter-spacing:.04em}
-.gate input:focus{outline:none;border-color:var(--green)}
-.gate .err{color:var(--tomato);font-weight:700;font-size:14px;margin:12px 0 0;min-height:18px}
-.gate .btn{margin-top:14px}
-.gate .spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+/* todo */
+.row.todo .check{width:28px;height:28px;border-radius:9px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:#fff;padding:0}
+.row.todo .check.on{background:var(--ok);border-color:var(--ok)}
+.row.todo .check svg{width:16px;height:16px}
+.row.todo .main b.done{text-decoration:line-through;color:var(--ink-soft)}
+
+/* empty */
+.empty{text-align:center;padding:46px 20px;color:var(--ink-soft)}
+.empty .ic{width:46px;height:46px;margin:0 auto 12px;color:var(--line)}
+.empty .ic svg{width:46px;height:46px}
+.empty b{display:block;font-family:"Anton";font-weight:400;font-size:20px;color:var(--ink);text-transform:uppercase;letter-spacing:.3px}
+.empty p{margin:7px 0 0;font-weight:600;font-size:14px}
+
+/* ---------- sheets ---------- */
+.scrim{position:fixed;inset:0;background:rgba(30,15,5,.42);display:flex;align-items:flex-end;justify-content:center;z-index:50;animation:fade .15s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{width:100%;max-width:500px;background:var(--cream);border-radius:22px 22px 0 0;padding:8px 18px calc(20px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:up .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.grip{width:40px;height:5px;border-radius:3px;background:var(--line);margin:6px auto 12px}
+.sheet h3{font-family:"Anton";font-weight:400;font-size:23px;text-transform:uppercase;letter-spacing:.3px;margin:2px 0 4px}
+.lead{color:var(--ink-soft);font-weight:600;font-size:14px;margin-bottom:14px}
+.fld{margin-bottom:13px}
+.fld label{display:block;font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.fld input,.fld textarea,.fld select{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;font-weight:600;color:var(--ink)}
+.fld textarea{min-height:74px;resize:vertical}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip .d{width:10px;height:10px;border-radius:3px}
+.chip.on{border-color:var(--red);background:#fff5f5;color:var(--red-deep)}
+.acts{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+
+/* ---------- fab + tabs ---------- */
+.fab{position:absolute;right:18px;bottom:96px;z-index:20}
+.fab .inner button{width:58px;height:58px;border-radius:50%;border:none;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 22px rgba(140,20,20,.34)}
+.fab .inner button svg{width:26px;height:26px}
+.tabs{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:7px 8px calc(8px + env(safe-area-inset-bottom))}
+.tabs .inner{display:flex;max-width:500px;margin:0 auto}
+.tabs button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--ink-soft);cursor:pointer;font-family:"Oswald";font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+.tabs button.on{color:var(--red)}
+.tabs .ico{position:relative}
+.tabs .ico svg{width:23px;height:23px}
+.tbadge{position:absolute;top:-5px;right:-9px;min-width:16px;height:16px;line-height:15px;padding:0 4px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;font-weight:800;text-align:center;font-family:-apple-system,sans-serif;border:1.5px solid #fff}
+
+/* ---------- gate ---------- */
+.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 26px;text-align:center;background:radial-gradient(120% 80% at 50% 0%, #fff 0%, var(--cream) 60%)}
+.gate .logo{width:230px;max-width:74%;margin-bottom:6px}
+.gate h1{font-family:"Anton";font-weight:400;font-size:30px;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 2px}
+.gate p{color:var(--ink-soft);font-weight:600;font-size:13.5px;margin:0 0 22px}
+.gate .box{width:100%;max-width:300px}
+.gate input{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:14px 16px;font:inherit;font-weight:700;font-size:16px;text-align:center;letter-spacing:.04em}
+.gate input:focus{outline:none;border-color:var(--red)}
+.gate .err{color:var(--bad);font-weight:700;font-size:13px;min-height:18px;margin:10px 0 12px}
+.gate .btn{margin-top:2px}
+.spin{width:34px;height:34px;border:3.5px solid var(--line);border-top-color:var(--red);border-radius:50%;margin:18px auto;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.syncpill{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;opacity:0;transition:.2s;pointer-events:none}
-.syncpill.show{opacity:.92}
 
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* toast + sync */
+#toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;font-weight:700;font-size:14px;padding:11px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:88%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.syncpill{position:fixed;top:10px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--ink);color:#fff;font-weight:700;font-size:12px;padding:6px 13px;border-radius:999px;opacity:0;transition:.2s;z-index:80}
+.syncpill.show{opacity:.95;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div id="app"><div class="gate"><div class="spin"></div></div></div>
-<div id="toast" class="toast"></div>
+<div class="wrap"><div id="app"></div></div>
+<div id="toast"></div>
 <div id="sync" class="syncpill"></div>
 <script>
 /* =====================================================================
-   MARKET DAY  —  shared, passcode-gated farmers-market app
-   Data lives in one shared store on Netlify. Everyone with the passcode
-   sees and edits the same copy.
+   MARKET DAY  —  Long Island Farmers Markets admin
+   Shared data on Netlify. Admin app is passcode-gated; the public
+   vendor application form (apply.html) is open to everyone.
    ===================================================================== */
 const API='/api/data';
 const PASS_KEY='md-pass';
+const PASSCODE='market26';            // admin passcode (also enforced server-side)
 let PASS=null;
 
-/* ---- icons ---- */
 const I={
-  tent:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 10v0M12 3l9 7M4 10v11h16V10M12 10v11"/></svg>',
   cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
   people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3 5 9l-2-2M21 6 11 16l-3-3M21 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8"/></svg>',
+  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
   tick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
@@ -201,14 +250,19 @@ const I={
   go:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>',
   x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
 };
 function tentSVG(filled){
-  const fill=filled?'var(--green)':'none', stroke=filled?'var(--green)':'var(--line)';
+  const fill=filled?'var(--red)':'none', stroke=filled?'var(--red)':'var(--line)';
   return `<svg class="tent" viewBox="0 0 26 22" fill="${fill}" stroke="${stroke}" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 2 9h22zM4 9v11h18V9M13 9v11"/></svg>`;
 }
 
-/* ---- categories (settings, not sample data) ---- */
+/* ---- categories ---- */
 const CATS=[
   {id:'produce',name:'Produce',color:'#3F8B57'},
   {id:'baked',name:'Baked',color:'#D69A3C'},
@@ -219,47 +273,74 @@ const CATS=[
   {id:'pantry',name:'Pantry',color:'#7C6BB0'}
 ];
 function cat(id){return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
-const CAP={produce:4,baked:2,coffee:1,prepared:3,flowers:2,crafts:4,pantry:3};
+const CAP={produce:8,baked:6,coffee:2,prepared:8,flowers:3,crafts:8,pantry:8};
 
-/* ---- fresh, empty starting data (your real markets only) ---- */
+/* ---- statuses + document types (vendor hub) ---- */
+const STATUSES=[
+  {id:'applied',name:'Applied',color:'#7C6BB0'},
+  {id:'review',name:'In review',color:'#D69A3C'},
+  {id:'approved',name:'Approved',color:'#3F8B57'},
+  {id:'booked',name:'Active',color:'#2E7D4F'},
+  {id:'waitlisted',name:'Waitlist',color:'#3E7C92'},
+  {id:'declined',name:'Declined',color:'#b0453a'}
+];
+function vstatus(v){return STATUSES.find(s=>s.id===((v&&v.status)||'booked'))||STATUSES[3];}
+const DOCTYPES=['Insurance (COI)','Business license','Health permit','Sales tax cert','Signed agreement','W-9','Other'];
+
+/* ---- real starting data (markets + roster from Drive) ---- */
+const SEED_MARKETS=[
+  {id:'hunt',name:'Huntington',full:'Huntington Village',where:'Elm Street parking lot, 228 Main St',weekday:0,time:'8:00am - 12:30pm',spots:40,color:'#C00000',start:'2026-06-07'},
+  {id:'baby',name:'Babylon',full:'Babylon Village',where:'The Gazebo, 244 W Main St',weekday:0,time:'8:00am - 12:30pm',spots:16,color:'#A30000',start:'2026-06-07'},
+  {id:'ronk',name:'Ronkonkoma',full:'Station Yards',where:'9 Hawkins Ave, Ronkonkoma',weekday:2,time:'5:00pm - 8:00pm',spots:14,color:'#7a0000',start:'2026-06-16'}
+];
+const SEED_VERSION=2;
+const SEED_VENDORS=[{"id": "v01", "name": "Oregon Road Organics", "cat": "produce", "phone": "631-885-7233", "email": "info@oregonroadorganics.com", "notes": "Calvin · Every Sunday · App ✓ · Insurance pending"}, {"id": "v02", "name": "Orchards of Concklin", "cat": "produce", "phone": "845-354-0369", "email": "concklins@aol.com", "notes": "Lauren / Peter · Fruit · Every Sunday · App ✓ · Insurance pending"}, {"id": "v03", "name": "Two Brothers Farm", "cat": "produce", "phone": "516-448-4064", "email": "2brosfarm@gmail.com", "notes": "Jason · Produce + flowers · Every Sunday"}, {"id": "v04", "name": "Moo La Farm", "cat": "produce", "phone": "347-245-1457", "email": "christinatarrago@yahoo.com", "notes": "Christina & Sal · Eggs, meat, dairy · Every Sunday"}, {"id": "v05", "name": "Horman's Best Pickles", "cat": "pantry", "phone": "516-669-7224", "email": "santiagonicole0901@gmail.com", "notes": "Nick Horman · Pickles · Every Sunday · App ✓ · Insurance pending"}, {"id": "v06", "name": "Three French Hens Bakery", "cat": "baked", "phone": "631-943-6664", "email": "threefrenchhensbakers@gmail.com", "notes": "Lisa & Rebecca · Every Sunday · App ✓ · Insurance ✓ · PAID"}, {"id": "v07", "name": "Saha Guys", "cat": "prepared", "phone": "657-532-0199", "email": "sahaguysco@gmail.com", "notes": "Leith · Hummus · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v08", "name": "Ommas Taste", "cat": "prepared", "phone": "", "email": "ommastaste.nyc@gmail.com", "notes": "Moon · Dumplings · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v09", "name": "Sal & Jerry Bakery", "cat": "baked", "phone": "516-242-1116", "email": "gianni@salandjerrysbakery.com", "notes": "Rob · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v10", "name": "Of Tea", "cat": "pantry", "phone": "", "email": "theoftea@gmail.com", "notes": "Suiling Sun · oftea.com · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v11", "name": "Gorden Craftworks", "cat": "crafts", "phone": "", "email": "", "notes": "Kim · Candles & air sprays · App ✓"}, {"id": "v12", "name": "Sano Snacks", "cat": "pantry", "phone": "", "email": "rathan@sanonuts.com", "notes": "Nuts & dried fruit · Every other Sunday · App ✓"}, {"id": "v13", "name": "Heda Healing", "cat": "crafts", "phone": "", "email": "", "notes": "Wellness"}, {"id": "v14", "name": "Fresh Factor", "cat": "prepared", "phone": "", "email": "", "notes": "Juice"}, {"id": "v15", "name": "Mighty Little Farms", "cat": "produce", "phone": "", "email": "bsize63@gmail.com", "notes": "Microgreens"}, {"id": "v16", "name": "Bauer's Brew Co", "cat": "coffee", "phone": "631-987-9240", "email": "mike@bauersbrew.com", "notes": "Mike · bauersbrew.com · Every Sunday · App pending · Insurance pending"}, {"id": "v17", "name": "Montauk Smoked Fish", "cat": "prepared", "phone": "", "email": "", "notes": "Seafood · Every Sunday · App pending · Insurance pending"}, {"id": "v18", "name": "Little Hippie Bake Shop", "cat": "pantry", "phone": "", "email": "liza@littlehippiebakeshop.com", "notes": "Jam & biscuits · Every Sunday · App pending"}, {"id": "v19", "name": "Oh My Loaf", "cat": "baked", "phone": "516-403-7974", "email": "ohmyloafshop@gmail.com", "notes": "Frank Kraemer · ohmyloaf.com · Gluten-free breads · App pending"}, {"id": "v20", "name": "Dr. Digs Mindful Treats", "cat": "baked", "phone": "516-301-8623", "email": "Realdocsocial@gmail.com", "notes": "Lauren · Protein treats · Biweekly (2nd & 4th Sun) · App ✓ · Insurance ✓"}, {"id": "v21", "name": "K's Confections", "cat": "baked", "phone": "", "email": "markgr38@gmail.com", "notes": "Kristin · Gluten-free · Biweekly (1st & 3rd Sun) · App ✓ · Insurance ✓"}, {"id": "v22", "name": "Simply Noured Bakery", "cat": "baked", "phone": "", "email": "", "notes": "Gluten-free"}, {"id": "v23", "name": "The Big Cheese", "cat": "pantry", "phone": "", "email": "", "notes": "Cheese · Every other Sunday"}, {"id": "v24", "name": "Cheese Maker on Duty", "cat": "pantry", "phone": "", "email": "", "notes": "Cheese · Every other Sunday"}, {"id": "v25", "name": "Thelma's Sazon Fuego", "cat": "pantry", "phone": "", "email": "", "notes": "Salsa & seasoning"}, {"id": "v26", "name": "The White Moustache", "cat": "pantry", "phone": "646-860-5274", "email": "Farmersmarkets@whitemoustache.com", "notes": "Lou Vitelli · whitemoustache.com · Yogurt · Every Sunday · App ✓ · Insurance pending"}, {"id": "v27", "name": "Pams Jamz", "cat": "pantry", "phone": "", "email": "", "notes": "Jam"}, {"id": "v28", "name": "Pure Kiwi Skin Care", "cat": "crafts", "phone": "", "email": "", "notes": "Skin care"}, {"id": "v29", "name": "Carlos Homemade", "cat": "pantry", "phone": "", "email": "carloshomemade1966@gmail.com", "notes": "Anthony · Sauce · Every other Sunday · App ✓ · Insurance pending"}, {"id": "v30", "name": "Curious Flowers", "cat": "flowers", "phone": "", "email": "", "notes": "Flowers · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v31", "name": "Table & Soul", "cat": "crafts", "phone": "", "email": "", "notes": "Aprons · Monthly · App ✓"}, {"id": "v32", "name": "LIVA", "cat": "crafts", "phone": "", "email": "", "notes": "Singing / entertainment"}, {"id": "v33", "name": "Bambino Ravioli", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v34", "name": "Bevo's Kitchen", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v35", "name": "Butterella", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v36", "name": "Coco Elephant", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v37", "name": "Johnny Breads", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v38", "name": "Jolly Jammer", "cat": "pantry", "phone": "", "email": "", "notes": "Jam"}, {"id": "v39", "name": "Kale Krisps", "cat": "pantry", "phone": "", "email": "", "notes": "Snacks"}, {"id": "v40", "name": "Mae Flower Designs", "cat": "flowers", "phone": "", "email": "", "notes": ""}, {"id": "v41", "name": "Malbec Empanadas", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v42", "name": "Mericias Homemade", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v43", "name": "Natural Hounds", "cat": "pantry", "phone": "", "email": "", "notes": "Dog treats"}, {"id": "v44", "name": "Patchinns", "cat": "flowers", "phone": "", "email": "", "notes": "Plants"}, {"id": "v45", "name": "Serious Seasonings", "cat": "pantry", "phone": "", "email": "", "notes": "Greg"}, {"id": "v46", "name": "Soft Honey", "cat": "pantry", "phone": "", "email": "", "notes": "Honey"}, {"id": "v47", "name": "Springbrook Hollow Farm", "cat": "produce", "phone": "", "email": "", "notes": ""}, {"id": "v48", "name": "Vincent Farms Natural Foods", "cat": "produce", "phone": "", "email": "", "notes": ""}, {"id": "v49", "name": "Erica & Emmett McDonough", "cat": "crafts", "phone": "", "email": "", "notes": "Guest vendor"}, {"id": "v50", "name": "Finprinted", "cat": "crafts", "phone": "", "email": "", "notes": "Guest vendor · prints"}, {"id": "v51", "name": "Alice — Fire Department", "cat": "crafts", "phone": "", "email": "", "notes": "Guest · Fire Department"}, {"id": "v52", "name": "Robin — Elde Home", "cat": "crafts", "phone": "", "email": "", "notes": "Guest · Elde Home"}];
+const SEED_BOOKINGS=[{"id": "b01", "m": "hunt", "date": "2026-06-28", "v": "v32", "paid": false}, {"id": "b02", "m": "hunt", "date": "2026-06-28", "v": "v33", "paid": false}, {"id": "b03", "m": "hunt", "date": "2026-06-28", "v": "v16", "paid": false}, {"id": "b04", "m": "hunt", "date": "2026-06-28", "v": "v34", "paid": false}, {"id": "b05", "m": "hunt", "date": "2026-06-28", "v": "v35", "paid": false}, {"id": "b06", "m": "hunt", "date": "2026-06-28", "v": "v24", "paid": false}, {"id": "b07", "m": "hunt", "date": "2026-06-28", "v": "v36", "paid": false}, {"id": "b08", "m": "hunt", "date": "2026-06-28", "v": "v20", "paid": false}, {"id": "b09", "m": "hunt", "date": "2026-06-28", "v": "v14", "paid": false}, {"id": "b10", "m": "hunt", "date": "2026-06-28", "v": "v11", "paid": false}, {"id": "b11", "m": "hunt", "date": "2026-06-28", "v": "v13", "paid": false}, {"id": "b12", "m": "hunt", "date": "2026-06-28", "v": "v05", "paid": false}, {"id": "b13", "m": "hunt", "date": "2026-06-28", "v": "v37", "paid": false}, {"id": "b14", "m": "hunt", "date": "2026-06-28", "v": "v38", "paid": false}, {"id": "b15", "m": "hunt", "date": "2026-06-28", "v": "v39", "paid": false}, {"id": "b16", "m": "hunt", "date": "2026-06-28", "v": "v40", "paid": false}, {"id": "b17", "m": "hunt", "date": "2026-06-28", "v": "v41", "paid": false}, {"id": "b18", "m": "hunt", "date": "2026-06-28", "v": "v42", "paid": false}, {"id": "b19", "m": "hunt", "date": "2026-06-28", "v": "v15", "paid": false}, {"id": "b20", "m": "hunt", "date": "2026-06-28", "v": "v17", "paid": false}, {"id": "b21", "m": "hunt", "date": "2026-06-28", "v": "v04", "paid": false}, {"id": "b22", "m": "hunt", "date": "2026-06-28", "v": "v43", "paid": false}, {"id": "b23", "m": "hunt", "date": "2026-06-28", "v": "v10", "paid": false}, {"id": "b24", "m": "hunt", "date": "2026-06-28", "v": "v02", "paid": false}, {"id": "b25", "m": "hunt", "date": "2026-06-28", "v": "v01", "paid": false}, {"id": "b26", "m": "hunt", "date": "2026-06-28", "v": "v44", "paid": false}, {"id": "b27", "m": "hunt", "date": "2026-06-28", "v": "v07", "paid": false}, {"id": "b28", "m": "hunt", "date": "2026-06-28", "v": "v45", "paid": false}, {"id": "b29", "m": "hunt", "date": "2026-06-28", "v": "v46", "paid": false}, {"id": "b30", "m": "hunt", "date": "2026-06-28", "v": "v47", "paid": false}, {"id": "b31", "m": "hunt", "date": "2026-06-28", "v": "v06", "paid": true}, {"id": "b32", "m": "hunt", "date": "2026-06-28", "v": "v03", "paid": false}, {"id": "b33", "m": "hunt", "date": "2026-06-28", "v": "v48", "paid": false}, {"id": "b34", "m": "hunt", "date": "2026-06-28", "v": "v49", "paid": false}, {"id": "b35", "m": "hunt", "date": "2026-06-28", "v": "v50", "paid": false}, {"id": "b36", "m": "hunt", "date": "2026-06-28", "v": "v51", "paid": false}, {"id": "b37", "m": "hunt", "date": "2026-06-28", "v": "v52", "paid": false}];
 function freshState(){
   return {
     seasonEnd:'2026-11-01',
-    markets:[
-      {id:'hunt',name:'Huntington',full:'Huntington Village',where:'Elm Street parking lot, 228 Main St',weekday:0,time:'8:00am – 12:30pm',spots:18,color:'#2E7D4F',start:'2026-06-07'},
-      {id:'baby',name:'Babylon',full:'Babylon Village',where:'The Gazebo, 244 W Main St',weekday:0,time:'8:00am – 12:30pm',spots:16,color:'#3E7C92',start:'2026-06-07'},
-      {id:'ronk',name:'Ronkonkoma',full:'Station Yards',where:'9 Hawkins Ave, Ronkonkoma',weekday:2,time:'5:00pm – 8:00pm',spots:14,color:'#D69A3C',start:'2026-06-16'}
-    ],
-    vendors:[],
-    bookings:[],
+    seedVersion:SEED_VERSION,
+    markets:JSON.parse(JSON.stringify(SEED_MARKETS)),
+    vendors:JSON.parse(JSON.stringify(SEED_VENDORS)),
+    bookings:JSON.parse(JSON.stringify(SEED_BOOKINGS)),
     todos:[]
   };
 }
+function applySeed(st){
+  if(!st) return freshState();
+  if(st.seedVersion && st.seedVersion>=SEED_VERSION) return st;
+  const hunt=(st.markets||[]).find(m=>m.id==='hunt'); if(hunt&&hunt.spots<40) hunt.spots=40;
+  if(!Array.isArray(st.vendors)||st.vendors.length===0) st.vendors=JSON.parse(JSON.stringify(SEED_VENDORS));
+  if(!Array.isArray(st.bookings)||st.bookings.length===0) st.bookings=JSON.parse(JSON.stringify(SEED_BOOKINGS));
+  st.seedVersion=SEED_VERSION;
+  return st;
+}
 
 let S=null;
-let ui={view:'days',m:null,date:null,sheet:null};
+let INBOX=[];
+let ui={view:'days',m:null,date:null,sheet:null,vid:null,q:''};
 function bid(){return 'b'+Math.random().toString(36).slice(2,9);}
 function uid(p){return (p||'x')+Math.random().toString(36).slice(2,9);}
 
-/* ---- shared storage via the function ---- */
+/* ---- shared storage ---- */
 async function apiGet(pass){
   try{
     const r=await fetch(API,{headers:{'x-passcode':pass}});
     if(r.status===401) return {ok:false,auth:false};
     if(!r.ok) return {ok:false};
     const j=await r.json();
-    return {ok:true,state:j.state};
+    return {ok:true,state:j.state,inbox:j.inbox||[]};
   }catch(e){ return {ok:false}; }
 }
 let saving=false, saveAgain=false;
 async function save(){
   if(!PASS) return;
-  if(saving){ saveAgain=true; return; }       // simple coalescing
-  saving=true; showSync('Saving…');
+  if(saving){ saveAgain=true; return; }
+  saving=true; showSync('Saving...');
   try{
-    const r=await fetch(API,{method:'POST',headers:{'x-passcode':PASS,'content-type':'application/json'},body:JSON.stringify({state:S})});
-    showSync(r.ok?'Saved':'Couldn\u2019t save');
-  }catch(e){ showSync('Offline — will retry'); }
+    const r=await fetch(API,{method:'POST',headers:{'x-passcode':PASS,'content-type':'application/json'},body:JSON.stringify({state:S,inbox:INBOX})});
+    showSync(r.ok?'Saved':'Could not save');
+  }catch(e){ showSync('Offline - will retry'); }
   saving=false;
   if(saveAgain){ saveAgain=false; save(); }
 }
@@ -289,6 +370,36 @@ const dayBookings=(mid,date)=>S.bookings.filter(b=>b.m===mid&&b.date===date);
 function spotsLeft(mid,date){const m=market(mid);return m.spots-dayBookings(mid,date).length;}
 function catCount(mid,date,c){return dayBookings(mid,date).filter(b=>{const v=vendor(b.v);return v&&v.cat===c;}).length;}
 
+/* ---- vendor-hub helpers ---- */
+function money(n){n=Number(n||0);if(!n)return '$0';return '$'+(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,'');}
+function vBookings(vid){return S.bookings.filter(b=>b.v===vid).slice().sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);}
+function vPayments(vid){const v=vendor(vid);return (v&&v.payments)||[];}
+function vPaidTotal(vid){let t=0;vPayments(vid).forEach(p=>t+=Number(p.amount||0));return t;}
+function vOwes(vid){const v=vendor(vid);const fee=Number((v&&v.fee)||0);const unpaid=S.bookings.filter(b=>b.v===vid&&!b.paid).length;return {count:unpaid,amount:fee?unpaid*fee:0};}
+function vDocs(vid){const v=vendor(vid);return (v&&v.docs)||[];}
+function insState(v){
+  const stt=(v&&v.insStatus)||'';const exp=v&&v.insExpiry;
+  if(stt==='on'){ if(exp){const d=until(exp); if(d<0) return {label:'Insurance expired',tone:'bad'}; if(d<30) return {label:'Insurance expires soon',tone:'warn'}; return {label:'Insurance on file',tone:'ok'};} return {label:'Insurance on file',tone:'ok'}; }
+  if(stt==='pending') return {label:'Insurance pending',tone:'warn'};
+  return {label:'No insurance on file',tone:'bad'};
+}
+function vFlags(v){const f=[];const ins=insState(v);if(ins.tone==='bad')f.push({t:'bad',x:'No COI'});else if(ins.tone==='warn')f.push({t:'warn',x:'COI'});return f;}
+function escapeHtml(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fixUrl(u){u=String(u||'').trim();if(!u)return '';return /^https?:\/\//i.test(u)?u:'https://'+u;}
+function newCount(){return INBOX.filter(a=>a.status!=='dismissed'&&a.status!=='imported').length;}
+function timeAgo(t){const d=new Date(t);const s=(Date.now()-d.getTime())/1000;if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+function applyURL(){return location.origin+'/apply.html';}
+function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase();
+  if(/coffee|espresso|tea|brew/.test(t))return 'coffee';
+  if(/bak|bread|pastr|cake|cookie|donut|loaf/.test(t))return 'baked';
+  if(/flower|plant|bouquet/.test(t))return 'flowers';
+  if(/produce|farm|veg|fruit|microgreen|orchard/.test(t))return 'produce';
+  if(/food|prepared|empanada|hummus|dumpling|kitchen|fish|seafood|juice|ravioli/.test(t))return 'prepared';
+  if(/craft|candle|art|print|soap|skin|jewel|apron|wellness/.test(t))return 'crafts';
+  if(/jam|honey|pickle|sauce|nut|snack|cheese|pantry|spice|season|salsa|oil|yogurt/.test(t))return 'pantry';
+  return null;
+}
+
 /* =====================================================================
    RENDER
    ===================================================================== */
@@ -300,18 +411,24 @@ function barFor(){
   if(ui.view==='day'||ui.view==='addv'){
     const m=market(ui.m);
     const t=ui.view==='day'?m.name:'Add a vendor';
-    const s=ui.view==='day'?nice(ui.date):(m.name+' · '+nice(ui.date));
+    const s=ui.view==='day'?nice(ui.date):(m.name+' - '+nice(ui.date));
     return `<div class="appbar"><button class="back" data-a="back" aria-label="Back">${I.back}</button>
       <div class="title"><b>${t}</b><small>${s}</small></div></div>`;
   }
-  return `<div class="appbar"><div class="logo">${I.tent}</div>
-    <div class="title"><b>Market Day</b><small>Long Island Farmers Markets</small></div></div>`;
+  if(ui.view==='vdetail'){
+    const v=vendor(ui.vid);
+    return `<div class="appbar"><button class="back" data-a="back" aria-label="Back">${I.back}</button>
+      <div class="title"><b>${escapeHtml(v?v.name:'Vendor')}</b><small>${v?cat(v.cat).name:''}</small></div></div>`;
+  }
+  return `<div class="topbar"><img class="brandlogo" src="logo-sm.png" alt="G&amp;G Long Island Farmers Market"/>
+    <div class="ttl"><b>Market Day</b><small>Vendor &amp; Market Manager</small></div></div>`;
 }
 function tabbar(){
-  if(ui.view==='addv') return '';
+  if(ui.view==='addv'||ui.view==='vdetail') return '';
   const root=ui.view==='day'?'days':ui.view;
-  const tab=(v,icon,label)=>`<button class="${root===v?'on':''}" data-a="tab" data-v="${v}"><span class="ico">${icon}</span><span>${label}</span></button>`;
-  return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Market Days')}${tab('vendors',I.people,'Vendors')}${tab('todos',I.check,'To-Do')}</div></div>`;
+  const n=newCount();
+  const tab=(v,icon,label,badge)=>`<button class="${root===v?'on':''}" data-a="tab" data-v="${v}"><span class="ico">${icon}${badge?`<span class="tbadge">${badge>9?'9+':badge}</span>`:''}</span><span>${label}</span></button>`;
+  return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Days')}${tab('vendors',I.people,'Vendors')}${tab('inbox',I.inbox,'Inbox',n)}${tab('todos',I.check,'To-Do')}</div></div>`;
 }
 function fab(){
   if(ui.view==='vendors') return fabBtn('add-vendor');
@@ -323,25 +440,25 @@ function fabBtn(a){return `<div class="fab"><div class="inner"><button data-a="$
 const VIEW={};
 VIEW.days=function(){
   const days=allDays(12);
-  if(!days.length) return emptyState(I.cal,'Season\u2019s over','No more market days are scheduled.');
+  if(!days.length) return emptyState(I.cal,'Season is over','No more market days are scheduled.');
   const first=days[0],rest=days.slice(1);
   const m=market(first.m);
   const booked=dayBookings(first.m,first.date),left=spotsLeft(first.m,first.date);
   const dd=until(first.date);
-  const when=dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' · '+dd+' days away';
+  const when=dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' - '+dd+' days away';
   const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
   const preview=booked.slice(0,4).map(b=>{const v=vendor(b.v);const c=cat(v.cat);
-    return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${v.name}</span>
+    return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${escapeHtml(v.name)}</span>
       <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('');
   const greet=(()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening';})();
   return `
-  <div class="hello"><div class="eye">${greet} 👋</div><h1>Here\u2019s what\u2019s next</h1></div>
+  <div class="hello"><div class="eye">${greet}</div><h1>Here is what is next</h1></div>
   <div class="card bigday tap" data-a="open-day" data-m="${first.m}" data-date="${first.date}">
     <div class="hd" style="background:${m.color}"><div class="when">${when}</div><h2>${m.name}</h2><div class="sub">${m.time}</div></div>
     <div class="bd">
       <div class="tents">${tents}</div>
-      <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">· ${booked.length} coming</span></div>
-      <div class="coming">${preview||`<div class="crow"><span class="nm" style="color:var(--ink-soft);font-weight:600">No vendors yet — tap to add some</span></div>`}</div>
+      <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} coming</span></div>
+      <div class="coming">${preview||`<div class="crow"><span class="nm" style="color:var(--ink-soft);font-weight:600">No vendors yet - tap to add some</span></div>`}</div>
     </div>
   </div>
   <div class="section-title">Coming up</div>
@@ -361,54 +478,148 @@ VIEW.day=function(){
   return `
   <div class="card" style="margin-top:6px">
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
-      <span style="color:var(--green);margin-top:2px">${I.pin}</span>
+      <span style="color:var(--red);margin-top:2px">${I.pin}</span>
       <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${m.where}</div></div>
     </div>
     <div class="tents" style="margin-top:12px">${tents}</div>
-    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">· ${booked.length} of ${m.spots}</span></div>
+    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${m.spots}</span></div>
   </div>
   <button class="btn" data-a="goto-add" style="margin:4px 0 18px">${I.plus} Add a vendor to this day</button>
-  <div class="section-title">Who\u2019s coming <span>(${booked.length})</span></div>
+  <div class="section-title">Who is coming <span>(${booked.length})</span></div>
   ${booked.length? `<div class="list">${booked.map(b=>{const v=vendor(b.v);const c=cat(v.cat);
     return `<div class="row"><span class="dot" style="background:${c.color}"></span>
-      <div class="main"><b>${v.name}</b><div class="meta">${c.name}</div></div>
-      <button class="pill ${b.paid?'paid':'owes'}" data-a="toggle-paid" data-id="${b.id}" style="border:none">${b.paid?'Paid':'Owes'}</button>
+      <div class="main tap" data-a="open-vendor" data-id="${v.id}"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}</div></div>
+      <button class="pill ${b.paid?'paid':'owes'}" data-a="toggle-paid" data-id="${b.id}">${b.paid?'Paid':'Owes'}</button>
       <button class="x" data-a="remove-booking" data-id="${b.id}" aria-label="Remove">${I.x}</button></div>`;}).join('')}</div>`
     : emptyState(I.people,'No vendors yet','Tap the button above to add your first vendor to this day.')}
   <div style="height:10px"></div>`;
 };
 VIEW.addv=function(){
   const here=new Set(dayBookings(ui.m,ui.date).map(b=>b.v));
-  const avail=S.vendors.filter(v=>!here.has(v.id));
+  const avail=S.vendors.filter(v=>!here.has(v.id)).slice().sort((a,b)=>a.name.localeCompare(b.name));
   const full=spotsLeft(ui.m,ui.date)<=0;
   return `
-  ${full?`<div class="card" style="background:var(--tomato-soft);box-shadow:none;color:#8a3322;font-weight:700;margin-top:6px">This market day is full. Remove a vendor first, or add more spots in the market settings.</div>`:''}
+  ${full?`<div class="card" style="background:var(--tomato-soft);border:none;color:#8a3322;font-weight:700;margin-top:6px">This market day is full. Remove a vendor first, or raise the spot count in market settings.</div>`:''}
   <div class="section-title" style="margin-top:14px">Tap a vendor to add them</div>
   ${avail.length? avail.map(v=>{const c=cat(v.cat);
     return `<div class="pickrow"><span class="dot" style="background:${c.color}"></span>
-      <div class="nm">${v.name}<small>${c.name}</small></div>
-      <button class="go" data-a="pick-vendor" data-id="${v.id}" aria-label="Add ${v.name}">${I.go}</button></div>`;}).join('')
+      <div class="nm">${escapeHtml(v.name)}<small>${c.name}</small></div>
+      <button class="go" data-a="pick-vendor" data-id="${v.id}" aria-label="Add ${escapeHtml(v.name)}">${I.go}</button></div>`;}).join('')
     : (S.vendors.length? `<div class="empty" style="padding:30px 10px"><p style="font-weight:600">Everyone in your list is already here.</p></div>`
        : `<div class="empty" style="padding:30px 10px"><p style="font-weight:600">Your vendor list is empty. Add someone first.</p></div>`)}
   <button class="btn soft" data-a="add-vendor" style="margin-top:8px">${I.plus} Add someone new to your list</button>
   <div style="height:10px"></div>`;
 };
 VIEW.vendors=function(){
-  const list=S.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const q=(ui.q||'').toLowerCase();
+  let list=S.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  if(q) list=list.filter(v=>v.name.toLowerCase().includes(q)||(v.email||'').toLowerCase().includes(q)||(v.notes||'').toLowerCase().includes(q)||(v.products||'').toLowerCase().includes(q));
+  const n=newCount();
   return `
-  <div class="hello"><div class="eye">Your people</div><h1>Vendors</h1></div>
-  ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);
-    return `<div class="row"><span class="dot" style="background:${c.color}"></span>
-      <div class="main"><b>${v.name}</b><div class="meta">${c.name}${v.phone?' · '+v.phone:v.email?' · '+v.email:''}</div></div>
-      <button class="edit" data-a="edit-vendor" data-id="${v.id}" aria-label="Edit ${v.name}">${I.edit}</button></div>`;}).join('')}</div>`
-    : emptyState(I.people,'No vendors yet','Add the makers and farmers who sell at your markets.')}
+  <div class="hello"><div class="eye">Your people</div><h1>Vendors <span>${S.vendors.length}</span></h1></div>
+  ${n?`<button class="inboxbar" data-a="tab" data-v="inbox">${I.inbox}<span>${n} new application${n===1?'':'s'} to review</span>${I.chev}</button>`:''}
+  <div class="searchwrap"><input class="search" id="vq" placeholder="Search vendors..." value="${escapeHtml(ui.q||'')}"/></div>
+  ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);const stt=vstatus(v);const flags=vFlags(v);
+    return `<div class="row tap" data-a="open-vendor" data-id="${v.id}"><span class="dot" style="background:${c.color}"></span>
+      <div class="main"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}${v.phone?' - '+escapeHtml(v.phone):v.email?' - '+escapeHtml(v.email):''}</div>
+      <div class="rowflags"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span>${flags.map(f=>`<span class="spill ${f.t}">${f.x}</span>`).join('')}</div></div>
+      <span class="chev">${I.chev}</span></div>`;}).join('')}</div>`
+    : emptyState(I.people, q?'No matches':'No vendors yet', q?'Try a different search.':'Add the makers and farmers who sell at your markets.')}
   <div style="height:10px"></div>`;
+};
+VIEW.vdetail=function(){
+  const v=vendor(ui.vid);
+  if(!v) return emptyState(I.people,'Vendor not found','This vendor may have been deleted.');
+  const c=cat(v.cat),stt=vstatus(v),ins=insState(v);
+  const bk=vBookings(v.id),pays=vPayments(v.id).slice().sort((a,b)=>(a.date||'')<(b.date||'')?1:-1);
+  const paid=vPaidTotal(v.id),owes=vOwes(v.id),docs=vDocs(v.id);
+  const tel=v.phone?`<a class="qa" href="tel:${escapeHtml(v.phone)}">${I.phone}<span>Call</span></a>`:'';
+  const mail=v.email?`<a class="qa" href="mailto:${escapeHtml(v.email)}">${I.mail}<span>Email</span></a>`:'';
+  const web=v.website?`<a class="qa" href="${escapeHtml(fixUrl(v.website))}" target="_blank" rel="noopener">${I.globe}<span>Site</span></a>`:'';
+  const kv=(l,val)=>val?`<div class="kv"><span>${l}</span><b>${escapeHtml(val)}</b></div>`:'';
+  return `
+  <div class="vhero">
+    <div class="vtop"><span class="dot big" style="background:${c.color}"></span>
+      <div><div class="vname">${escapeHtml(v.name)}</div><div class="vsub">${c.name}${v.contact?' - '+escapeHtml(v.contact):''}</div></div></div>
+    <div class="vchips"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span><span class="spill ${ins.tone}">${ins.label}</span></div>
+    <div class="qarow">${tel}${mail}${web}<button class="qa" data-a="edit-vendor" data-id="${v.id}">${I.edit}<span>Edit</span></button></div>
+  </div>
+
+  <div class="hubsec"><div class="hubt">Contact</div>
+    <div class="card">
+      ${kv('Contact',v.contact)}
+      ${v.phone?`<div class="kv"><span>Phone</span><a href="tel:${escapeHtml(v.phone)}">${escapeHtml(v.phone)}</a></div>`:''}
+      ${v.email?`<div class="kv"><span>Email</span><a href="mailto:${escapeHtml(v.email)}">${escapeHtml(v.email)}</a></div>`:''}
+      ${v.website?`<div class="kv"><span>Website</span><a href="${escapeHtml(fixUrl(v.website))}" target="_blank" rel="noopener">${escapeHtml(v.website)}</a></div>`:''}
+      ${kv('Address',v.address)}
+      ${kv('Products',v.products)}
+      ${kv('Schedule',v.frequency)}
+      ${(!v.contact&&!v.phone&&!v.email&&!v.website&&!v.address&&!v.products&&!v.frequency)?`<div class="muted">No contact details yet - tap Edit to add them.</div>`:''}
+    </div>
+  </div>
+
+  <div class="hubsec"><div class="hubt">Documents <button class="addlink" data-a="add-doc" data-id="${v.id}">+ Add</button></div>
+    <div class="card">
+      <div class="kv"><span>Insurance (COI)</span><b class="${ins.tone}">${ins.label}${v.insExpiry?' - exp '+nice(v.insExpiry):''}</b></div>
+      ${docs.length?docs.map(d=>`<div class="docrow"><span class="di">${I.doc}</span>
+        <div class="dm"><b>${escapeHtml(d.type||'Document')}</b><small>${escapeHtml(d.name||'')}${d.expiry?' - exp '+nice(d.expiry):''}</small></div>
+        <button class="mini" data-a="open-doc-file" data-id="${v.id}" data-d="${d.id}">Open</button>
+        <button class="x" data-a="del-doc" data-id="${v.id}" data-d="${d.id}" aria-label="Delete">${I.x}</button></div>`).join('')
+        :`<div class="muted">No documents yet. Attach insurance certificates, signed agreements, permits - paste a share link from Drive or Dropbox.</div>`}
+    </div>
+  </div>
+
+  <div class="hubsec"><div class="hubt">Attendance <span class="cnt">${bk.length}</span></div>
+    <div class="card">
+      ${bk.length?bk.slice(0,14).map(b=>{const mk=market(b.m);return `<div class="histrow">
+        <button class="ci ${b.checkedIn?'on':''}" data-a="toggle-checkin" data-id="${b.id}" aria-label="Checked in">${b.checkedIn?I.tick:''}</button>
+        <div class="hm"><b>${escapeHtml(mk?mk.name:b.m)}</b><small>${nice(b.date)}${until(b.date)>0?' - upcoming':''}</small></div>
+        <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('')
+        :`<div class="muted">No market days booked yet.</div>`}
+      ${bk.length>14?`<div class="muted">+ ${bk.length-14} more</div>`:''}
+    </div>
+  </div>
+
+  <div class="hubsec"><div class="hubt">Payments <button class="addlink" data-a="add-payment" data-id="${v.id}">+ Add</button></div>
+    <div class="card">
+      <div class="paytotals"><div><span>Collected</span><b>${money(paid)}</b></div><div><span>Open days</span><b>${owes.count}${owes.amount?' / '+money(owes.amount):''}</b></div></div>
+      ${pays.length?pays.map(p=>`<div class="payrow"><div class="pm"><b>${money(p.amount)}</b><small>${p.date?nice(p.date):''}${p.method?' - '+escapeHtml(p.method):''}${p.note?' - '+escapeHtml(p.note):''}</small></div>
+        <button class="x" data-a="del-payment" data-id="${v.id}" data-p="${p.id}" aria-label="Delete">${I.x}</button></div>`).join('')
+        :`<div class="muted">No payments recorded yet.</div>`}
+    </div>
+  </div>
+
+  ${v.notes?`<div class="hubsec"><div class="hubt">Notes</div><div class="card"><div style="white-space:pre-wrap;font-weight:600;font-size:14px">${escapeHtml(v.notes)}</div></div></div>`:''}
+
+  <div class="hubsec"><button class="btn danger" data-a="del-vendor" data-id="${v.id}">Delete vendor</button></div>
+  <div style="height:14px"></div>`;
+};
+VIEW.inbox=function(){
+  const live=INBOX.filter(a=>a.status!=='dismissed'&&a.status!=='imported').slice().sort((a,b)=>a.submittedAt<b.submittedAt?1:-1);
+  const done=INBOX.filter(a=>a.status==='dismissed'||a.status==='imported').slice().sort((a,b)=>a.submittedAt<b.submittedAt?1:-1);
+  const cardRow=a=>{const when=a.submittedAt?timeAgo(a.submittedAt):'';
+    return `<div class="row tap" data-a="open-app" data-id="${a.id}"><span class="dot" style="background:#D69A3C"></span>
+      <div class="main"><b>${escapeHtml(a.name)}</b><div class="meta">${escapeHtml(a.category||'-')}${a.markets?' - '+escapeHtml(a.markets):''} - ${when}</div></div>
+      ${a.status==='imported'?'<span class="spill ok">Imported</span>':a.status==='dismissed'?'<span class="spill">Dismissed</span>':'<span class="spill warn">New</span>'}
+      <span class="chev">${I.chev}</span></div>`;};
+  return `
+  <div class="hello"><div class="eye">Applications</div><h1>Inbox</h1></div>
+  <div class="lead" style="margin:-8px 2px 14px">Vendors who applied through your online form land here. Review and import them in one tap.</div>
+  ${live.length?`<div class="section-title" style="margin-top:0">New <span>(${live.length})</span></div><div class="list">${live.map(cardRow).join('')}</div>`
+    : emptyState(I.inbox,'No new applications','Share your form link and submissions show up right here.')}
+  ${done.length?`<div class="section-title">Processed</div><div class="list">${done.map(cardRow).join('')}</div>`:''}
+  <div class="card" style="margin-top:16px;background:var(--oat);border:none">
+    <div style="font-family:'Oswald';text-transform:uppercase;letter-spacing:.07em;font-weight:600;font-size:12px;color:var(--ink-soft);margin-bottom:4px">Your application link</div>
+    <div style="font-weight:700;font-size:14px;margin-bottom:9px">Send this to vendors instead of emailing forms - tap to copy:</div>
+    <div class="linkbox" data-a="copy-link">${applyURL()}</div>
+  </div>
+  <div style="height:14px"></div>`;
 };
 VIEW.todos=function(){
   const open=S.todos.filter(t=>!t.done),done=S.todos.filter(t=>t.done);
   const row=t=>`<div class="row todo">
     <button class="check ${t.done?'on':''}" data-a="toggle-todo" data-id="${t.id}" aria-label="Mark done">${t.done?I.tick:''}</button>
-    <div class="main"><b class="${t.done?'done':''}" style="font-weight:800">${t.title}</b></div>
+    <div class="main"><b class="${t.done?'done':''}" style="font-weight:800">${escapeHtml(t.title)}</b></div>
     <button class="edit" data-a="edit-todo" data-id="${t.id}" aria-label="Edit">${I.edit}</button></div>`;
   return `
   <div class="hello"><div class="eye">Before market day</div><h1>To-Do</h1></div>
@@ -421,21 +632,103 @@ function emptyState(icon,title,text){return `<div class="empty"><div class="ic">
 
 /* ---- sheets ---- */
 function sheetHTML(){return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>${ui.sheet.body}</div></div>`;}
-function fld(label,name,val,type,ph){return `<div class="fld"><label>${label}</label><input name="${name}" type="${type||'text'}" value="${(val??'').toString().replace(/"/g,'&quot;')}" placeholder="${ph||''}"/></div>`;}
+function fld(label,name,val,type,ph){return `<div class="fld"><label>${label}</label><input name="${name}" type="${type||'text'}" value="${(val==null?'':val).toString().replace(/"/g,'&quot;')}" placeholder="${ph||''}"/></div>`;}
 function openVendor(v){
-  const chips=CATS.map(c=>`<button type="button" class="chip ${(v?v.cat:'produce')===c.id?'on':''}" data-a="pickcat" data-c="${c.id}"><span class="d" style="background:${c.color}"></span>${c.name}</button>`).join('');
   ui.catPick=v?v.cat:'produce';
+  ui.statusPick=(v&&v.status)||'booked';
+  ui.insPick=(v&&v.insStatus)||'';
+  const chips=CATS.map(c=>`<button type="button" class="chip ${ui.catPick===c.id?'on':''}" data-a="pickcat" data-c="${c.id}"><span class="d" style="background:${c.color}"></span>${c.name}</button>`).join('');
+  const sChips=STATUSES.map(s=>`<button type="button" class="chip ${ui.statusPick===s.id?'on':''}" data-a="pickstatus" data-s="${s.id}"><span class="d" style="background:${s.color}"></span>${s.name}</button>`).join('');
+  const iChips=[['','None'],['pending','Pending'],['on','On file']].map(p=>`<button type="button" class="chip ${ui.insPick===p[0]?'on':''}" data-a="pickins" data-i="${p[0]}">${p[1]}</button>`).join('');
   ui.sheet={type:'vendor',id:v?v.id:null,body:`
     <h3>${v?'Edit vendor':'New vendor'}</h3>
     <div class="lead">${v?'Update their details.':'Add someone who sells at your markets.'}</div>
-    ${fld('Name','name',v?v.name:'','text','e.g. Sunny Acres Farm')}
+    ${fld('Business name','name',v?v.name:'','text','e.g. Sunny Acres Farm')}
+    ${fld('Contact person','contact',v?v.contact:'','text','Optional')}
     <div class="fld"><label>What do they sell?</label><div class="chips" id="catchips">${chips}</div></div>
     ${fld('Phone','phone',v?v.phone:'','tel','Optional')}
     ${fld('Email','email',v?v.email:'','email','Optional')}
-    <div class="fld"><label>Notes</label><textarea name="notes" placeholder="Anything to remember">${v?v.notes||'':''}</textarea></div>
+    ${fld('Website','website',v?v.website:'','text','Optional')}
+    ${fld('Products','products',v?v.products:'','text','e.g. tomatoes, jam, honey')}
+    ${fld('Schedule','frequency',v?v.frequency:'','text','e.g. Every Sunday')}
+    ${fld('Address','address',v?v.address:'','text','Optional')}
+    <div class="fld"><label>Status</label><div class="chips" id="statuschips">${sChips}</div></div>
+    <div class="fld"><label>Insurance (COI)</label><div class="chips" id="inschips">${iChips}</div></div>
+    ${fld('Insurance expiry','insExpiry',v?v.insExpiry:'','date','')}
+    ${fld('Spot fee ($ per day)','fee',v?v.fee:'','number','Optional')}
+    <div class="fld"><label>Notes</label><textarea name="notes" placeholder="Anything to remember">${v?escapeHtml(v.notes||''):''}</textarea></div>
     <div class="acts"><button class="btn" data-a="save-vendor">${v?'Save changes':'Add vendor'}</button>
-    ${v?`<button class="btn danger" data-a="del-vendor" data-id="${v.id}">Delete vendor</button>`:''}
     <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+function openDoc(vid){
+  ui.docType=DOCTYPES[0];
+  const chips=DOCTYPES.map(t=>`<button type="button" class="chip ${ui.docType===t?'on':''}" data-a="pickdoc" data-t="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('');
+  ui.sheet={type:'doc',id:vid,body:`
+    <h3>Add a document</h3>
+    <div class="lead">Paste a share link to the file (Google Drive, Dropbox, etc.). Set the link to "anyone with the link can view".</div>
+    <div class="fld"><label>Type</label><div class="chips" id="docchips">${chips}</div></div>
+    ${fld('Label','docname','','text','e.g. 2026 COI')}
+    ${fld('Share link','docurl','','text','Paste the link here')}
+    ${fld('Expiry date (optional)','docexp','','date','')}
+    <div class="acts"><button class="btn" data-a="save-doc" data-id="${vid}">Add document</button>
+    <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+function openPayment(vid){
+  ui.payMethod='Cash';
+  const methods=['Cash','Check','Card','Venmo','Zelle','Other'];
+  const chips=methods.map(m=>`<button type="button" class="chip ${ui.payMethod===m?'on':''}" data-a="pickpay" data-m="${m}">${m}</button>`).join('');
+  ui.sheet={type:'payment',id:vid,body:`
+    <h3>Record a payment</h3>
+    <div class="lead">Log what they paid and when.</div>
+    ${fld('Amount ($)','payamt','','number','e.g. 50')}
+    ${fld('Date','paydate',iso(new Date()),'date','')}
+    <div class="fld"><label>Method</label><div class="chips" id="paychips">${chips}</div></div>
+    ${fld('Note (optional)','paynote','','text','e.g. Huntington spot fee')}
+    <div class="acts"><button class="btn" data-a="save-payment" data-id="${vid}">Save payment</button>
+    <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+function openApp(a){
+  if(!a) return;
+  const link=(label,url)=>url?`<div class="kv"><span>${label}</span><a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener">View</a></div>`:'';
+  ui.sheet={type:'app',id:a.id,body:`
+    <h3>${escapeHtml(a.name)}</h3>
+    <div class="lead">Applied ${a.submittedAt?nice(a.submittedAt.slice(0,10)):''} - ${escapeHtml(a.category||'-')}</div>
+    <div class="card" style="box-shadow:none">
+      ${a.contact?`<div class="kv"><span>Contact</span><b>${escapeHtml(a.contact)}</b></div>`:''}
+      ${a.email?`<div class="kv"><span>Email</span><a href="mailto:${escapeHtml(a.email)}">${escapeHtml(a.email)}</a></div>`:''}
+      ${a.phone?`<div class="kv"><span>Phone</span><a href="tel:${escapeHtml(a.phone)}">${escapeHtml(a.phone)}</a></div>`:''}
+      ${a.website?`<div class="kv"><span>Website</span><b>${escapeHtml(a.website)}</b></div>`:''}
+      ${a.markets?`<div class="kv"><span>Markets</span><b>${escapeHtml(a.markets)}</b></div>`:''}
+      ${a.frequency?`<div class="kv"><span>Schedule</span><b>${escapeHtml(a.frequency)}</b></div>`:''}
+      ${a.products?`<div class="kv"><span>Products</span><b>${escapeHtml(a.products)}</b></div>`:''}
+      ${a.address?`<div class="kv"><span>Address</span><b>${escapeHtml(a.address)}</b></div>`:''}
+      ${link('Insurance',a.insuranceLink)}
+      ${(a.docLinks||[]).map((d,i)=>link('Doc '+(i+1),d)).join('')}
+      ${a.message?`<div class="kv"><span>Message</span><b>${escapeHtml(a.message)}</b></div>`:''}
+    </div>
+    <div class="acts">
+      ${a.status==='imported'?'<div class="muted" style="text-align:center">Already imported as a vendor.</div>':`<button class="btn" data-a="import-app" data-id="${a.id}">Import as vendor</button>`}
+      <button class="btn line" data-a="dismiss-app" data-id="${a.id}">${a.status==='dismissed'?'Restore':'Dismiss'}</button>
+      <button class="btn line" data-a="closesheet">Close</button></div>`};
+  render();
+}
+function confirmCat(vendorId,cName,n){
+  ui.sheet={type:'confirm',body:`
+    <h3>Lots of ${cName.toLowerCase()}</h3>
+    <div class="lead">There ${n===1?'is':'are'} already ${n} ${cName.toLowerCase()} vendor${n===1?'':'s'} that day. Add another anyway?</div>
+    <div class="acts"><button class="btn" data-a="force-add" data-id="${vendorId}">Yes, add anyway</button>
+    <button class="btn line" data-a="closesheet">No, never mind</button></div>`};
+  render();
+}
+function confirmRemove(bookingId,name){
+  ui.sheet={type:'confirm',body:`
+    <h3>Remove ${escapeHtml(name)}?</h3>
+    <div class="lead">They will come off this market day. Their profile stays in your vendor list.</div>
+    <div class="acts"><button class="btn danger" data-a="do-remove" data-id="${bookingId}">Yes, remove</button>
+    <button class="btn line" data-a="closesheet">Keep them</button></div>`};
   render();
 }
 function openTodo(t){
@@ -447,28 +740,16 @@ function openTodo(t){
     <button class="btn line" data-a="closesheet">Cancel</button></div>`};
   render();
 }
-function confirmCat(vendorId,cName,n){
-  ui.sheet={type:'confirmcat',body:`
-    <h3>Add another ${cName.toLowerCase()} vendor?</h3>
-    <div class="lead">You already have ${n} ${cName.toLowerCase()} vendor${n===1?'':'s'} booked for this day. That\u2019s usually plenty — add another anyway?</div>
-    <div class="acts"><button class="btn wheat" data-a="force-add" data-id="${vendorId}">Yes, add anyway</button>
-    <button class="btn line" data-a="closesheet">No, never mind</button></div>`};
-  render();
-}
-function confirmRemove(bookingId,name){
-  ui.sheet={type:'confirmrm',body:`
-    <h3>Remove ${name}?</h3><div class="lead">They\u2019ll be taken off this market day. You can always add them back.</div>
-    <div class="acts"><button class="btn danger" data-a="do-remove" data-id="${bookingId}">Yes, remove</button>
-    <button class="btn line" data-a="closesheet">Keep them</button></div>`};
-  render();
-}
 
 /* ---- events ---- */
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.id==='vq'){ ui.q=e.target.value; const pos=e.target.selectionStart; render(); const n=document.getElementById('vq'); if(n){ n.focus(); try{n.setSelectionRange(pos,pos);}catch(_){}} }
+});
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-a]'); if(!el) return;
   const a=el.dataset.a;
   if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; render(); sc(); return; }
-  if(a==='back'){ ui.view=ui.view==='addv'?'day':'days'; ui.sheet=null; render(); sc(); return; }
+  if(a==='back'){ ui.view=ui.view==='addv'?'day':(ui.view==='vdetail'?'vendors':'days'); ui.sheet=null; render(); sc(); return; }
   if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; render(); sc(); return; }
   if(a==='goto-add'){ ui.view='addv'; render(); sc(); return; }
   if(a==='pick-vendor'){ await tryAdd(el.dataset.id,false); return; }
@@ -476,11 +757,28 @@ document.addEventListener('click',async e=>{
   if(a==='toggle-paid'){ const b=S.bookings.find(x=>x.id===el.dataset.id); if(b){b.paid=!b.paid; render(); save(); toast(b.paid?'Marked paid':'Marked as owes');} return; }
   if(a==='remove-booking'){ const b=S.bookings.find(x=>x.id===el.dataset.id); const v=b?vendor(b.v):null; confirmRemove(el.dataset.id,v?v.name:'this vendor'); return; }
   if(a==='do-remove'){ S.bookings=S.bookings.filter(x=>x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Removed'); return; }
+  if(a==='open-vendor'){ ui.view='vdetail'; ui.vid=el.dataset.id; ui.sheet=null; render(); sc(); return; }
   if(a==='add-vendor'){ openVendor(null); return; }
   if(a==='edit-vendor'){ openVendor(vendor(el.dataset.id)); return; }
   if(a==='pickcat'){ ui.catPick=el.dataset.c; document.querySelectorAll('#catchips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.c===el.dataset.c)); return; }
+  if(a==='pickstatus'){ ui.statusPick=el.dataset.s; document.querySelectorAll('#statuschips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.s===el.dataset.s)); return; }
+  if(a==='pickins'){ ui.insPick=el.dataset.i; document.querySelectorAll('#inschips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.i===el.dataset.i)); return; }
+  if(a==='pickdoc'){ ui.docType=el.dataset.t; document.querySelectorAll('#docchips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.t===el.dataset.t)); return; }
+  if(a==='pickpay'){ ui.payMethod=el.dataset.m; document.querySelectorAll('#paychips .chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.m===el.dataset.m)); return; }
   if(a==='save-vendor'){ await saveVendor(); return; }
-  if(a==='del-vendor'){ S.vendors=S.vendors.filter(x=>x.id!==el.dataset.id); S.bookings=S.bookings.filter(b=>b.v!==el.dataset.id); ui.sheet=null; render(); save(); toast('Vendor deleted'); return; }
+  if(a==='del-vendor'){ const id=el.dataset.id; S.vendors=S.vendors.filter(x=>x.id!==id); S.bookings=S.bookings.filter(b=>b.v!==id); ui.sheet=null; ui.view='vendors'; render(); save(); toast('Vendor deleted'); return; }
+  if(a==='add-doc'){ openDoc(el.dataset.id); return; }
+  if(a==='save-doc'){ await saveDoc(el.dataset.id); return; }
+  if(a==='del-doc'){ const v=vendor(el.dataset.id); if(v){v.docs=(v.docs||[]).filter(d=>d.id!==el.dataset.d); render(); save(); toast('Removed');} return; }
+  if(a==='open-doc-file'){ openDocFile(el.dataset.id,el.dataset.d); return; }
+  if(a==='add-payment'){ openPayment(el.dataset.id); return; }
+  if(a==='save-payment'){ await savePayment(el.dataset.id); return; }
+  if(a==='del-payment'){ const v=vendor(el.dataset.id); if(v){v.payments=(v.payments||[]).filter(p=>p.id!==el.dataset.p); render(); save(); toast('Removed');} return; }
+  if(a==='toggle-checkin'){ const b=S.bookings.find(x=>x.id===el.dataset.id); if(b){b.checkedIn=!b.checkedIn; if(b.checkedIn)b.checkedInAt=new Date().toISOString(); render(); save();} return; }
+  if(a==='open-app'){ openApp(INBOX.find(x=>x.id===el.dataset.id)); return; }
+  if(a==='import-app'){ importApp(el.dataset.id); return; }
+  if(a==='dismiss-app'){ dismissApp(el.dataset.id); return; }
+  if(a==='copy-link'){ const u=applyURL(); if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(u).then(()=>toast('Link copied')).catch(()=>toast(u)); } else { toast(u); } return; }
   if(a==='add-todo'){ openTodo(null); return; }
   if(a==='edit-todo'){ openTodo(S.todos.find(t=>t.id===el.dataset.id)); return; }
   if(a==='toggle-todo'){ const t=S.todos.find(x=>x.id===el.dataset.id); if(t){t.done=!t.done; render(); save();} return; }
@@ -501,11 +799,47 @@ async function tryAdd(vendorId,force){
 }
 async function saveVendor(){
   const name=gf('name'); if(!name){ toast('Please add a name'); return; }
-  const data={name,cat:ui.catPick||'produce',phone:gf('phone'),email:gf('email'),notes:gf('notes')};
+  const data={
+    name, cat:ui.catPick||'produce', contact:gf('contact'),
+    phone:gf('phone'), email:gf('email'), website:gf('website'),
+    products:gf('products'), frequency:gf('frequency'), address:gf('address'),
+    status:ui.statusPick||'booked', insStatus:ui.insPick||'', insExpiry:gf('insExpiry'),
+    fee:gf('fee'), notes:gf('notes')
+  };
   if(ui.sheet.id){ Object.assign(vendor(ui.sheet.id),data); toast('Saved'); }
-  else { S.vendors.push({id:uid('v'),...data}); toast(name+' added'); }
+  else { S.vendors.push({id:uid('v'),docs:[],payments:[],...data}); toast(name+' added'); }
   ui.sheet=null; render(); save();
 }
+async function saveDoc(vid){
+  const v=vendor(vid); if(!v) return;
+  const url=gf('docurl'); if(!url){ toast('Paste a share link'); return; }
+  const doc={id:uid('d'),type:ui.docType||'Document',name:gf('docname')||'Link',url:fixUrl(url),expiry:gf('docexp'),addedAt:iso(new Date())};
+  if(!Array.isArray(v.docs)) v.docs=[];
+  v.docs.push(doc);
+  ui.sheet=null; render(); save(); toast('Document added');
+}
+function openDocFile(vid,did){
+  const v=vendor(vid); if(!v) return; const d=(v.docs||[]).find(x=>x.id===did); if(!d||!d.url){ toast('No link'); return; }
+  window.open(d.url,'_blank','noopener');
+}
+async function savePayment(vid){
+  const v=vendor(vid); if(!v) return;
+  const amt=parseFloat(gf('payamt')); if(!(amt>0)){ toast('Enter an amount'); return; }
+  const p={id:uid('p'),amount:amt,date:gf('paydate')||iso(new Date()),method:ui.payMethod||'',note:gf('paynote')};
+  if(!Array.isArray(v.payments)) v.payments=[];
+  v.payments.push(p);
+  ui.sheet=null; render(); save(); toast('Payment recorded');
+}
+function importApp(id){
+  const a=INBOX.find(x=>x.id===id); if(!a) return;
+  const catId=guessCat(a.category)||guessCat(a.products)||'crafts';
+  const v={id:uid('v'),name:a.name,cat:catId,contact:a.contact||'',phone:a.phone||'',email:a.email||'',website:a.website||'',products:a.products||'',frequency:a.frequency||'',address:a.address||'',status:'applied',insStatus:a.insuranceLink?'on':'',insExpiry:'',fee:'',notes:(a.message||'')+(a.markets?('\nMarkets requested: '+a.markets):''),docs:[],payments:[]};
+  if(a.insuranceLink) v.docs.push({id:uid('d'),type:'Insurance (COI)',name:'COI (from application)',url:fixUrl(a.insuranceLink),addedAt:iso(new Date())});
+  (a.docLinks||[]).forEach((d,i)=>{ if(d) v.docs.push({id:uid('d'),type:'Other',name:'Doc '+(i+1)+' (from application)',url:fixUrl(d),addedAt:iso(new Date())}); });
+  S.vendors.push(v); a.status='imported';
+  ui.sheet=null; ui.view='vdetail'; ui.vid=v.id; render(); sc(); save(); toast(a.name+' imported');
+}
+function dismissApp(id){ const a=INBOX.find(x=>x.id===id); if(!a) return; a.status=(a.status==='dismissed')?'new':'dismissed'; ui.sheet=null; render(); save(); toast(a.status==='dismissed'?'Dismissed':'Restored'); }
 async function saveTodo(){
   const title=gf('title'); if(!title){ toast('Please add a task'); return; }
   if(ui.sheet.id){ S.todos.find(t=>t.id===ui.sheet.id).title=title; toast('Saved'); }
@@ -514,25 +848,23 @@ async function saveTodo(){
 }
 
 let tt; function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000);}
-let st; function showSync(m){const s=document.getElementById('sync');s.textContent=m;s.classList.add('show');clearTimeout(st);st=setTimeout(()=>s.classList.remove('show'),1400);}
+let stt2; function showSync(m){const s=document.getElementById('sync');s.textContent=m;s.classList.add('show');clearTimeout(stt2);stt2=setTimeout(()=>s.classList.remove('show'),1400);}
 function sc(){const s=document.querySelector('.scroll');if(s)s.scrollTop=0;}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ui.sheet){ui.sheet=null;render();}});
-
-/* refresh shared data when the app regains focus, so both people stay in sync */
 window.addEventListener('focus',async()=>{
   if(!PASS||ui.sheet) return;
   const res=await apiGet(PASS);
-  if(res.ok&&res.state){ S=res.state; render(); }
+  if(res.ok&&res.state){ S=res.state; INBOX=res.inbox||INBOX; render(); }
 });
 
 /* =====================================================================
-   LOGIN GATE
+   LOGIN GATE  (admin only)
    ===================================================================== */
 function gateScreen(msg,busy){
   app.innerHTML=`<div class="gate">
-    <div class="logo">${I.tent}</div>
+    <img class="logo" src="logo.png" alt="G&amp;G Long Island Farmers Market"/>
     <h1>Market Day</h1>
-    <p>Long Island Farmers Markets</p>
+    <p>Vendor &amp; market manager</p>
     <div class="box">
       ${busy?'<div class="spin"></div>':`
         <input id="pass" type="password" inputmode="text" autocomplete="off" placeholder="Enter passcode" />
@@ -542,41 +874,31 @@ function gateScreen(msg,busy){
   </div>`;
   if(!busy){ const i=document.getElementById('pass'); if(i){ i.focus(); i.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); }); } }
 }
+async function enter(passVal,res){
+  PASS=passVal; try{ localStorage.setItem(PASS_KEY,passVal); }catch(e){}
+  const online = !!(res && res.ok);
+  S = (online && res.state) ? res.state : freshState();
+  INBOX = (online && res.inbox) ? res.inbox : [];
+  ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
+  S.seasonEnd=S.seasonEnd||'2026-11-01';
+  const before=JSON.stringify(S); S=applySeed(S);
+  ui.view='days'; render();                       // you are IN — never blocked by the network
+  if(online && (!res.state || JSON.stringify(S)!==before)){ await save(); }
+  if(!online){ toast('Loaded local copy — will sync when connected'); }
+}
 async function doLogin(){
   const i=document.getElementById('pass'); const val=i?i.value.trim():'';
-  if(!val){ gateScreen('Type the passcode to open.'); return; }
+  if(val!==PASSCODE){ gateScreen('That passcode did not work. Try again.'); return; }
   gateScreen('',true);
-  const res=await apiGet(val);
-  if(res.ok){
-    PASS=val; try{ localStorage.setItem(PASS_KEY,val); }catch(e){}
-    S=res.state||freshState();
-    ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
-    S.seasonEnd=S.seasonEnd||'2026-11-01';
-    if(!res.state){ await save(); }   // first run: store the starting markets
-    ui.view='days'; render();
-  } else if(res.auth===false){
-    gateScreen('That passcode didn\u2019t work. Try again.');
-  } else {
-    gateScreen('Couldn\u2019t connect. Check your internet and try again.');
-  }
+  const res=await apiGet(val);                     // gate already passed; this only loads data
+  await enter(val,res);
 }
 
 /* ---- boot ---- */
 (async function(){
-  let saved=null; try{ saved=localStorage.getItem(PASS_KEY); }catch(e){}
-  if(saved){
-    gateScreen('',true);
-    const res=await apiGet(saved);
-    if(res.ok){
-      PASS=saved; S=res.state||freshState();
-      ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
-      S.seasonEnd=S.seasonEnd||'2026-11-01';
-      if(!res.state){ await save(); }
-      render(); return;
-    }
-    try{ localStorage.removeItem(PASS_KEY); }catch(e){}
-  }
-  gateScreen();
+  let saved=''; try{ saved=localStorage.getItem(PASS_KEY)||''; }catch(e){}
+  if(saved===PASSCODE){ gateScreen('',true); const res=await apiGet(saved); await enter(saved,res); return; }
+  gateScreen('');
 })();
 </script>
 </body>
