@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#C00000"/>
+<title>Become a Vendor · Long Island Farmers Markets</title>
+<link rel="icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C00000;--red-deep:#A30000;--ink:#211b15;--ink-soft:#8a7f72;--cream:#FBF6EC;--line:#EBE1D1;--oat:#F4EDDE;--ok:#2E7D4F;--bad:#C0392B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding:0 0 60px}
+.hero{background:#fff;border-bottom:4px solid var(--red);padding:26px 22px 22px;text-align:center}
+.hero img{width:230px;max-width:80%;margin-bottom:8px}
+.hero h1{font-family:"Anton";font-weight:400;font-size:30px;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 4px;line-height:1.05}
+.hero p{color:var(--ink-soft);font-weight:600;font-size:14.5px;margin:0;line-height:1.4}
+.body{padding:20px 18px}
+.intro{background:var(--oat);border-radius:14px;padding:14px 16px;font-weight:600;font-size:14px;color:var(--ink);margin-bottom:20px;line-height:1.5}
+.fld{margin-bottom:15px}
+.fld label{display:block;font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.fld label .req{color:var(--red)}
+.fld input,.fld textarea,.fld select{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:13px 14px;font:inherit;font-weight:600;color:var(--ink)}
+.fld textarea{min-height:90px;resize:vertical}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--red)}
+.hint{color:var(--ink-soft);font-weight:600;font-size:12.5px;margin-top:5px}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checkpill{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;user-select:none}
+.checkpill.on{border-color:var(--red);background:#fff5f5;color:var(--red-deep)}
+.btn{display:block;width:100%;border:none;background:var(--red);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(140,20,20,.2);margin-top:6px}
+.btn:disabled{opacity:.6}
+.err{color:var(--bad);font-weight:700;font-size:13.5px;margin:10px 0 0;text-align:center;min-height:18px}
+.foot{text-align:center;color:var(--ink-soft);font-weight:600;font-size:12.5px;margin-top:18px}
+.done{text-align:center;padding:40px 24px}
+.done .mark{width:74px;height:74px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.done .mark svg{width:40px;height:40px;color:#fff}
+.done h2{font-family:"Anton";font-weight:400;font-size:27px;text-transform:uppercase;letter-spacing:.4px;margin:0 0 8px}
+.done p{color:var(--ink-soft);font-weight:600;font-size:15px;line-height:1.5;margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <img src="logo.png" alt="G&amp;G Long Island Farmers Market"/>
+    <h1>Become a Vendor</h1>
+    <p>Apply to sell at our Long Island farmers markets</p>
+  </div>
+  <div class="body" id="form">
+    <div class="intro">Tell us about your business and we'll be in touch. Markets run Sundays in Huntington Village &amp; Babylon Village, and Tuesday evenings at Station Yards in Ronkonkoma.</div>
+
+    <div class="fld"><label>Business name <span class="req">*</span></label><input id="f_name" placeholder="e.g. Sunny Acres Farm"/></div>
+    <div class="fld"><label>Your name</label><input id="f_contact" placeholder="Contact person"/></div>
+    <div class="fld"><label>Email <span class="req">*</span></label><input id="f_email" type="email" placeholder="you@example.com"/></div>
+    <div class="fld"><label>Phone</label><input id="f_phone" type="tel" placeholder="(631) 555-1234"/></div>
+
+    <div class="fld"><label>What do you sell? <span class="req">*</span></label>
+      <select id="f_category">
+        <option value="">Choose one...</option>
+        <option>Produce</option><option>Baked goods</option><option>Coffee / drinks</option>
+        <option>Prepared food</option><option>Flowers / plants</option><option>Crafts / makers</option>
+        <option>Pantry (jam, honey, cheese, etc.)</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fld"><label>Products</label><input id="f_products" placeholder="e.g. tomatoes, sourdough, candles"/></div>
+
+    <div class="fld"><label>Which markets are you interested in?</label>
+      <div class="checks" id="f_markets">
+        <span class="checkpill" data-m="Huntington Village">Huntington Village</span>
+        <span class="checkpill" data-m="Babylon Village">Babylon Village</span>
+        <span class="checkpill" data-m="Station Yards (Ronkonkoma)">Station Yards</span>
+      </div>
+    </div>
+    <div class="fld"><label>How often would you attend?</label>
+      <select id="f_frequency">
+        <option value="">Choose one...</option>
+        <option>Every week</option><option>Every other week</option><option>Once a month</option><option>Occasionally / pop-up</option>
+      </select>
+    </div>
+
+    <div class="fld"><label>Website or social</label><input id="f_website" placeholder="Instagram, website, etc."/></div>
+    <div class="fld"><label>Business address</label><input id="f_address" placeholder="Optional"/></div>
+    <div class="fld"><label>Certificate of insurance (link)</label><input id="f_insurance" placeholder="Paste a Drive/Dropbox link if you have one"/>
+      <div class="hint">No insurance yet? No problem - leave this blank and we'll guide you.</div></div>
+    <div class="fld"><label>Anything else?</label><textarea id="f_message" placeholder="Tell us about your business, special requests, etc."></textarea></div>
+
+    <button class="btn" id="submit">Submit application</button>
+    <div class="err" id="err"></div>
+    <div class="foot">Long Island Farmers Markets · G&amp;G</div>
+  </div>
+
+  <div class="body" id="thanks" style="display:none">
+    <div class="done">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h2>Application received!</h2>
+      <p>Thanks for applying to the Long Island Farmers Markets. We've got your details and will reach out soon. Feel free to close this page.</p>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('f_markets').addEventListener('click',e=>{
+  const p=e.target.closest('.checkpill'); if(p) p.classList.toggle('on');
+});
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+document.getElementById('submit').addEventListener('click',async function(){
+  const name=val('f_name'), email=val('f_email'), category=val('f_category');
+  const err=document.getElementById('err');
+  if(!name){ err.textContent='Please add your business name.'; return; }
+  if(!email){ err.textContent='Please add an email so we can reach you.'; return; }
+  if(!category){ err.textContent='Please tell us what you sell.'; return; }
+  err.textContent='';
+  const markets=[].slice.call(document.querySelectorAll('#f_markets .checkpill.on')).map(p=>p.dataset.m).join(', ');
+  const application={
+    name, contact:val('f_contact'), email, phone:val('f_phone'),
+    category, products:val('f_products'), markets, frequency:val('f_frequency'),
+    website:val('f_website'), address:val('f_address'),
+    insuranceLink:val('f_insurance'), message:val('f_message')
+  };
+  const btn=this; btn.disabled=true; btn.textContent='Sending...';
+  try{
+    const r=await fetch('/api/apply',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({application})});
+    if(!r.ok) throw new Error('bad');
+    document.getElementById('form').style.display='none';
+    document.getElementById('thanks').style.display='block';
+    window.scrollTo(0,0);
+  }catch(e){
+    btn.disabled=false; btn.textContent='Submit application';
+    err.textContent='Something went wrong sending that. Please try again.';
+  }
+});
+</script>
+</body>
+</html>
