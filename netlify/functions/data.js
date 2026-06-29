@@ -1,5 +1,4 @@
-// netlify/functions/data.js — open data store; tries auto-config first, token fallback
-import { getStore } from "@netlify/blobs";
+// netlify/functions/data.js — open data store; dynamic import + auto/token fallback + timeouts
 var STORE_NAME = "marketday";
 var STATE_KEY = "state";
 var INBOX_KEY = "inbox";
@@ -11,7 +10,10 @@ function json(obj, status = 200) {
 function withTimeout(p, label) {
   return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(label + "-timeout")), TMO))]);
 }
-function storeWith(useToken) {
+async function getBlobsStore(useToken) {
+  let getStore;
+  try { ({ getStore } = await import("@netlify/blobs")); }
+  catch (e) { throw new Error("module-load: " + String(e && e.message || e)); }
   const opts = { name: STORE_NAME, consistency: "strong" };
   if (useToken) {
     let t = null;
@@ -26,7 +28,7 @@ var data_default = async (req) => {
     let ok = false, state = null, inbox = [], errs = [];
     for (const useToken of [false, true]) {
       try {
-        const store = storeWith(useToken);
+        const store = await getBlobsStore(useToken);
         state = await withTimeout(store.get(STATE_KEY, { type: "json" }), "get-state");
         const ib = await withTimeout(store.get(INBOX_KEY, { type: "json" }), "get-inbox");
         inbox = Array.isArray(ib) ? ib : [];
@@ -42,7 +44,7 @@ var data_default = async (req) => {
     let ok = false, via = "", errs = [];
     for (const useToken of [false, true]) {
       try {
-        const store = storeWith(useToken);
+        const store = await getBlobsStore(useToken);
         if (body && typeof body.state === "object" && body.state !== null) await withTimeout(store.setJSON(STATE_KEY, body.state), "set-state");
         if (body && Array.isArray(body.inbox)) await withTimeout(store.setJSON(INBOX_KEY, body.inbox), "set-inbox");
         ok = true; via = useToken ? "token" : "auto"; break;
