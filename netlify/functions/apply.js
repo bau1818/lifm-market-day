@@ -1,5 +1,4 @@
-// netlify/functions/apply.js  (public vendor application intake)
-import { getStore } from "@netlify/blobs";
+// netlify/functions/apply.js — public vendor application intake
 var STORE_NAME = "marketday";
 var INBOX_KEY = "inbox";
 var SITE_ID = "02c25e1d-7279-447c-ac91-9a666f0225c7";
@@ -11,7 +10,10 @@ function clean(s, max) { if (s == null) return ""; return String(s).slice(0, max
 function withTimeout(p, label) {
   return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(label + "-timeout")), TMO))]);
 }
-function storeWith(useToken) {
+async function getBlobsStore(useToken) {
+  let getStore;
+  try { ({ getStore } = await import("@netlify/blobs")); }
+  catch (e) { throw new Error("module-load: " + String(e && e.message || e)); }
   const opts = { name: STORE_NAME, consistency: "strong" };
   if (useToken) {
     let t = null;
@@ -27,7 +29,6 @@ var apply_default = async (req) => {
   try { body = await req.json(); } catch { return json({ ok: false, error: "bad-body" }, 400); }
   const a = (body && body.application) || {};
   if (!a.name || !String(a.name).trim()) return json({ ok: false, error: "name-required" }, 400);
-
   const entry = {
     id: "app" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     submittedAt: new Date().toISOString(), status: "new",
@@ -38,11 +39,10 @@ var apply_default = async (req) => {
     docLinks: Array.isArray(a.docLinks) ? a.docLinks.slice(0, 6).map((d) => clean(d, 400)) : [],
     message: clean(a.message, 1000)
   };
-
   let ok = false, via = "", errs = [];
   for (const useToken of [false, true]) {
     try {
-      const store = storeWith(useToken);
+      const store = await getBlobsStore(useToken);
       let inbox = await withTimeout(store.get(INBOX_KEY, { type: "json" }), "get");
       if (!Array.isArray(inbox)) inbox = [];
       inbox.push(entry);
@@ -51,21 +51,6 @@ var apply_default = async (req) => {
     } catch (e) { errs.push((useToken ? "token: " : "auto: ") + String(e && e.message || e)); }
   }
   if (!ok) return json({ ok: false, error: "store", detail: errs.join(" | ") }, 500);
-
-  try {
-    const key = Netlify.env.get("RESEND_API_KEY"), to = Netlify.env.get("NOTIFY_EMAIL");
-    if (key && to) {
-      const lines = ["New vendor application — Long Island Farmers Markets", "",
-        "Business: " + entry.name, "Contact: " + entry.contact, "Email: " + entry.email,
-        "Phone: " + entry.phone, "Category: " + entry.category, "Markets: " + entry.markets,
-        "Frequency: " + entry.frequency, "Products: " + entry.products, "Website: " + entry.website,
-        "Insurance: " + entry.insuranceLink, "Message: " + entry.message].join("\n");
-      await fetch("https://api.resend.com/emails", { method: "POST",
-        headers: { "authorization": "Bearer " + key, "content-type": "application/json" },
-        body: JSON.stringify({ from: "Market Day <onboarding@resend.dev>", to: [to], subject: "New vendor application: " + entry.name, text: lines }) });
-    }
-  } catch (e) {}
-
   return json({ ok: true, via });
 };
 var config = { path: "/api/apply" };
