@@ -875,9 +875,16 @@ async function savePayment(vid){
   v.payments.push(p);
   ui.sheet=null; render(); save(); toast('Payment recorded');
 }
+function marketsFromApp(a){
+  const s=((a&&a.markets)||'').toLowerCase(); const out=[];
+  if(/huntington/.test(s)) out.push('hunt');
+  if(/babylon/.test(s)) out.push('baby');
+  if(/station|ronkonkoma/.test(s)) out.push('ronk');
+  return out;
+}
 function vendorFromApp(a){
   const catId=guessCat(a.category)||guessCat(a.products)||'crafts';
-  const v={id:uid('v'),name:a.name,cat:catId,contact:a.contact||'',phone:a.phone||'',email:a.email||'',website:a.website||'',products:a.products||'',frequency:a.frequency||'',address:a.address||'',status:'applied',insStatus:a.insuranceLink?'on':'',insExpiry:'',fee:'',notes:(a.message||'')+(a.markets?('\nMarkets requested: '+a.markets):'')+(a.submittedAt?('\nApplied via form '+a.submittedAt.slice(0,10)):''),docs:[],payments:[]};
+  const v={id:uid('v'),name:a.name,cat:catId,contact:a.contact||'',phone:a.phone||'',email:a.email||'',website:a.website||'',products:a.products||'',frequency:a.frequency||'',address:a.address||'',markets:marketsFromApp(a),status:'applied',insStatus:a.insuranceLink?'on':'',insExpiry:'',fee:'',notes:(a.message||'')+(a.markets?('\nMarkets requested: '+a.markets):'')+(a.submittedAt?('\nApplied via form '+a.submittedAt.slice(0,10)):''),docs:[],payments:[]};
   if(a.insuranceLink) v.docs.push({id:uid('d'),type:'Insurance (COI)',name:'COI (from application)',url:fixUrl(a.insuranceLink),addedAt:iso(new Date())});
   (a.docLinks||[]).forEach((d,i)=>{ if(d) v.docs.push({id:uid('d'),type:'Other',name:'Doc '+(i+1)+' (from application)',url:fixUrl(d),addedAt:iso(new Date())}); });
   return v;
@@ -890,6 +897,7 @@ function mergeAppIntoVendor(v,a){
   if(!v.products&&a.products) v.products=a.products;
   if(!v.frequency&&a.frequency) v.frequency=a.frequency;
   if(!v.contact&&a.contact) v.contact=a.contact;
+  const mk=marketsFromApp(a); if(mk.length){ const cur=Array.isArray(v.markets)?v.markets:[]; mk.forEach(m=>{ if(!cur.includes(m)) cur.push(m); }); v.markets=cur; }
   v.docs=v.docs||[];
   if(a.insuranceLink){ const u=fixUrl(a.insuranceLink); if(!v.docs.some(d=>d.url===u)){ v.docs.push({id:uid('d'),type:'Insurance (COI)',name:'COI (from application)',url:u,addedAt:iso(new Date())}); if(!v.insStatus) v.insStatus='on'; } }
 }
