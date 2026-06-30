@@ -368,17 +368,23 @@ async function apiGet(pass){
     return {ok:true,state:j.state,inbox:j.inbox||[]};
   }catch(e){ return {ok:false}; }
 }
-let saving=false, saveAgain=false;
+function stateSig(st,inb){ try{ return JSON.stringify(st)+'\u0001'+JSON.stringify(inb||[]); }catch(_){ return ''+Math.random(); } }
+let lastSig='';
+let saving=false, saveAgain=false, dirty=false, retryT=null;
 async function save(){
   if(!PASS) return;
+  dirty=true;                                   // local change not yet confirmed on server
   if(saving){ saveAgain=true; return; }
   saving=true; showSync('Saving...');
+  let okFlag=false;
   try{
     const r=await fetch(API,{method:'POST',headers:{'x-passcode':PASS,'content-type':'application/json'},body:JSON.stringify({state:S,inbox:INBOX})});
-    showSync(r.ok?'Saved':'Could not save');
-  }catch(e){ showSync('Offline - will retry'); }
+    okFlag=r.ok; showSync(r.ok?'Saved':'Could not save - retrying');
+  }catch(e){ showSync('Offline - retrying'); }
   saving=false;
-  if(saveAgain){ saveAgain=false; save(); }
+  if(okFlag){ dirty=false; lastSig=stateSig(S,INBOX); }   // server now matches local; poll won't re-render
+  if(saveAgain){ saveAgain=false; return save(); }
+  if(!okFlag){ clearTimeout(retryT); retryT=setTimeout(save,4000); }  // keep trying so edits are never lost
 }
 
 /* ---- dates ---- */
@@ -938,11 +944,24 @@ let tt; function toast(m){const t=document.getElementById('toast');t.textContent
 let stt2; function showSync(m){const s=document.getElementById('sync');s.textContent=m;s.classList.add('show');clearTimeout(stt2);stt2=setTimeout(()=>s.classList.remove('show'),1400);}
 function sc(){const s=document.querySelector('.scroll');if(s)s.scrollTop=0;}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ui.sheet){ui.sheet=null;render();}});
-window.addEventListener('focus',async()=>{
-  if(!PASS||ui.sheet) return;
+async function pull(){
+  if(!PASS||saving||dirty||ui.sheet) return;       // skip while saving, while local edits are unsaved, or an editor is open
+  const ae=document.activeElement;
+  if(ae && (ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')) return;  // don't interrupt typing
   const res=await apiGet(PASS);
-  if(res.ok&&res.state){ S=res.state; INBOX=res.inbox||INBOX; const added=autoImport(); if(added>0) save(); render(); if(added>0) toast(added+' new application'+(added>1?'s':'')+' added to Vendors'); }
-});
+  if(!res.ok||!res.state) return;
+  const sig=stateSig(res.state,res.inbox);
+  if(sig===lastSig) return;                         // nothing changed on the server - skip re-render
+  lastSig=sig;
+  S=res.state; INBOX=res.inbox||[];
+  const added=autoImport();
+  if(added>0) save();
+  render();
+  if(added>0) toast(added+' new application'+(added>1?'s':'')+' added to Vendors');
+}
+window.addEventListener('focus',pull);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') pull(); });
+setInterval(()=>{ if(document.visibilityState==='visible') pull(); }, 5000);  // live: pull fresh data every 5s
 
 /* =====================================================================
    LOGIN GATE  (admin only)
@@ -972,6 +991,7 @@ async function enter(passVal,res){
   const added=autoImport();
   ui.view='days'; render();                       // you are IN — never blocked by the network
   if(online && (added>0 || !res.state || JSON.stringify(S)!==before)){ await save(); }
+  lastSig=stateSig(S,INBOX);
   if(!online){ toast('Loaded local copy — will sync when connected'); }
   else if(added>0){ toast(added+' new application'+(added>1?'s':'')+' added to Vendors'); }
 }
