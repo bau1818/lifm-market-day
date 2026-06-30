@@ -104,6 +104,12 @@ b.ok{color:var(--ok)}b.warn{color:#9a6a12}b.bad{color:var(--bad)}
 /* search + inbox banner */
 .searchwrap{margin:2px 0 12px}
 .search{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;font:inherit;font-weight:600}
+.mchips{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 10px;padding-bottom:2px;scrollbar-width:none}
+.mchips::-webkit-scrollbar{display:none}
+.mchip{flex:0 0 auto;font-family:"Oswald";font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.mchip.on{background:var(--red);border-color:var(--red);color:#fff}
+.mchip .mc{font-size:11px;font-weight:700;opacity:.8;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 6px}
+.mchip.on .mc{background:rgba(255,255,255,.22);opacity:1}
 .search:focus{outline:none;border-color:var(--red)}
 .inboxbar{display:flex;align-items:center;gap:10px;width:100%;border:none;background:var(--red);color:#fff;font-weight:800;font-size:14.5px;padding:13px 14px;border-radius:14px;margin:0 0 13px;cursor:pointer;box-shadow:0 6px 16px rgba(140,20,20,.18)}
 .inboxbar svg{width:21px;height:21px;flex:none}
@@ -316,9 +322,39 @@ function applySeed(st){
   return st;
 }
 
+/* ---- one-time enrichment from the Huntington vendor tracker (runs once) ---- */
+const IMPORT_VERSION=1;
+const VIMPORT={"v01":{"contact":"Calvin","frequency":"Every Sunday","email":"info@oregonroadorganics.com","phone":"631-885-7233","insStatus":"pending","note":"Calvin · Every Sunday · App ✓ · Insurance pending"},"v02":{"contact":"Lauren / Peter","frequency":"Every Sunday","email":"concklins@aol.com","phone":"845-354-0369","insStatus":"pending","note":"Lauren / Peter · Every Sunday · App ✓ · Insurance pending"},"v03":{"contact":"Jason","frequency":"Every Sunday","email":"2brosfarm@gmail.com","phone":"516-448-4064","note":"Jason · Every Sunday"},"v04":{"contact":"Christina & Sal","frequency":"Every Sunday","email":"christinatarrago@yahoo.com","phone":"347-245-1457","note":"Christina & Sal · Every Sunday"},"v05":{"contact":"Nick Horman","frequency":"Every Sunday","email":"santiagonicole0901@gmail.com","phone":"516-669-7224","insStatus":"pending","note":"Nick Horman · Every Sunday · App ✓ · Insurance pending"},"v06":{"contact":"Lisa & Rebecca","frequency":"Every Sunday","email":"threefrenchhensbakers@gmail.com","phone":"631-943-6664","insStatus":"on","note":"Lisa & Rebecca · Every Sunday · App ✓ · Insurance ✓ · PAID"},"v07":{"contact":"Leith","frequency":"Every Sunday","email":"sahaguysco@gmail.com","phone":"657-532-0199","insStatus":"on","note":"Leith · Every Sunday · App ✓ · Insurance ✓"},"v08":{"contact":"Moon","frequency":"Every Sunday","email":"ommastaste.nyc@gmail.com","insStatus":"on","note":"Moon · Every Sunday · App ✓ · Insurance ✓"},"v09":{"contact":"Rob","frequency":"Every Sunday","email":"gianni@salandjerrysbakery.com","phone":"516-242-1116","insStatus":"on","note":"Rob · Every Sunday · App ✓ · Insurance ✓"},"v10":{"contact":"Suiling Sun","frequency":"Every Sunday","website":"oftea.com","email":"theoftea@gmail.com","insStatus":"on","note":"Suiling Sun · Every Sunday · App ✓ · Insurance ✓"},"v11":{"note":"App ✓"},"v12":{"frequency":"Every other Sunday","email":"rathan@sanonuts.com","note":"Every other Sunday · App ✓"},"v13":{},"v14":{},"v15":{"email":"bsize63@gmail.com"},"v16":{"contact":"Mike","frequency":"Every Sunday","website":"bauersbrew.com","email":"mike@bauersbrew.com","phone":"631-987-9240","insStatus":"pending","note":"Mike · Every Sunday · App pending · Insurance pending"},"v17":{"frequency":"Every Sunday","insStatus":"pending","note":"Every Sunday · App pending · Insurance pending"},"v18":{"frequency":"Every Sunday","email":"liza@littlehippiebakeshop.com","insStatus":"pending","note":"Every Sunday · App pending · Insurance pending"},"v19":{"contact":"Frank Kraemer","frequency":"Every Sunday","website":"ohmyloaf.com","email":"ohmyloafshop@gmail.com","phone":"516-403-7974","insStatus":"pending","note":"Frank Kraemer · Every Sunday · App pending · Insurance pending"},"v20":{"contact":"Lauren","frequency":"Biweekly (2nd & 4th Sun)","email":"Realdocsocial@gmail.com","phone":"516-301-8623","insStatus":"on","note":"Lauren · Biweekly (2nd & 4th Sun) · App ✓ · Insurance ✓"},"v21":{"contact":"Kristin","frequency":"Biweekly (1st & 3rd Sun)","email":"markgr38@gmail.com","insStatus":"on","note":"Kristin · Biweekly (1st & 3rd Sun) · App ✓ · Insurance ✓"},"v22":{},"v23":{"frequency":"Every other Sunday","note":"Every other Sunday"},"v24":{"frequency":"Every other Sunday","note":"Every other Sunday"},"v25":{},"v26":{"contact":"Lou Vitelli","frequency":"Every Sunday","website":"whitemoustache.com","email":"Farmersmarkets@whitemoustache.com","phone":"646-860-5274","insStatus":"pending","note":"Lou Vitelli · Every Sunday · App ✓ · Insurance pending"},"v27":{},"v28":{},"v29":{"contact":"Anthony","frequency":"Every other Sunday","email":"carloshomemade1966@gmail.com","insStatus":"pending","note":"Anthony · Every other Sunday · App ✓ · Insurance pending"},"v30":{"frequency":"Every Sunday","insStatus":"on","note":"Every Sunday · App ✓ · Insurance ✓ · Paid June $200"},"v31":{"frequency":"Monthly","insStatus":"pending","note":"Monthly · App ✓ · Insurance pending"}};
+function vMarkets(v){
+  const set=new Set(Array.isArray(v&&v.markets)?v.markets:[]);
+  const bk=(typeof S!=='undefined'&&S&&S.bookings)?S.bookings:[];
+  if(v) bk.forEach(b=>{ if(b.v===v.id&&b.m) set.add(b.m); });
+  return set;
+}
+function applyImports(st){
+  if(!st) return st;
+  if((st.importVersion||0)>=IMPORT_VERSION) return st;
+  const byId={}; (st.vendors||[]).forEach(v=>{ byId[v.id]=v; });
+  Object.keys(VIMPORT).forEach(id=>{
+    const v=byId[id]; if(!v) return; const rec=VIMPORT[id];
+    const mk=Array.isArray(v.markets)?v.markets:[]; if(!mk.includes('hunt')) mk.push('hunt'); v.markets=mk;
+    if(rec.contact && !v.contact) v.contact=rec.contact;
+    if(rec.frequency && !v.frequency) v.frequency=rec.frequency;
+    if(rec.website && !v.website) v.website=rec.website;
+    if(rec.email && !v.email) v.email=rec.email;
+    if(rec.phone && !v.phone) v.phone=rec.phone;
+    if(rec.insStatus && !v.insStatus) v.insStatus=rec.insStatus;
+    if(rec.note){ const cur=(v.notes||'').trim();
+      if(!cur || cur.indexOf('·')>=0){ v.notes=rec.note; }
+      else if(cur.indexOf(rec.note)<0){ v.notes=rec.note+'\n'+cur; } }
+  });
+  st.importVersion=IMPORT_VERSION;
+  return st;
+}
+
 let S=null;
 let INBOX=[];
-let ui={view:'days',m:null,date:null,sheet:null,vid:null,q:''};
+let ui={view:'days',m:null,date:null,sheet:null,vid:null,q:'',vmkt:'all'};
 function bid(){return 'b'+Math.random().toString(36).slice(2,9);}
 function uid(p){return (p||'x')+Math.random().toString(36).slice(2,9);}
 
@@ -512,19 +548,26 @@ VIEW.addv=function(){
 };
 VIEW.vendors=function(){
   const q=(ui.q||'').toLowerCase();
+  const mk=ui.vmkt||'all';
   let list=S.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  if(mk!=='all') list=list.filter(v=>vMarkets(v).has(mk));
   if(q) list=list.filter(v=>v.name.toLowerCase().includes(q)||(v.email||'').toLowerCase().includes(q)||(v.notes||'').toLowerCase().includes(q)||(v.products||'').toLowerCase().includes(q));
   const n=newCount();
+  const cnt=mid=>S.vendors.reduce((a,v)=>a+(vMarkets(v).has(mid)?1:0),0);
+  const chip=(id,label)=>`<button class="mchip${mk===id?' on':''}" data-a="vmkt" data-m="${id}">${label}${id==='all'?` <span class="mc">${S.vendors.length}</span>`:` <span class="mc">${cnt(id)}</span>`}</button>`;
+  const chips=`<div class="mchips">${chip('all','All')}${chip('hunt','Huntington')}${chip('baby','Babylon')}${chip('ronk','Ronkonkoma')}</div>`;
+  const mlabel=({hunt:'Huntington',baby:'Babylon',ronk:'Ronkonkoma'})[mk]||'';
   return `
   <div class="hello"><div class="eye">Your people</div><h1>Vendors <span>${S.vendors.length}</span></h1></div>
   ${n?`<button class="inboxbar" data-a="tab" data-v="inbox">${I.inbox}<span>${n} new application${n===1?'':'s'} to review</span>${I.chev}</button>`:''}
+  ${chips}
   <div class="searchwrap"><input class="search" id="vq" placeholder="Search vendors..." value="${escapeHtml(ui.q||'')}"/></div>
   ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);const stt=vstatus(v);const flags=vFlags(v);
     return `<div class="row tap" data-a="open-vendor" data-id="${v.id}"><span class="dot" style="background:${c.color}"></span>
       <div class="main"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}${v.phone?' - '+escapeHtml(v.phone):v.email?' - '+escapeHtml(v.email):''}</div>
       <div class="rowflags"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span>${flags.map(f=>`<span class="spill ${f.t}">${f.x}</span>`).join('')}</div></div>
       <span class="chev">${I.chev}</span></div>`;}).join('')}</div>`
-    : emptyState(I.people, q?'No matches':'No vendors yet', q?'Try a different search.':'Add the makers and farmers who sell at your markets.')}
+    : emptyState(I.people, (mk!=='all'?('No '+mlabel+' vendors yet'):(q?'No matches':'No vendors yet')), (mk!=='all'?('Vendors booked at '+mlabel+' - or tagged to it from an application - show up here.'):(q?'Try a different search.':'Add the makers and farmers who sell at your markets.')))}
   <div style="height:10px"></div>`;
 };
 VIEW.vdetail=function(){
@@ -749,6 +792,7 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-a]'); if(!el) return;
   const a=el.dataset.a;
   if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; render(); sc(); return; }
+  if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
   if(a==='back'){ ui.view=ui.view==='addv'?'day':(ui.view==='vdetail'?'vendors':'days'); ui.sheet=null; render(); sc(); return; }
   if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; render(); sc(); return; }
   if(a==='goto-add'){ ui.view='addv'; render(); sc(); return; }
@@ -916,7 +960,7 @@ async function enter(passVal,res){
   INBOX = (online && res.inbox) ? res.inbox : [];
   ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
   S.seasonEnd=S.seasonEnd||'2026-11-01';
-  const before=JSON.stringify(S); S=applySeed(S);
+  const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S);
   const added=autoImport();
   ui.view='days'; render();                       // you are IN — never blocked by the network
   if(online && (added>0 || !res.state || JSON.stringify(S)!==before)){ await save(); }
