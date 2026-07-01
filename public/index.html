@@ -668,7 +668,7 @@ VIEW.vdetail=function(){
         <div class="dm"><b>${escapeHtml(d.type||'Document')}</b><small>${escapeHtml(d.name||'')}${d.expiry?' - exp '+nice(d.expiry):''}</small></div>
         <button class="mini" data-a="open-doc-file" data-id="${v.id}" data-d="${d.id}">Open</button>
         <button class="x" data-a="del-doc" data-id="${v.id}" data-d="${d.id}" aria-label="Delete">${I.x}</button></div>`).join('')
-        :`<div class="muted">No documents yet. Attach insurance certificates, signed agreements, permits - paste a share link from Drive or Dropbox.</div>`}
+        :`<div class="muted">No documents yet. Tap + Add to upload an insurance certificate (COI), permit, or signed agreement - PDF or a photo from your phone.</div>`}
     </div>
   </div>
 
@@ -768,13 +768,13 @@ function openDoc(vid){
   ui.docType=DOCTYPES[0];
   const chips=DOCTYPES.map(t=>`<button type="button" class="chip ${ui.docType===t?'on':''}" data-a="pickdoc" data-t="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('');
   ui.sheet={type:'doc',id:vid,body:`
-    <h3>Add a document</h3>
-    <div class="lead">Paste a share link to the file (Google Drive, Dropbox, etc.). Set the link to "anyone with the link can view".</div>
+    <h3>Attach a file</h3>
+    <div class="lead">Upload the insurance certificate, permit, or signed agreement - a PDF or a photo from your phone.</div>
     <div class="fld"><label>Type</label><div class="chips" id="docchips">${chips}</div></div>
-    ${fld('Label','docname','','text','e.g. 2026 COI')}
-    ${fld('Share link','docurl','','text','Paste the link here')}
+    ${fld('Label (optional)','docname','','text','e.g. 2026 COI')}
+    <div class="fld"><label>File</label><input id="docfile" name="docfile" type="file" accept="application/pdf,image/*,.pdf,.png,.jpg,.jpeg,.heic"/></div>
     ${fld('Expiry date (optional)','docexp','','date','')}
-    <div class="acts"><button class="btn" data-a="save-doc" data-id="${vid}">Add document</button>
+    <div class="acts"><button class="btn" data-a="save-doc" data-id="${vid}">Upload &amp; attach</button>
     <button class="btn line" data-a="closesheet">Cancel</button></div>`};
   render();
 }
@@ -920,15 +920,28 @@ async function saveVendor(){
 }
 async function saveDoc(vid){
   const v=vendor(vid); if(!v) return;
-  const url=gf('docurl'); if(!url){ toast('Paste a share link'); return; }
-  const doc={id:uid('d'),type:ui.docType||'Document',name:gf('docname')||'Link',url:fixUrl(url),expiry:gf('docexp'),addedAt:iso(new Date())};
-  if(!Array.isArray(v.docs)) v.docs=[];
-  v.docs.push(doc);
-  ui.sheet=null; render(); save(); toast('Document added');
+  const inp=document.getElementById('docfile');
+  const f=inp&&inp.files&&inp.files[0];
+  if(!f){ toast('Choose a file first'); return; }
+  if(f.size>5*1024*1024){ toast('File too large (max 5MB)'); return; }
+  const type=ui.docType||'Document', label=gf('docname'), exp=gf('docexp');
+  toast('Uploading...');
+  try{
+    const dataB64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const s=String(r.result||''); res(s.slice(s.indexOf(',')+1)); }; r.onerror=()=>rej(new Error('read')); r.readAsDataURL(f); });
+    const resp=await fetch('/api/upload',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pass:PASS,name:f.name,type:f.type||'application/octet-stream',dataB64})});
+    const j=await resp.json().catch(()=>null);
+    if(!j||!j.ok||!j.key){ toast((j&&j.error==='too-big')?'File too large':'Upload failed'); return; }
+    if(!Array.isArray(v.docs)) v.docs=[];
+    v.docs.push({id:uid('d'),type,name:label||f.name,key:j.key,size:f.size,kind:'file',expiry:exp,addedAt:iso(new Date())});
+    if(type==='Insurance (COI)'&&!v.insStatus) v.insStatus='on';
+    ui.sheet=null; render(); save(); toast('File attached');
+  }catch(e){ toast('Upload failed - check connection'); }
 }
 function openDocFile(vid,did){
-  const v=vendor(vid); if(!v) return; const d=(v.docs||[]).find(x=>x.id===did); if(!d||!d.url){ toast('No link'); return; }
-  window.open(d.url,'_blank','noopener');
+  const v=vendor(vid); if(!v) return; const d=(v.docs||[]).find(x=>x.id===did); if(!d){ toast('Not found'); return; }
+  if(d.key){ window.open('/api/file?key='+encodeURIComponent(d.key)+'&pass='+encodeURIComponent(PASS||''),'_blank','noopener'); return; }
+  if(d.url){ window.open(d.url,'_blank','noopener'); return; }
+  toast('No file attached');
 }
 async function savePayment(vid){
   const v=vendor(vid); if(!v) return;
