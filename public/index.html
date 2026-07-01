@@ -23,11 +23,11 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMac
 a{color:var(--red-deep)}
 .wrap{max-width:500px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;overflow:hidden}
 .frame{min-height:100vh;display:flex;flex-direction:column}
-.scroll{flex:1;overflow-y:auto;padding:14px 16px 110px}
+.scroll{flex:1;overflow-y:auto;padding:14px 16px 40px}
 button{font-family:inherit}
 
 /* ---------- top bar ---------- */
-.topbar{display:flex;align-items:center;gap:11px;padding:12px 16px 11px;background:#fff;border-bottom:3px solid var(--red)}
+.topbar{display:flex;align-items:center;gap:11px;padding:12px 16px 11px;background:#fff}
 .topbar .brandlogo{height:34px;width:auto;display:block}
 .topbar .ttl{display:flex;flex-direction:column;line-height:1}
 .topbar .ttl b{font-family:"Anton";font-weight:400;font-size:19px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink)}
@@ -91,6 +91,7 @@ button{font-family:inherit}
 .row .main{flex:1;min-width:0}
 .row .main b{font-weight:800;font-size:15.5px;display:block;line-height:1.15}
 .row .meta{color:var(--ink-soft);font-weight:600;font-size:13px;margin-top:2px}
+.row .vemail{color:var(--ink);word-break:break-all}
 .row .x{width:32px;height:32px;border:none;background:var(--oat);border-radius:9px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .row .x svg{width:17px;height:17px}
 .row .edit{width:34px;height:34px;border:none;background:var(--oat);border-radius:10px;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
@@ -198,10 +199,10 @@ b.ok{color:var(--ok)}b.warn{color:#9a6a12}b.bad{color:var(--bad)}
 .acts{display:flex;flex-direction:column;gap:9px;margin-top:16px}
 
 /* ---------- fab + tabs ---------- */
-.fab{position:absolute;right:18px;bottom:96px;z-index:20}
+.fab{position:absolute;right:18px;bottom:24px;z-index:20}
 .fab .inner button{width:58px;height:58px;border-radius:50%;border:none;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 22px rgba(140,20,20,.34)}
 .fab .inner button svg{width:26px;height:26px}
-.tabs{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:7px 8px calc(8px + env(safe-area-inset-bottom))}
+.tabs{background:#fff;border-bottom:3px solid var(--red);padding:4px 8px 6px}
 .tabs .inner{display:flex;max-width:500px;margin:0 auto}
 .tabs button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--ink-soft);cursor:pointer;font-family:"Oswald";font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
 .tabs button.on{color:var(--red)}
@@ -295,9 +296,12 @@ const DOCTYPES=['Insurance (COI)','Business license','Health permit','Sales tax 
 
 /* ---- real starting data (markets + roster from Drive) ---- */
 const SEED_MARKETS=[
-  {id:'hunt',name:'Huntington',full:'Huntington Village',where:'Elm Street parking lot, 228 Main St',weekday:0,time:'8:00am - 12:30pm',spots:40,color:'#C00000',start:'2026-06-07'},
-  {id:'baby',name:'Babylon',full:'Babylon Village',where:'The Gazebo, 244 W Main St',weekday:0,time:'8:00am - 12:30pm',spots:16,color:'#A30000',start:'2026-06-07'},
-  {id:'ronk',name:'Ronkonkoma',full:'Station Yards',where:'9 Hawkins Ave, Ronkonkoma',weekday:2,time:'5:00pm - 8:00pm',spots:14,color:'#7a0000',start:'2026-06-16'}
+  {id:'hunt',name:'Huntington',full:'Huntington Village',where:'Elm Street parking lot, 228 Main St',weekday:0,time:'8:00am - 12:30pm',spots:40,color:'#C00000',start:'2026-06-07',music:''},
+  {id:'baby',name:'Babylon',full:'Babylon Village',where:'The Gazebo, 244 W Main St',weekday:0,time:'8:00am - 12:30pm',spots:40,truck:true,color:'#A30000',start:'2026-06-07',music:''},
+  {id:'ronk',name:'Ronkonkoma',full:'Station Yards',where:'9 Hawkins Ave, Ronkonkoma',weekday:2,time:'5:00pm - 8:00pm',spots:17,color:'#7a0000',start:'2026-06-16',music:''},
+  {id:'estee',name:'Estée Lauder',full:'Estée Lauder',where:'',weekday:0,time:'',spots:20,color:'#7A3B69',start:'2026-06-07',music:''},
+  {id:'liu',name:'LIU',full:'LIU',where:'',weekday:0,time:'',spots:20,color:'#2E5E8C',start:'2026-06-07',music:''},
+  {id:'rxr',name:'RXR',full:'RXR',where:'',weekday:0,time:'',spots:20,color:'#4E7A6A',start:'2026-06-07',music:''}
 ];
 const SEED_VERSION=2;
 const SEED_VENDORS=[{"id": "v01", "name": "Oregon Road Organics", "cat": "produce", "phone": "631-885-7233", "email": "info@oregonroadorganics.com", "notes": "Calvin · Every Sunday · App ✓ · Insurance pending"}, {"id": "v02", "name": "Orchards of Concklin", "cat": "produce", "phone": "845-354-0369", "email": "concklins@aol.com", "notes": "Lauren / Peter · Fruit · Every Sunday · App ✓ · Insurance pending"}, {"id": "v03", "name": "Two Brothers Farm", "cat": "produce", "phone": "516-448-4064", "email": "2brosfarm@gmail.com", "notes": "Jason · Produce + flowers · Every Sunday"}, {"id": "v04", "name": "Moo La Farm", "cat": "produce", "phone": "347-245-1457", "email": "christinatarrago@yahoo.com", "notes": "Christina & Sal · Eggs, meat, dairy · Every Sunday"}, {"id": "v05", "name": "Horman's Best Pickles", "cat": "pantry", "phone": "516-669-7224", "email": "santiagonicole0901@gmail.com", "notes": "Nick Horman · Pickles · Every Sunday · App ✓ · Insurance pending"}, {"id": "v06", "name": "Three French Hens Bakery", "cat": "baked", "phone": "631-943-6664", "email": "threefrenchhensbakers@gmail.com", "notes": "Lisa & Rebecca · Every Sunday · App ✓ · Insurance ✓ · PAID"}, {"id": "v07", "name": "Saha Guys", "cat": "prepared", "phone": "657-532-0199", "email": "sahaguysco@gmail.com", "notes": "Leith · Hummus · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v08", "name": "Ommas Taste", "cat": "prepared", "phone": "", "email": "ommastaste.nyc@gmail.com", "notes": "Moon · Dumplings · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v09", "name": "Sal & Jerry Bakery", "cat": "baked", "phone": "516-242-1116", "email": "gianni@salandjerrysbakery.com", "notes": "Rob · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v10", "name": "Of Tea", "cat": "pantry", "phone": "", "email": "theoftea@gmail.com", "notes": "Suiling Sun · oftea.com · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v11", "name": "Gorden Craftworks", "cat": "crafts", "phone": "", "email": "", "notes": "Kim · Candles & air sprays · App ✓"}, {"id": "v12", "name": "Sano Snacks", "cat": "pantry", "phone": "", "email": "rathan@sanonuts.com", "notes": "Nuts & dried fruit · Every other Sunday · App ✓"}, {"id": "v13", "name": "Heda Healing", "cat": "crafts", "phone": "", "email": "", "notes": "Wellness"}, {"id": "v14", "name": "Fresh Factor", "cat": "prepared", "phone": "", "email": "", "notes": "Juice"}, {"id": "v15", "name": "Mighty Little Farms", "cat": "produce", "phone": "", "email": "bsize63@gmail.com", "notes": "Microgreens"}, {"id": "v16", "name": "Bauer's Brew Co", "cat": "coffee", "phone": "631-987-9240", "email": "mike@bauersbrew.com", "notes": "Mike · bauersbrew.com · Every Sunday · App pending · Insurance pending"}, {"id": "v17", "name": "Montauk Smoked Fish", "cat": "prepared", "phone": "", "email": "", "notes": "Seafood · Every Sunday · App pending · Insurance pending"}, {"id": "v18", "name": "Little Hippie Bake Shop", "cat": "pantry", "phone": "", "email": "liza@littlehippiebakeshop.com", "notes": "Jam & biscuits · Every Sunday · App pending"}, {"id": "v19", "name": "Oh My Loaf", "cat": "baked", "phone": "516-403-7974", "email": "ohmyloafshop@gmail.com", "notes": "Frank Kraemer · ohmyloaf.com · Gluten-free breads · App pending"}, {"id": "v20", "name": "Dr. Digs Mindful Treats", "cat": "baked", "phone": "516-301-8623", "email": "Realdocsocial@gmail.com", "notes": "Lauren · Protein treats · Biweekly (2nd & 4th Sun) · App ✓ · Insurance ✓"}, {"id": "v21", "name": "K's Confections", "cat": "baked", "phone": "", "email": "markgr38@gmail.com", "notes": "Kristin · Gluten-free · Biweekly (1st & 3rd Sun) · App ✓ · Insurance ✓"}, {"id": "v22", "name": "Simply Noured Bakery", "cat": "baked", "phone": "", "email": "", "notes": "Gluten-free"}, {"id": "v23", "name": "The Big Cheese", "cat": "pantry", "phone": "", "email": "", "notes": "Cheese · Every other Sunday"}, {"id": "v24", "name": "Cheese Maker on Duty", "cat": "pantry", "phone": "", "email": "", "notes": "Cheese · Every other Sunday"}, {"id": "v25", "name": "Thelma's Sazon Fuego", "cat": "pantry", "phone": "", "email": "", "notes": "Salsa & seasoning"}, {"id": "v26", "name": "The White Moustache", "cat": "pantry", "phone": "646-860-5274", "email": "Farmersmarkets@whitemoustache.com", "notes": "Lou Vitelli · whitemoustache.com · Yogurt · Every Sunday · App ✓ · Insurance pending"}, {"id": "v27", "name": "Pams Jamz", "cat": "pantry", "phone": "", "email": "", "notes": "Jam"}, {"id": "v28", "name": "Pure Kiwi Skin Care", "cat": "crafts", "phone": "", "email": "", "notes": "Skin care"}, {"id": "v29", "name": "Carlos Homemade", "cat": "pantry", "phone": "", "email": "carloshomemade1966@gmail.com", "notes": "Anthony · Sauce · Every other Sunday · App ✓ · Insurance pending"}, {"id": "v30", "name": "Curious Flowers", "cat": "flowers", "phone": "", "email": "", "notes": "Flowers · Every Sunday · App ✓ · Insurance ✓"}, {"id": "v31", "name": "Table & Soul", "cat": "crafts", "phone": "", "email": "", "notes": "Aprons · Monthly · App ✓"}, {"id": "v32", "name": "LIVA", "cat": "crafts", "phone": "", "email": "", "notes": "Singing / entertainment"}, {"id": "v33", "name": "Bambino Ravioli", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v34", "name": "Bevo's Kitchen", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v35", "name": "Butterella", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v36", "name": "Coco Elephant", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v37", "name": "Johnny Breads", "cat": "baked", "phone": "", "email": "", "notes": ""}, {"id": "v38", "name": "Jolly Jammer", "cat": "pantry", "phone": "", "email": "", "notes": "Jam"}, {"id": "v39", "name": "Kale Krisps", "cat": "pantry", "phone": "", "email": "", "notes": "Snacks"}, {"id": "v40", "name": "Mae Flower Designs", "cat": "flowers", "phone": "", "email": "", "notes": ""}, {"id": "v41", "name": "Malbec Empanadas", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v42", "name": "Mericias Homemade", "cat": "prepared", "phone": "", "email": "", "notes": ""}, {"id": "v43", "name": "Natural Hounds", "cat": "pantry", "phone": "", "email": "", "notes": "Dog treats"}, {"id": "v44", "name": "Patchinns", "cat": "flowers", "phone": "", "email": "", "notes": "Plants"}, {"id": "v45", "name": "Serious Seasonings", "cat": "pantry", "phone": "", "email": "", "notes": "Greg"}, {"id": "v46", "name": "Soft Honey", "cat": "pantry", "phone": "", "email": "", "notes": "Honey"}, {"id": "v47", "name": "Springbrook Hollow Farm", "cat": "produce", "phone": "", "email": "", "notes": ""}, {"id": "v48", "name": "Vincent Farms Natural Foods", "cat": "produce", "phone": "", "email": "", "notes": ""}, {"id": "v49", "name": "Erica & Emmett McDonough", "cat": "crafts", "phone": "", "email": "", "notes": "Guest vendor"}, {"id": "v50", "name": "Finprinted", "cat": "crafts", "phone": "", "email": "", "notes": "Guest vendor · prints"}, {"id": "v51", "name": "Alice — Fire Department", "cat": "crafts", "phone": "", "email": "", "notes": "Guest · Fire Department"}, {"id": "v52", "name": "Robin — Elde Home", "cat": "crafts", "phone": "", "email": "", "notes": "Guest · Elde Home"}];
@@ -309,6 +313,7 @@ function freshState(){
     markets:JSON.parse(JSON.stringify(SEED_MARKETS)),
     vendors:JSON.parse(JSON.stringify(SEED_VENDORS)),
     bookings:JSON.parse(JSON.stringify(SEED_BOOKINGS)),
+    music:{},
     todos:[]
   };
 }
@@ -323,7 +328,7 @@ function applySeed(st){
 }
 
 /* ---- one-time enrichment from the Huntington vendor tracker (runs once) ---- */
-const IMPORT_VERSION=1;
+const IMPORT_VERSION=2;
 const VIMPORT={"v01":{"contact":"Calvin","frequency":"Every Sunday","email":"info@oregonroadorganics.com","phone":"631-885-7233","insStatus":"pending","note":"Calvin · Every Sunday · App ✓ · Insurance pending"},"v02":{"contact":"Lauren / Peter","frequency":"Every Sunday","email":"concklins@aol.com","phone":"845-354-0369","insStatus":"pending","note":"Lauren / Peter · Every Sunday · App ✓ · Insurance pending"},"v03":{"contact":"Jason","frequency":"Every Sunday","email":"2brosfarm@gmail.com","phone":"516-448-4064","note":"Jason · Every Sunday"},"v04":{"contact":"Christina & Sal","frequency":"Every Sunday","email":"christinatarrago@yahoo.com","phone":"347-245-1457","note":"Christina & Sal · Every Sunday"},"v05":{"contact":"Nick Horman","frequency":"Every Sunday","email":"santiagonicole0901@gmail.com","phone":"516-669-7224","insStatus":"pending","note":"Nick Horman · Every Sunday · App ✓ · Insurance pending"},"v06":{"contact":"Lisa & Rebecca","frequency":"Every Sunday","email":"threefrenchhensbakers@gmail.com","phone":"631-943-6664","insStatus":"on","note":"Lisa & Rebecca · Every Sunday · App ✓ · Insurance ✓ · PAID"},"v07":{"contact":"Leith","frequency":"Every Sunday","email":"sahaguysco@gmail.com","phone":"657-532-0199","insStatus":"on","note":"Leith · Every Sunday · App ✓ · Insurance ✓"},"v08":{"contact":"Moon","frequency":"Every Sunday","email":"ommastaste.nyc@gmail.com","insStatus":"on","note":"Moon · Every Sunday · App ✓ · Insurance ✓"},"v09":{"contact":"Rob","frequency":"Every Sunday","email":"gianni@salandjerrysbakery.com","phone":"516-242-1116","insStatus":"on","note":"Rob · Every Sunday · App ✓ · Insurance ✓"},"v10":{"contact":"Suiling Sun","frequency":"Every Sunday","website":"oftea.com","email":"theoftea@gmail.com","insStatus":"on","note":"Suiling Sun · Every Sunday · App ✓ · Insurance ✓"},"v11":{"note":"App ✓"},"v12":{"frequency":"Every other Sunday","email":"rathan@sanonuts.com","note":"Every other Sunday · App ✓"},"v13":{},"v14":{},"v15":{"email":"bsize63@gmail.com"},"v16":{"contact":"Mike","frequency":"Every Sunday","website":"bauersbrew.com","email":"mike@bauersbrew.com","phone":"631-987-9240","insStatus":"pending","note":"Mike · Every Sunday · App pending · Insurance pending"},"v17":{"frequency":"Every Sunday","insStatus":"pending","note":"Every Sunday · App pending · Insurance pending"},"v18":{"frequency":"Every Sunday","email":"liza@littlehippiebakeshop.com","insStatus":"pending","note":"Every Sunday · App pending · Insurance pending"},"v19":{"contact":"Frank Kraemer","frequency":"Every Sunday","website":"ohmyloaf.com","email":"ohmyloafshop@gmail.com","phone":"516-403-7974","insStatus":"pending","note":"Frank Kraemer · Every Sunday · App pending · Insurance pending"},"v20":{"contact":"Lauren","frequency":"Biweekly (2nd & 4th Sun)","email":"Realdocsocial@gmail.com","phone":"516-301-8623","insStatus":"on","note":"Lauren · Biweekly (2nd & 4th Sun) · App ✓ · Insurance ✓"},"v21":{"contact":"Kristin","frequency":"Biweekly (1st & 3rd Sun)","email":"markgr38@gmail.com","insStatus":"on","note":"Kristin · Biweekly (1st & 3rd Sun) · App ✓ · Insurance ✓"},"v22":{},"v23":{"frequency":"Every other Sunday","note":"Every other Sunday"},"v24":{"frequency":"Every other Sunday","note":"Every other Sunday"},"v25":{},"v26":{"contact":"Lou Vitelli","frequency":"Every Sunday","website":"whitemoustache.com","email":"Farmersmarkets@whitemoustache.com","phone":"646-860-5274","insStatus":"pending","note":"Lou Vitelli · Every Sunday · App ✓ · Insurance pending"},"v27":{},"v28":{},"v29":{"contact":"Anthony","frequency":"Every other Sunday","email":"carloshomemade1966@gmail.com","insStatus":"pending","note":"Anthony · Every other Sunday · App ✓ · Insurance pending"},"v30":{"frequency":"Every Sunday","insStatus":"on","note":"Every Sunday · App ✓ · Insurance ✓ · Paid June $200"},"v31":{"frequency":"Monthly","insStatus":"pending","note":"Monthly · App ✓ · Insurance pending"}};
 function vMarkets(v){
   const set=new Set(Array.isArray(v&&v.markets)?v.markets:[]);
@@ -331,9 +336,47 @@ function vMarkets(v){
   if(v) bk.forEach(b=>{ if(b.v===v.id&&b.m) set.add(b.m); });
   return set;
 }
+const VBABYLON=[{"name":"Frampton Family Farm","cat":"produce","contact":"Bobby","email":"rframpton35@aol.com","phone":"631-707-2208","frequency":"Weekly","paid":1,"app":1},{"name":"Barna Bee Honey","cat":"pantry","email":"Margaret@BarnabeeHoney.om","frequency":"Weekly","paid":1,"app":1},{"name":"Nautilus Roasting Co","cat":"coffee","contact":"Hugo","email":"Hugo@nautilusroasting.com","phone":"631-889-1884","frequency":"Weekly","paid":1,"app":1},{"name":"Turturici & Sons Inc.","cat":"prepared","email":"Turturici.sons@gmail.com","paid":1,"app":1},{"name":"Blakes Bloom","cat":"flowers","email":"Blakesblooms@gmail.com","frequency":"Weekly","paid":1,"app":1},{"name":"Pete's Twisted Bacon","cat":"prepared","contact":"Pete","email":"Petestwistedbacon@gmail.com","phone":"631-745-2380","frequency":"Pop-up","app":1},{"name":"Zafferano Farm","cat":"produce","contact":"Teddy","email":"Zafferanofarm@gmail.com","website":"Zafferanofarm.com","frequency":"Weekly","paid":1,"app":1},{"name":"Jessy's Pastries","cat":"baked","contact":"Jessy","email":"Jessypastries@gmail.com","phone":"516-232-4588","website":"Jessyspastries.com","frequency":"Weekly","paid":1,"app":1},{"name":"Black Cap Kombucha","cat":"pantry","contact":"Pat","email":"Mrphizzi@phizzi-inc.com","website":"Blackcapbev.com","frequency":"Weekly","paid":1,"app":1},{"name":"The Better Man Distillery Co.","cat":"crafts","contact":"Abby","email":"Abby@thebettermandistillingco.com","website":"www.thebettermandistillingco.com","frequency":"Weekly","paid":1,"app":1},{"name":"Heda Healing Health & Wellness","cat":"crafts","contact":"Marcela & Marc","email":"Hedahealing@gmail.com","phone":"516-423-0373","frequency":"Weekly","vid":"v13","paid":1,"app":1},{"name":"Zito's Traditions Inc.","cat":"prepared","contact":"Giovanni","email":"Zitostraditions@gmail.com","phone":"631-697-9245","frequency":"Weekly","paid":1,"app":1},{"name":"Healthy Snax Corp.","cat":"pantry","contact":"Pam","email":"hseagapo@yahoo.com","phone":"631-943-2151","frequency":"Weekly","paid":1,"app":1},{"name":"Loide Candle Co","cat":"crafts","contact":"Loide","email":"Loide@Loideco.com","phone":"631-512-6650","website":"www.Loidecandleco.com","frequency":"Weekly","paid":1,"app":1},{"name":"Sal & Jerry Bakery","cat":"baked","contact":"Gianni","email":"Sue@salandjerrysbakery.com","phone":"516-242-1116","website":"SalandJerrysbakery.com","frequency":"Weekly","vid":"v09","paid":1,"app":1},{"name":"Hormans Best Pickles","cat":"pantry","contact":"Nick","email":"Nicky@hormansbestpickles.com","phone":"516-444-1280","frequency":"Weekly","vid":"v05","app":1},{"name":"Skinny Earth Chips","cat":"pantry","contact":"Ef`e","email":"orders@runwaybaker.com","phone":"917-225-8878","frequency":"Weekly","app":1},{"name":"Baked By Ash","cat":"baked","contact":"Ashley","email":"Frisina.Ashley@gmail.com","frequency":"Every other week","app":1},{"name":"Plantopia L.I.","cat":"flowers","email":"plantopialongisland@gmail.com","frequency":"Pop-up","app":1},{"name":"Terra Nut","cat":"pantry","contact":"Ed and Ursula","email":"Terranutinc@gmail","phone":"631-517-0402","website":"www.terranut.com","frequency":"Every other week","app":1},{"name":"K9 Bros","cat":"pantry","contact":"David","email":"K9bros@gmail.com","phone":"516-384-1963","website":"pulsar-foods.com","frequency":"Pop-up","app":1},{"name":"Newlight Breadworks","cat":"baked","contact":"Stephen","email":"ren@newlightbread.com","phone":"646-389-5449","website":"Newlightbread.com","frequency":"Weekly","app":1},{"name":"Dude Gourmet","cat":"prepared","contact":"Tom","email":"tom@dudesgourmet.com","phone":"631-664-5593","website":"Dudesgourmet.com","frequency":"Weekly","app":1},{"name":"Van's Country Style Potato Salad","cat":"pantry","contact":"Vanessa","email":"Blessedpotatoflavrs@gmail.com","phone":"631-356-6822","frequency":"Every other week","app":1},{"name":"Of Tea","cat":"pantry","email":"Theoftea@gmail.com","website":"Oftea.co","frequency":"Weekly","vid":"v10","app":1},{"name":"Vincent Farm Nayural Foods","cat":"produce","contact":"Maria","email":"vmartdiscount@yahoo.com","phone":"917-375-0364","website":"VincentfarmsNY.com","frequency":"Pop-up","vid":"v48","app":1},{"name":"Macaron 5 Chic Inc.","cat":"baked","contact":"Jeanne","email":"Macaronfive@yahoo.com","phone":"516-721-0712","website":"Macaron5chic.com","frequency":"Weekly","app":1},{"name":"Urban Tails Treats","cat":"pantry","contact":"Michelle","email":"Urbantailstreatsnyc@gmail.com","phone":"516-641-1236","website":"Urbantailstreats.com","frequency":"Every other week","app":1},{"name":"Modern Pawz","cat":"pantry","email":"Support@modernpawz.com","phone":"631-401-5258","website":"Modernpawz.com","frequency":"Every other week","app":1},{"name":"Dekkade LLC","cat":"crafts","contact":"Adelaide Paul","email":"adelaide.paul23@gmail.com","phone":"646-258-9213","frequency":"Every other week","app":1},{"name":"Vienna Cookie Company","cat":"baked","contact":"Hedi","email":"Info@Viennacookiecompany.com","website":"www.viennacookiecompany.com","frequency":"Every other week","app":1},{"name":"Humbel Bee Pantry LLC","cat":"pantry","contact":"Deb","email":"DFalcone5331@gmail.com","website":"HumbleBeePantry.com","frequency":"Pop-up","paid":1,"app":1},{"name":"Bella Ciao Ciao","cat":"pantry","contact":"Anthony","email":"Bellaciaociao74@gmail.com","website":"Bellaciaociaosauce.com","frequency":"Every other week","app":1},{"name":"Really Crumby Cakes","cat":"baked","contact":"Jillian","email":"reallycrumbycakes@gmail.com","frequency":"Every other week","app":1},{"name":"Chowderhead Soup LLC","cat":"pantry","contact":"Joseph Bruno","email":"Chowderheadsoup@gmail.com","frequency":"Every other week","app":1},{"name":"Tallow Honey Gold","cat":"pantry","contact":"Bobby","email":"bobby@freemindsthrive.com","phone":"631-339-8355","frequency":"Pop-up","paid":1,"app":1},{"name":"Ia's Threads LLC","cat":"crafts","contact":"Ia","email":"Info@iasthreads.com","website":"www.iasthreads.com","frequency":"Pop-up","paid":1,"app":1},{"name":"High & Miri","cat":"crafts","contact":"Brad & Lauren Rubin","email":"highmiri@gmail.com","phone":"917-617-2305","website":"https://www.highmiri.com/#/","frequency":"Pop-up","app":1},{"name":"Igor Kitchen","cat":"prepared","contact":"Igor","email":"Igorskitchenofficial@gmail.com","website":"www.Igorskitchen.com","frequency":"Pop-up","app":1},{"name":"Pop Culture Cookie","cat":"baked","contact":"Jason","email":"info@popculturecookie.com","phone":"216-544-9359","frequency":"Weekly"},{"name":"Scott's Knots","cat":"baked","contact":"Scott Schneider","email":"scott@scottsknots.com","phone":"917-213-3422","website":"www.scottsknots.com","frequency":"Pop-up","app":1},{"name":"Vintage Mermaid of Long Beach","cat":"crafts","contact":"Lorna Weyant","email":"vintagemermaidlb@gmail.com","website":"www.vintagemermaidlb.com","frequency":"Pop-up","app":1}];
+function applyMarketsV2(st){
+  const M=Array.isArray(st.markets)?st.markets:(st.markets=[]);
+  const byId={}; M.forEach(m=>{ byId[m.id]=m; if(typeof m.music!=='string') m.music=''; });
+  if(byId.hunt && byId.hunt.spots<40) byId.hunt.spots=40;
+  if(byId.baby){ byId.baby.spots=40; byId.baby.truck=true; }
+  if(byId.ronk) byId.ronk.spots=17;
+  const NEW=[
+    {id:'estee',name:'Est\u00e9e Lauder',full:'Est\u00e9e Lauder',where:'',weekday:0,time:'',spots:20,color:'#7A3B69',start:'2026-06-07',music:''},
+    {id:'liu',name:'LIU',full:'LIU',where:'',weekday:0,time:'',spots:20,color:'#2E5E8C',start:'2026-06-07',music:''},
+    {id:'rxr',name:'RXR',full:'RXR',where:'',weekday:0,time:'',spots:20,color:'#4E7A6A',start:'2026-06-07',music:''}
+  ];
+  NEW.forEach(nm=>{ if(!byId[nm.id]) M.push(nm); });
+  if(!st.music||typeof st.music!=='object') st.music={};
+}
+function applyBabylon(st){
+  const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const vs=Array.isArray(st.vendors)?st.vendors:(st.vendors=[]);
+  const byId={},byEmail={},byName={};
+  vs.forEach(v=>{ byId[v.id]=v; if(v.email) byEmail[v.email.toLowerCase()]=v; byName[norm(v.name)]=v; });
+  VBABYLON.forEach(r=>{
+    let v=(r.vid&&byId[r.vid])||(r.email&&byEmail[r.email.toLowerCase()])||byName[norm(r.name)]||null;
+    if(v){
+      const mk=Array.isArray(v.markets)?v.markets:[]; if(!mk.includes('baby')) mk.push('baby'); v.markets=mk;
+      if(r.contact&&!v.contact) v.contact=r.contact;
+      if(r.email&&!v.email) v.email=r.email;
+      if(r.phone&&!v.phone) v.phone=r.phone;
+      if(r.website&&!v.website) v.website=r.website;
+      if(r.frequency&&!v.frequency) v.frequency=r.frequency;
+    } else {
+      const parts=[]; if(r.contact)parts.push(r.contact); parts.push('Babylon'); if(r.frequency)parts.push(r.frequency); if(r.app)parts.push('App \u2713'); if(r.paid)parts.push('PAID');
+      const nv={id:uid('v'),name:r.name,cat:r.cat||'crafts',contact:r.contact||'',phone:r.phone||'',email:r.email||'',website:r.website||'',products:'',frequency:r.frequency||'',address:'',status:'approved',insStatus:'',insExpiry:'',fee:'',markets:['baby'],notes:parts.join(' \u00b7 '),docs:[],payments:[]};
+      vs.push(nv); byName[norm(nv.name)]=nv; if(nv.email) byEmail[nv.email.toLowerCase()]=nv;
+    }
+  });
+}
 function applyImports(st){
   if(!st) return st;
   if((st.importVersion||0)>=IMPORT_VERSION) return st;
+  if((st.importVersion||0)<2){ applyMarketsV2(st); applyBabylon(st); }
+  if((st.importVersion||0)<1){
   const byId={}; (st.vendors||[]).forEach(v=>{ byId[v.id]=v; });
   Object.keys(VIMPORT).forEach(id=>{
     const v=byId[id]; if(!v) return; const rec=VIMPORT[id];
@@ -348,6 +391,7 @@ function applyImports(st){
       if(!cur || cur.indexOf('·')>=0){ v.notes=rec.note; }
       else if(cur.indexOf(rec.note)<0){ v.notes=rec.note+'\n'+cur; } }
   });
+  }
   st.importVersion=IMPORT_VERSION;
   return st;
 }
@@ -447,7 +491,7 @@ function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase();
    ===================================================================== */
 const app=document.getElementById('app');
 function render(){
-  app.innerHTML=`<div class="frame">${barFor()}<div class="scroll">${VIEW[ui.view]()}</div>${fab()}${tabbar()}</div>${ui.sheet?sheetHTML():''}`;
+  app.innerHTML=`<div class="frame">${barFor()}${tabbar()}<div class="scroll">${VIEW[ui.view]()}</div>${fab()}</div>${ui.sheet?sheetHTML():''}`;
 }
 function barFor(){
   if(ui.view==='day'||ui.view==='addv'){
@@ -517,6 +561,8 @@ VIEW.day=function(){
   const booked=dayBookings(ui.m,date).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
   const left=spotsLeft(ui.m,date);
   const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  const cin=booked.filter(b=>b.checkedIn).length;
+  const mkey=ui.m+'|'+date; const mus=(S.music&&S.music[mkey])||'';
   return `
   <div class="card" style="margin-top:6px">
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
@@ -524,13 +570,21 @@ VIEW.day=function(){
       <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${m.where}</div></div>
     </div>
     <div class="tents" style="margin-top:12px">${tents}</div>
-    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${m.spots}</span></div>
+    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${m.spots}${m.truck?' + food truck':''}</span></div>
   </div>
-  <button class="btn" data-a="goto-add" style="margin:4px 0 18px">${I.plus} Add a vendor to this day</button>
-  <div class="section-title">Who is coming <span>(${booked.length})</span></div>
+  <div class="card" style="margin-top:10px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="color:var(--red);font-size:20px;line-height:1">&#9834;</span>
+      <div style="flex:1"><b style="font-weight:800">Live music</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${mus?escapeHtml(mus):'No act entered for this day'}</div></div>
+      <button class="mini" data-a="edit-music">${mus?'Edit':'Add'}</button>
+    </div>
+  </div>
+  <button class="btn" data-a="goto-add" style="margin:14px 0 18px">${I.plus} Add a vendor to this day</button>
+  <div class="section-title">Who is coming <span>(${cin}/${booked.length} checked in)</span></div>
   ${booked.length? `<div class="list">${booked.map(b=>{const v=vendor(b.v);const c=cat(v.cat);
     return `<div class="row"><span class="dot" style="background:${c.color}"></span>
       <div class="main tap" data-a="open-vendor" data-id="${v.id}"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}</div></div>
+      <button class="ci ${b.checkedIn?'on':''}" data-a="toggle-checkin" data-id="${b.id}" aria-label="Check in ${escapeHtml(v.name)}">${b.checkedIn?I.tick:''}</button>
       <button class="pill ${b.paid?'paid':'owes'}" data-a="toggle-paid" data-id="${b.id}">${b.paid?'Paid':'Owes'}</button>
       <button class="x" data-a="remove-booking" data-id="${b.id}" aria-label="Remove">${I.x}</button></div>`;}).join('')}</div>`
     : emptyState(I.people,'No vendors yet','Tap the button above to add your first vendor to this day.')}
@@ -561,8 +615,8 @@ VIEW.vendors=function(){
   const n=newCount();
   const cnt=mid=>S.vendors.reduce((a,v)=>a+(vMarkets(v).has(mid)?1:0),0);
   const chip=(id,label)=>`<button class="mchip${mk===id?' on':''}" data-a="vmkt" data-m="${id}">${label}${id==='all'?` <span class="mc">${S.vendors.length}</span>`:` <span class="mc">${cnt(id)}</span>`}</button>`;
-  const chips=`<div class="mchips">${chip('all','All')}${chip('hunt','Huntington')}${chip('baby','Babylon')}${chip('ronk','Ronkonkoma')}</div>`;
-  const mlabel=({hunt:'Huntington',baby:'Babylon',ronk:'Ronkonkoma'})[mk]||'';
+  const chips=`<div class="mchips">${chip('all','All')}${(S.markets||[]).map(m=>chip(m.id,m.name)).join('')}</div>`;
+  const mlabel=((S.markets||[]).find(m=>m.id===mk)||{}).name||'';
   return `
   <div class="hello"><div class="eye">Your people</div><h1>Vendors <span>${S.vendors.length}</span></h1></div>
   ${n?`<button class="inboxbar" data-a="tab" data-v="inbox">${I.inbox}<span>${n} new application${n===1?'':'s'} to review</span>${I.chev}</button>`:''}
@@ -570,7 +624,7 @@ VIEW.vendors=function(){
   <div class="searchwrap"><input class="search" id="vq" placeholder="Search vendors..." value="${escapeHtml(ui.q||'')}"/></div>
   ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);const stt=vstatus(v);const flags=vFlags(v);
     return `<div class="row tap" data-a="open-vendor" data-id="${v.id}"><span class="dot" style="background:${c.color}"></span>
-      <div class="main"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}${v.phone?' - '+escapeHtml(v.phone):v.email?' - '+escapeHtml(v.email):''}</div>
+      <div class="main"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}</div>${v.email?`<div class="meta vemail">${escapeHtml(v.email)}</div>`:(v.phone?`<div class="meta">${escapeHtml(v.phone)}</div>`:'')}
       <div class="rowflags"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span>${flags.map(f=>`<span class="spill ${f.t}">${f.x}</span>`).join('')}</div></div>
       <span class="chev">${I.chev}</span></div>`;}).join('')}</div>`
     : emptyState(I.people, (mk!=='all'?('No '+mlabel+' vendors yet'):(q?'No matches':'No vendors yet')), (mk!=='all'?('Vendors booked at '+mlabel+' - or tagged to it from an application - show up here.'):(q?'Try a different search.':'Add the makers and farmers who sell at your markets.')))}
@@ -834,6 +888,9 @@ document.addEventListener('click',async e=>{
   if(a==='edit-todo'){ openTodo(S.todos.find(t=>t.id===el.dataset.id)); return; }
   if(a==='toggle-todo'){ const t=S.todos.find(x=>x.id===el.dataset.id); if(t){t.done=!t.done; render(); save();} return; }
   if(a==='save-todo'){ await saveTodo(); return; }
+  if(a==='edit-music'){ openMusic(); return; }
+  if(a==='save-music'){ await saveMusic(); return; }
+  if(a==='clear-music'){ const mkey=ui.m+'|'+ui.date; if(S.music) delete S.music[mkey]; ui.sheet=null; render(); save(); toast('Removed'); return; }
   if(a==='del-todo'){ S.todos=S.todos.filter(x=>x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Deleted'); return; }
   if(a==='closesheet'){ ui.sheet=null; render(); return; }
   if(a==='scrim'){ if(!e.target.closest('.sheet')){ ui.sheet=null; render(); } return; }
@@ -939,6 +996,21 @@ async function saveTodo(){
   else { S.todos.unshift({id:uid('t'),title,done:false}); toast('Added'); }
   ui.sheet=null; render(); save();
 }
+function openMusic(){
+  const mkey=ui.m+'|'+ui.date; const cur=(S.music&&S.music[mkey])||''; const mk=market(ui.m);
+  ui.sheet={type:'music',body:`
+    <h3>Live music</h3><div class="lead">${mk?escapeHtml(mk.name):''} - ${nice(ui.date)}</div>
+    ${fld('Who is playing?','music',cur,'text','e.g. The Smith Brothers - 10am to 12pm')}
+    <div class="acts"><button class="btn" data-a="save-music">Save</button>
+    ${cur?`<button class="btn danger" data-a="clear-music">Remove</button>`:''}
+    <button class="btn line" data-a="closesheet">Cancel</button></div>`};
+  render();
+}
+async function saveMusic(){
+  const mkey=ui.m+'|'+ui.date; if(!S.music||typeof S.music!=='object') S.music={};
+  const val=gf('music'); if(val) S.music[mkey]=val; else delete S.music[mkey];
+  ui.sheet=null; render(); save(); toast('Saved');
+}
 
 let tt; function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000);}
 let stt2; function showSync(m){const s=document.getElementById('sync');s.textContent=m;s.classList.add('show');clearTimeout(stt2);stt2=setTimeout(()=>s.classList.remove('show'),1400);}
@@ -987,6 +1059,7 @@ async function enter(passVal,res){
   INBOX = (online && res.inbox) ? res.inbox : [];
   ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
   S.seasonEnd=S.seasonEnd||'2026-11-01';
+  if(!S.music||typeof S.music!=='object') S.music={};
   const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S);
   const added=autoImport();
   ui.view='days'; render();                       // you are IN — never blocked by the network
