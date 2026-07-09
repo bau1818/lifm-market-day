@@ -7,7 +7,7 @@ var MAX_B64 = 9400000; // ~7MB binary
 function adminPass() {
   try { if (typeof Netlify !== "undefined" && Netlify.env) { const v = Netlify.env.get("ADMIN_PASSCODE"); if (v) return v; } } catch (e) {}
   try { if (typeof process !== "undefined" && process.env && process.env.ADMIN_PASSCODE) return process.env.ADMIN_PASSCODE; } catch (e) {}
-  return "market26";
+  return "farm3r26!";
 }
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
