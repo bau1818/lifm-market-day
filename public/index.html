@@ -22,6 +22,10 @@ html,body{margin:0;padding:0}
 body{background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--red-deep)}
 .wrap{max-width:500px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;overflow:hidden}
+/* Desktop: let the Vendors grid use the full width; other views stay comfortably narrow */
+@media (min-width:820px){
+  body[data-view="vendors"] .wrap{max-width:1120px}
+}
 .frame{min-height:100vh;display:flex;flex-direction:column}
 .scroll{flex:1;overflow-y:auto;padding:14px 16px 40px}
 button{font-family:inherit}
@@ -95,9 +99,18 @@ button{font-family:inherit}
 .row .x{width:32px;height:32px;border:none;background:var(--oat);border-radius:9px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .row .x svg{width:17px;height:17px}
 .row .edit{width:34px;height:34px;border:none;background:var(--oat);border-radius:10px;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.row .edit.del{background:var(--tomato-soft);color:var(--bad)}
+.row .edit.del svg{width:17px;height:17px}
 .row .edit svg{width:18px;height:18px}
 button.pill{border:none;cursor:pointer}
 .rowflags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.vcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 12px 17px;cursor:pointer;display:flex;flex-direction:column;gap:5px;overflow:hidden;transition:border-color .12s,box-shadow .12s}
+.vcard:hover{border-color:var(--ink-soft);box-shadow:0 4px 14px rgba(120,80,20,.08)}
+.vcard .cbar{position:absolute;left:0;top:0;bottom:0;width:5px}
+.vcard .vc-name{font-weight:800;font-size:15.5px;line-height:1.15}
+.vcard .vc-cat{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px;color:var(--ink-soft)}
+.vcard .vc-contact{font-size:12.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spill{display:inline-block;font-family:"Oswald";font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:#eee;color:#666;white-space:nowrap}
 .spill.ok{background:#e6f4ea;color:var(--ok)}.spill.warn{background:#fbeccd;color:#9a6a12}.spill.bad{background:var(--tomato-soft);color:var(--bad)}
 b.ok{color:var(--ok)}b.warn{color:#9a6a12}b.bad{color:var(--bad)}
@@ -266,7 +279,8 @@ const I={
   doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>',
   dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
   download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
-  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>'
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6"/></svg>'
 };
 function tentSVG(filled){
   const fill=filled?'var(--red)':'none', stroke=filled?'var(--red)':'var(--line)';
@@ -283,12 +297,14 @@ const CATS=[
   {id:'bakery',name:'Bakery',color:'#D69A3C'},
   {id:'dairy',name:'Dairy & Cheese',color:'#C9A24B'},
   {id:'beverage',name:'Coffee/Tea/Beverage',color:'#8A5A33'},
+  {id:'spirits',name:'Spirits/Beer',color:'#B5852F'},
   {id:'pantry',name:'Pantry/Specialty Foods',color:'#7C6BB0'},
   {id:'prepared',name:'Prepared Foods',color:'#D2553F'},
   {id:'sweets',name:'Sweet Treats',color:'#E08AB0'},
   {id:'wellness',name:'Health & Wellness',color:'#5AA17F'},
   {id:'pet',name:'Pet Products',color:'#6E8CB0'},
   {id:'handcrafted',name:'Handcrafted Goods',color:'#3E7C92'},
+  {id:'jewelry',name:'Jewelry',color:'#5AA0A6'},
   {id:'beauty',name:'Beauty Products',color:'#C76F9C'},
   {id:'foodtruck',name:'Food Truck',color:'#8C6E4A'},
   {id:'plants',name:'Plants & Garden',color:'#5E9E52'}
@@ -297,7 +313,7 @@ const CAT_ALIAS={produce:'farm',baked:'bakery',coffee:'beverage',flowers:'plants
 function normCat(id){id=id||'';return CAT_ALIAS[id]||id;}
 function migrateCats(st){ if(st&&Array.isArray(st.vendors)) st.vendors.forEach(v=>{ if(v) v.cat=normCat(v.cat); }); return st; }
 function cat(id){id=normCat(id);return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
-const CAP={farm:8,meat:4,bakery:6,dairy:4,beverage:3,pantry:8,prepared:8,sweets:6,wellness:4,pet:3,handcrafted:8,beauty:4,foodtruck:1,plants:3};
+const CAP={farm:8,meat:4,bakery:6,dairy:4,beverage:3,spirits:3,pantry:8,prepared:8,sweets:6,wellness:4,pet:3,handcrafted:8,jewelry:4,beauty:4,foodtruck:1,plants:3};
 
 /* ---- statuses + document types (vendor hub) ---- */
 const STATUSES=[
@@ -534,6 +550,8 @@ function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase().trim();
   if(CATS.some(c=>c.id===t)) return t;
   // fuzzy match on free text (products, notes, etc.) — order matters
   if(/food truck|truck/.test(t))return 'foodtruck';
+  if(/spirit|liquor|distill|whiskey|whisky|bourbon|tequila|vodka|\bgin\b|\brum\b|beer|brewery|\bale\b|lager|\bwine\b|mead|cocktail/.test(t))return 'spirits';
+  if(/jewel|ring|necklace|earring|bracelet|gemstone|\bgems?\b/.test(t))return 'jewelry';
   if(/meat|poultry|chicken|beef|pork|bacon|seafood|fish|butcher/.test(t))return 'meat';
   if(/dairy|cheese|milk|yogurt|creamery/.test(t))return 'dairy';
   if(/coffee|espresso|\btea\b|brew|beverage|drink|juice|kombucha|cider|soda/.test(t))return 'beverage';
@@ -545,7 +563,7 @@ function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase().trim();
   if(/beauty|skin|soap|cosmetic|makeup|lotion|balm|candle/.test(t))return 'beauty';
   if(/produce|farm|veg|fruit|microgreen|orchard|organic/.test(t))return 'farm';
   if(/prepared|empanada|hummus|dumpling|kitchen|ravioli|soup|meal|hot food/.test(t))return 'prepared';
-  if(/craft|art|print|jewel|apron|handmade|ceramic|woodwork|thread/.test(t))return 'handcrafted';
+  if(/craft|art|print|apron|handmade|ceramic|woodwork|thread/.test(t))return 'handcrafted';
   if(/jam|honey|pickle|sauce|\bnut|snack|pantry|spice|season|salsa|\boil\b|specialty|chip/.test(t))return 'pantry';
   return null;
 }
@@ -555,7 +573,8 @@ function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase().trim();
    ===================================================================== */
 const app=document.getElementById('app');
 function render(){
-  app.innerHTML=`<div class="frame">${barFor()}${tabbar()}<div class="scroll">${VIEW[ui.view]()}</div>${fab()}</div>${ui.sheet?sheetHTML():''}`;
+  app.innerHTML=`<div class="frame">${barFor()}${tabbar()}<div class="scroll scroll-${ui.view}">${VIEW[ui.view]()}</div>${fab()}</div>${ui.sheet?sheetHTML():''}`;
+  document.body.setAttribute('data-view',ui.view);
 }
 function barFor(){
   if(ui.view==='day'||ui.view==='addv'){
@@ -581,7 +600,6 @@ function tabbar(){
   return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Days')}${tab('vendors',I.people,'Vendors')}${tab('inbox',I.inbox,'Inbox',n)}${tab('todos',I.check,'To-Do')}</div></div>`;
 }
 function fab(){
-  if(ui.view==='vendors') return fabBtn('add-vendor');
   if(ui.view==='todos') return fabBtn('add-todo');
   return '';
 }
@@ -600,9 +618,8 @@ VIEW.days=function(){
   const preview=booked.slice(0,4).map(b=>{const v=vendor(b.v);const c=cat(v.cat);
     return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${escapeHtml(v.name)}</span>
       <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('');
-  const greet=(()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening';})();
   return `
-  <div class="hello"><div class="eye">${greet}</div><h1>Here is what is next</h1></div>
+  <div style="height:8px"></div>
   <div class="card bigday tap" data-a="open-day" data-m="${first.m}" data-date="${first.date}">
     <div class="hd" style="background:${m.color}"><div class="when">${when}</div><h2>${m.name}</h2><div class="sub">${m.time}</div></div>
     <div class="bd">
@@ -686,11 +703,15 @@ VIEW.vendors=function(){
   ${n?`<button class="inboxbar" data-a="tab" data-v="inbox">${I.inbox}<span>${n} new application${n===1?'':'s'} to review</span>${I.chev}</button>`:''}
   ${chips}
   <div class="searchwrap"><input class="search" id="vq" placeholder="Search vendors..." value="${escapeHtml(ui.q||'')}"/></div>
-  ${list.length? `<div class="list">${list.map(v=>{const c=cat(v.cat);const stt=vstatus(v);const flags=vFlags(v);
-    return `<div class="row tap" data-a="open-vendor" data-id="${v.id}"><span class="dot" style="background:${c.color}"></span>
-      <div class="main"><b>${escapeHtml(v.name)}</b><div class="meta">${c.name}</div>${v.email?`<div class="meta vemail">${escapeHtml(v.email)}</div>`:(v.phone?`<div class="meta">${escapeHtml(v.phone)}</div>`:'')}
-      <div class="rowflags"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span>${flags.map(f=>`<span class="spill ${f.t}">${f.x}</span>`).join('')}</div></div>
-      <span class="chev">${I.chev}</span></div>`;}).join('')}</div>`
+  <button class="btn" data-a="add-vendor" style="margin:0 0 14px">${I.plus} Add new vendor</button>
+  ${(q||mk!=='all')?`<div class="section-title" style="margin:2px 2px 10px">${list.length} ${list.length===1?'match':'matches'}${mk!=='all'?' in '+escapeHtml(mlabel):''}</div>`:''}
+  ${list.length? `<div class="vgrid">${list.map(v=>{const c=cat(v.cat);const stt=vstatus(v);const flags=vFlags(v);
+    return `<div class="vcard" data-a="open-vendor" data-id="${v.id}"><span class="cbar" style="background:${c.color}"></span>
+      <div class="vc-name">${escapeHtml(v.name)}</div>
+      <div class="vc-cat"><span class="dot" style="background:${c.color}"></span>${c.name}</div>
+      ${v.email?`<div class="vc-contact">${escapeHtml(v.email)}</div>`:(v.phone?`<div class="vc-contact">${escapeHtml(v.phone)}</div>`:'')}
+      <div class="rowflags"><span class="spill" style="background:${stt.color}1f;color:${stt.color}">${stt.name}</span>${flags.map(f=>`<span class="spill ${f.t}">${f.x}</span>`).join('')}</div>
+    </div>`;}).join('')}</div>`
     : emptyState(I.people, (mk!=='all'?('No '+mlabel+' vendors yet'):(q?'No matches':'No vendors yet')), (mk!=='all'?('Vendors booked at '+mlabel+' - or tagged to it from an application - show up here.'):(q?'Try a different search.':'Add the makers and farmers who sell at your markets.')))}
   <div style="height:10px"></div>`;
 };
@@ -768,7 +789,7 @@ VIEW.inbox=function(){
     return `<div class="row tap" data-a="open-app" data-id="${a.id}"><span class="dot" style="background:#D69A3C"></span>
       <div class="main"><b>${escapeHtml(a.name)}</b><div class="meta">${escapeHtml(a.category||'-')}${a.markets?' - '+escapeHtml(a.markets):''} - ${when}</div></div>
       ${a.status==='dismissed'?'<span class="spill">Dismissed</span>':(!a.seen?'<span class="spill warn">New</span>':'<span class="spill ok">Imported</span>')}
-      <span class="chev">${I.chev}</span></div>`;};
+      <button class="edit del" data-a="del-app" data-id="${a.id}" aria-label="Delete">${I.trash}</button></div>`;};
   return `
   <div class="hello"><div class="eye">Applications</div><h1>Inbox</h1></div>
   <div class="lead" style="margin:-8px 2px 14px">Vendors who apply through your form are added to your Vendors tab automatically. Review them here.</div>
@@ -787,7 +808,8 @@ VIEW.todos=function(){
   const row=t=>`<div class="row todo">
     <button class="check ${t.done?'on':''}" data-a="toggle-todo" data-id="${t.id}" aria-label="Mark done">${t.done?I.tick:''}</button>
     <div class="main"><b class="${t.done?'done':''}" style="font-weight:800">${escapeHtml(t.title)}</b></div>
-    <button class="edit" data-a="edit-todo" data-id="${t.id}" aria-label="Edit">${I.edit}</button></div>`;
+    <button class="edit" data-a="edit-todo" data-id="${t.id}" aria-label="Edit">${I.edit}</button>
+    <button class="edit del" data-a="del-todo" data-id="${t.id}" aria-label="Delete">${I.trash}</button></div>`;
   return `
   <div class="hello"><div class="eye">Before market day</div><h1>To-Do</h1></div>
   ${S.todos.length===0? emptyState(I.check,'All clear','Add reminders for things to do before market day.'):''}
@@ -959,6 +981,7 @@ document.addEventListener('click',async e=>{
   if(a==='open-vendor'){ ui.sheet=null; ui.view='vdetail'; ui.vid=el.dataset.id; render(); return; }
   if(a==='import-app'){ importApp(el.dataset.id); return; }
   if(a==='dismiss-app'){ dismissApp(el.dataset.id); return; }
+  if(a==='del-app'){ if(!confirm('Delete this application? This removes it from the Inbox for everyone.')) return; INBOX=INBOX.filter(x=>x&&x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Application deleted'); return; }
   if(a==='copy-link'){ const u=applyURL(); if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(u).then(()=>toast('Link copied')).catch(()=>toast(u)); } else { toast(u); } return; }
   if(a==='add-todo'){ openTodo(null); return; }
   if(a==='edit-todo'){ openTodo(S.todos.find(t=>t.id===el.dataset.id)); return; }
