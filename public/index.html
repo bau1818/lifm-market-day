@@ -506,7 +506,19 @@ function parse(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)
 function t0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 function until(s){return Math.round((parse(s)-t0())/864e5);}
 function nice(s){const d=parse(s);return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate();}
+// Pop-up markets (Estée, LIU, RXR) store an explicit list of dates instead of a
+// weekly day-of-week. `dates` is an array; `venues` is a map of date -> {where,spots}.
+function marketDates(m){
+  if(m&&Array.isArray(m.dates)&&m.dates.length) return m.dates.slice();
+  if(m&&m.venues&&typeof m.venues==='object'){ const k=Object.keys(m.venues); if(k.length) return k; }
+  return null;
+}
+function dayVenue(m,date){ return (m&&m.venues&&m.venues[date])||null; }
+function dayWhere(m,date){ const v=dayVenue(m,date); return (v&&v.where)||(m&&m.where)||''; }
+function daySpots(m,date){ const v=dayVenue(m,date); const s=v&&v.spots; return (s!=null?s:(m&&m.spots))||0; }
 function nextDates(m,n){
+  const fixed=marketDates(m);
+  if(fixed){ return fixed.slice().sort().filter(d=>parse(d)>=t0()).slice(0,n||20); }
   const out=[],end=parse(S?S.seasonEnd:'2026-11-01');
   let d=new Date(Math.max(t0().getTime(),parse(m.start).getTime()));d.setHours(0,0,0,0);
   let g=0;while(d.getDay()!==m.weekday&&g++<8)d.setDate(d.getDate()+1);
@@ -520,7 +532,7 @@ function allDays(n){
 const market=id=>S.markets.find(m=>m.id===id);
 const vendor=id=>S.vendors.find(v=>v.id===id);
 const dayBookings=(mid,date)=>S.bookings.filter(b=>b.m===mid&&b.date===date);
-function spotsLeft(mid,date){const m=market(mid);return m.spots-dayBookings(mid,date).length;}
+function spotsLeft(mid,date){const m=market(mid);return daySpots(m,date)-dayBookings(mid,date).length;}
 function catCount(mid,date,c){return dayBookings(mid,date).filter(b=>{const v=vendor(b.v);return v&&v.cat===c;}).length;}
 
 /* ---- vendor-hub helpers ---- */
@@ -614,7 +626,7 @@ VIEW.days=function(){
   const booked=dayBookings(first.m,first.date),left=spotsLeft(first.m,first.date);
   const dd=until(first.date);
   const when=dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' - '+dd+' days away';
-  const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  const cap=Math.min(daySpots(m,first.date),24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
   const preview=booked.slice(0,4).map(b=>{const v=vendor(b.v);const c=cat(v.cat);
     return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${escapeHtml(v.name)}</span>
       <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('');
@@ -641,17 +653,18 @@ VIEW.day=function(){
   const m=market(ui.m),date=ui.date;
   const booked=dayBookings(ui.m,date).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
   const left=spotsLeft(ui.m,date);
-  const cap=Math.min(m.spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  const spots=daySpots(m,date);
+  const cap=Math.min(spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
   const cin=booked.filter(b=>b.checkedIn).length;
   const mkey=ui.m+'|'+date; const mus=(S.music&&S.music[mkey])||'';
   return `
   <div class="card" style="margin-top:6px">
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
       <span style="color:var(--red);margin-top:2px">${I.pin}</span>
-      <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${m.where}</div></div>
+      <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${escapeHtml(dayWhere(m,date))}</div></div>
     </div>
     <div class="tents" style="margin-top:12px">${tents}</div>
-    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${m.spots}${m.truck?' + food truck':''}</span></div>
+    <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${spots}${m.truck?' + food truck':''}</span></div>
   </div>
   <div class="card" style="margin-top:10px">
     <div style="display:flex;align-items:center;gap:10px">
