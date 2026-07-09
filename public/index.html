@@ -525,9 +525,9 @@ function nextDates(m,n){
   while(d<=end&&out.length<(n||20)){out.push(iso(d));d.setDate(d.getDate()+7);}
   return out;
 }
-function allDays(n){
-  let r=[];S.markets.forEach(m=>nextDates(m,5).forEach(date=>r.push({m:m.id,date})));
-  r.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);return r.slice(0,n||12);
+function allDays(){
+  let r=[];S.markets.forEach(m=>nextDates(m,60).forEach(date=>r.push({m:m.id,date})));
+  r.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);return r;
 }
 const market=id=>S.markets.find(m=>m.id===id);
 const vendor=id=>S.vendors.find(v=>v.id===id);
@@ -619,9 +619,22 @@ function fabBtn(a){return `<div class="fab"><div class="inner"><button data-a="$
 
 const VIEW={};
 VIEW.days=function(){
-  const days=allDays(12);
+  const days=allDays();
   if(!days.length) return emptyState(I.cal,'Season is over','No more market days are scheduled.');
   const first=days[0],rest=days.slice(1);
+  // Show ~2 months at a time; "View more" loads the next batch, on through the season.
+  const WINDOW=61, windows=ui.dayWindows||1, cutoff=WINDOW*windows;
+  const shown=rest.filter(r=>until(r.date)<=cutoff);
+  const moreCount=rest.length-shown.length;
+  let lastMon='';
+  const listHTML=shown.map(r=>{const mk=market(r.m);const l=spotsLeft(r.m,r.date);const d=parse(r.date);
+    const monLabel=MON[d.getMonth()]+' '+d.getFullYear();
+    const hdr=monLabel!==lastMon?`<div class="section-title">${monLabel}</div>`:''; lastMon=monLabel;
+    return hdr+`<div class="card tap daycard" data-a="open-day" data-m="${r.m}" data-date="${r.date}">
+      <div class="date"><div class="d">${d.getDate()}</div><div class="m">${MON[d.getMonth()]}</div></div>
+      <div class="info"><b>${mk.name}</b><div class="meta">${mk.time}</div></div>
+      <div class="right"><div class="spots ${l<=0?'full':''}">${l<=0?'Full':l}</div><small>${l<=0?'':'spots left'}</small></div>
+      <span class="chev">${I.chev}</span></div>`;}).join('');
   const m=market(first.m);
   const booked=dayBookings(first.m,first.date),left=spotsLeft(first.m,first.date);
   const dd=until(first.date);
@@ -640,13 +653,8 @@ VIEW.days=function(){
       <div class="coming">${preview||`<div class="crow"><span class="nm" style="color:var(--ink-soft);font-weight:600">No vendors yet - tap to add some</span></div>`}</div>
     </div>
   </div>
-  <div class="section-title">Coming up</div>
-  ${rest.map(r=>{const mk=market(r.m);const l=spotsLeft(r.m,r.date);const d=parse(r.date);
-    return `<div class="card tap daycard" data-a="open-day" data-m="${r.m}" data-date="${r.date}">
-      <div class="date"><div class="d">${d.getDate()}</div><div class="m">${MON[d.getMonth()]}</div></div>
-      <div class="info"><b>${mk.name}</b><div class="meta">${mk.time}</div></div>
-      <div class="right"><div class="spots ${l<=0?'full':''}">${l<=0?'Full':l}</div><small>${l<=0?'':'spots left'}</small></div>
-      <span class="chev">${I.chev}</span></div>`;}).join('')}
+  ${listHTML}
+  ${moreCount>0?`<button class="btn line" data-a="more-days" style="margin-top:12px">View more dates <span style="opacity:.55;font-weight:700">(${moreCount} more)</span></button>`:''}
   <div style="height:8px"></div>`;
 };
 VIEW.day=function(){
@@ -960,7 +968,8 @@ document.addEventListener('input',e=>{
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-a]'); if(!el) return;
   const a=el.dataset.a;
-  if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; render(); sc(); return; }
+  if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; if(el.dataset.v==='days') ui.dayWindows=1; render(); sc(); return; }
+  if(a==='more-days'){ ui.dayWindows=(ui.dayWindows||1)+1; render(); return; }
   if(a==='export-data'){ exportData(); return; }
   if(a==='import-data'){ importData(); return; }
   if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
