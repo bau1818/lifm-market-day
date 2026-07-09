@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "backup": "node scripts/backup.mjs",
+    "restore": "node scripts/restore.mjs",
+    "package": "node scripts/package.mjs"
+  },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
     "@netlify/functions": "^2.8.2"

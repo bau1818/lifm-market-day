@@ -122,6 +122,8 @@ b.ok{color:var(--ok)}b.warn{color:#9a6a12}b.bad{color:var(--bad)}
 .btn.soft{background:var(--oat);color:var(--ink);box-shadow:none}
 .btn.line{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
 .btn.danger{background:#fff;color:var(--bad);border:1.5px solid var(--tomato-soft);box-shadow:none}
+.btn-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-weight:800;font-size:14.5px;padding:12px;border-radius:12px;cursor:pointer}
+.btn-row svg{width:18px;height:18px}
 
 /* pick rows (add vendor) */
 .pickrow{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:8px}
@@ -262,25 +264,40 @@ const I={
   mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>',
   globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>',
   doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>',
-  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>'
 };
 function tentSVG(filled){
   const fill=filled?'var(--red)':'none', stroke=filled?'var(--red)':'var(--line)';
   return `<svg class="tent" viewBox="0 0 26 22" fill="${fill}" stroke="${stroke}" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 2 9h22zM4 9v11h18V9M13 9v11"/></svg>`;
 }
 
-/* ---- categories ---- */
+/* ---- vendor categories ----
+   14 categories. Old data uses a smaller legacy set; CAT_ALIAS maps those
+   legacy ids onto the new ones so nothing breaks, and migrateCats() rewrites
+   stored vendors to the new ids on load. */
 const CATS=[
-  {id:'produce',name:'Produce',color:'#3F8B57'},
-  {id:'baked',name:'Baked',color:'#D69A3C'},
-  {id:'coffee',name:'Coffee',color:'#8A5A33'},
-  {id:'prepared',name:'Food',color:'#D2553F'},
-  {id:'flowers',name:'Flowers',color:'#C76F9C'},
-  {id:'crafts',name:'Crafts',color:'#3E7C92'},
-  {id:'pantry',name:'Pantry',color:'#7C6BB0'}
+  {id:'farm',name:'Farm/Produce',color:'#3F8B57'},
+  {id:'meat',name:'Meat/Poultry/Seafood',color:'#A8443A'},
+  {id:'bakery',name:'Bakery',color:'#D69A3C'},
+  {id:'dairy',name:'Dairy & Cheese',color:'#C9A24B'},
+  {id:'beverage',name:'Coffee/Tea/Beverage',color:'#8A5A33'},
+  {id:'pantry',name:'Pantry/Specialty Foods',color:'#7C6BB0'},
+  {id:'prepared',name:'Prepared Foods',color:'#D2553F'},
+  {id:'sweets',name:'Sweet Treats',color:'#E08AB0'},
+  {id:'wellness',name:'Health & Wellness',color:'#5AA17F'},
+  {id:'pet',name:'Pet Products',color:'#6E8CB0'},
+  {id:'handcrafted',name:'Handcrafted Goods',color:'#3E7C92'},
+  {id:'beauty',name:'Beauty Products',color:'#C76F9C'},
+  {id:'foodtruck',name:'Food Truck',color:'#8C6E4A'},
+  {id:'plants',name:'Plants & Garden',color:'#5E9E52'}
 ];
-function cat(id){return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
-const CAP={produce:8,baked:6,coffee:2,prepared:8,flowers:3,crafts:8,pantry:8};
+const CAT_ALIAS={produce:'farm',baked:'bakery',coffee:'beverage',flowers:'plants',crafts:'handcrafted'};
+function normCat(id){id=id||'';return CAT_ALIAS[id]||id;}
+function migrateCats(st){ if(st&&Array.isArray(st.vendors)) st.vendors.forEach(v=>{ if(v) v.cat=normCat(v.cat); }); return st; }
+function cat(id){id=normCat(id);return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
+const CAP={farm:8,meat:4,bakery:6,dairy:4,beverage:3,pantry:8,prepared:8,sweets:6,wellness:4,pet:3,handcrafted:8,beauty:4,foodtruck:1,plants:3};
 
 /* ---- statuses + document types (vendor hub) ---- */
 const STATUSES=[
@@ -367,7 +384,7 @@ function applyBabylon(st){
       if(r.frequency&&!v.frequency) v.frequency=r.frequency;
     } else {
       const parts=[]; if(r.contact)parts.push(r.contact); parts.push('Babylon'); if(r.frequency)parts.push(r.frequency); if(r.app)parts.push('App \u2713'); if(r.paid)parts.push('PAID');
-      const nv={id:uid('v'),name:r.name,cat:r.cat||'crafts',contact:r.contact||'',phone:r.phone||'',email:r.email||'',website:r.website||'',products:'',frequency:r.frequency||'',address:'',status:'approved',insStatus:'',insExpiry:'',fee:'',markets:['baby'],notes:parts.join(' \u00b7 '),docs:[],payments:[]};
+      const nv={id:uid('v'),name:r.name,cat:normCat(r.cat)||'handcrafted',contact:r.contact||'',phone:r.phone||'',email:r.email||'',website:r.website||'',products:'',frequency:r.frequency||'',address:'',status:'approved',insStatus:'',insExpiry:'',fee:'',markets:['baby'],notes:parts.join(' \u00b7 '),docs:[],payments:[]};
       vs.push(nv); byName[norm(nv.name)]=nv; if(nv.email) byEmail[nv.email.toLowerCase()]=nv;
     }
   });
@@ -431,6 +448,40 @@ async function save(){
   if(!okFlag){ clearTimeout(retryT); retryT=setTimeout(save,4000); }  // keep trying so edits are never lost
 }
 
+/* ---- backup: export / import the whole dataset ---- */
+function exportData(){
+  try{
+    const payload={ app:'lifm-market-day', exportedAt:new Date().toISOString(), version:SEED_VERSION, state:S, inbox:INBOX };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const d=new Date(); const stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const aEl=document.createElement('a'); aEl.href=url; aEl.download='market-day-backup-'+stamp+'.json';
+    document.body.appendChild(aEl); aEl.click(); aEl.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    toast('Backup downloaded');
+  }catch(e){ toast('Could not export'); }
+}
+function importData(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
+  inp.addEventListener('change',()=>{
+    const f=inp.files&&inp.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      let obj=null; try{ obj=JSON.parse(rd.result); }catch(_){ toast('That file is not a valid backup'); return; }
+      const st=obj&&obj.state?obj.state:(obj&&obj.markets?obj:null);
+      if(!st||!Array.isArray(st.vendors)){ toast('That file is not a Market Day backup'); return; }
+      if(!confirm('Restore this backup? It replaces the current shared data for everyone.')) return;
+      S=st; INBOX=Array.isArray(obj.inbox)?obj.inbox:[];
+      ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
+      S.seasonEnd=S.seasonEnd||'2026-11-01'; if(!S.music||typeof S.music!=='object') S.music={};
+      migrateCats(S);
+      ui.view='days'; ui.sheet=null; render(); save(); toast('Backup restored');
+    };
+    rd.readAsText(f);
+  });
+  inp.click();
+}
+
 /* ---- dates ---- */
 const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -475,14 +526,27 @@ function fixUrl(u){u=String(u||'').trim();if(!u)return '';return /^https?:\/\//i
 function newCount(){return INBOX.filter(a=>a&&a.status!=='dismissed'&&!a.seen).length;}
 function timeAgo(t){const d=new Date(t);const s=(Date.now()-d.getTime())/1000;if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
 function applyURL(){return location.origin+'/apply.html';}
-function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase();
-  if(/coffee|espresso|tea|brew/.test(t))return 'coffee';
-  if(/bak|bread|pastr|cake|cookie|donut|loaf/.test(t))return 'baked';
-  if(/flower|plant|bouquet/.test(t))return 'flowers';
-  if(/produce|farm|veg|fruit|microgreen|orchard/.test(t))return 'produce';
-  if(/food|prepared|empanada|hummus|dumpling|kitchen|fish|seafood|juice|ravioli/.test(t))return 'prepared';
-  if(/craft|candle|art|print|soap|skin|jewel|apron|wellness/.test(t))return 'crafts';
-  if(/jam|honey|pickle|sauce|nut|snack|cheese|pantry|spice|season|salsa|oil|yogurt/.test(t))return 'pantry';
+function guessCat(txt){if(!txt)return null;const t=txt.toLowerCase().trim();
+  // exact match against a category name (e.g. picked from the apply-form dropdown)
+  const byName=CATS.find(c=>c.name.toLowerCase()===t); if(byName) return byName.id;
+  // legacy id typed in directly
+  if(CAT_ALIAS[t]) return CAT_ALIAS[t];
+  if(CATS.some(c=>c.id===t)) return t;
+  // fuzzy match on free text (products, notes, etc.) — order matters
+  if(/food truck|truck/.test(t))return 'foodtruck';
+  if(/meat|poultry|chicken|beef|pork|bacon|seafood|fish|butcher/.test(t))return 'meat';
+  if(/dairy|cheese|milk|yogurt|creamery/.test(t))return 'dairy';
+  if(/coffee|espresso|\btea\b|brew|beverage|drink|juice|kombucha|cider|soda/.test(t))return 'beverage';
+  if(/pet|\bdog\b|\bcat\b|hound|pawz|k9|animal/.test(t))return 'pet';
+  if(/sweet|candy|chocolate|fudge|dessert|ice cream|macaron|treat/.test(t))return 'sweets';
+  if(/bak|bread|pastr|cake|cookie|donut|loaf|pie/.test(t))return 'bakery';
+  if(/plant|garden|flower|bouquet|nursery|succulent/.test(t))return 'plants';
+  if(/wellness|health|healing|supplement|herbal|apothecary|cbd/.test(t))return 'wellness';
+  if(/beauty|skin|soap|cosmetic|makeup|lotion|balm|candle/.test(t))return 'beauty';
+  if(/produce|farm|veg|fruit|microgreen|orchard|organic/.test(t))return 'farm';
+  if(/prepared|empanada|hummus|dumpling|kitchen|ravioli|soup|meal|hot food/.test(t))return 'prepared';
+  if(/craft|art|print|jewel|apron|handmade|ceramic|woodwork|thread/.test(t))return 'handcrafted';
+  if(/jam|honey|pickle|sauce|\bnut|snack|pantry|spice|season|salsa|\boil\b|specialty|chip/.test(t))return 'pantry';
   return null;
 }
 
@@ -729,6 +793,16 @@ VIEW.todos=function(){
   ${S.todos.length===0? emptyState(I.check,'All clear','Add reminders for things to do before market day.'):''}
   ${open.length?`<div class="list">${open.map(row).join('')}</div>`:''}
   ${done.length?`<div class="section-title">Done</div><div class="list">${done.map(row).join('')}</div>`:''}
+  <div class="section-title">Backup &amp; data</div>
+  <div class="card" style="padding:16px">
+    <div style="font-weight:800;margin-bottom:4px">Own your data</div>
+    <div style="color:var(--ink-soft);font-weight:600;font-size:13.5px;line-height:1.5;margin-bottom:12px">
+      Download a full copy of everything (vendors, markets, bookings, applications) as a file you can keep,
+      email, or hand to a new owner. Restore re-loads a downloaded file back into the app for everyone.</div>
+    <button class="btn-row" data-a="export-data">${I.download||''} Download backup (.json)</button>
+    <button class="btn-row" data-a="import-data" style="margin-top:8px">${I.upload||''} Restore from a backup file</button>
+    <div style="color:var(--ink-soft);font-weight:600;font-size:12px;margin-top:10px">Everything you change is saved to the shared cloud automatically. Backups are also snapshotted daily on the server.</div>
+  </div>
   <div style="height:10px"></div>`;
 };
 function emptyState(icon,title,text){return `<div class="empty"><div class="ic">${icon}</div><b>${title}</b><p>${text}</p></div>`;}
@@ -737,7 +811,7 @@ function emptyState(icon,title,text){return `<div class="empty"><div class="ic">
 function sheetHTML(){return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>${ui.sheet.body}</div></div>`;}
 function fld(label,name,val,type,ph){return `<div class="fld"><label>${label}</label><input name="${name}" type="${type||'text'}" value="${(val==null?'':val).toString().replace(/"/g,'&quot;')}" placeholder="${ph||''}"/></div>`;}
 function openVendor(v){
-  ui.catPick=v?v.cat:'produce';
+  ui.catPick=v?normCat(v.cat):'farm';
   ui.statusPick=(v&&v.status)||'booked';
   ui.insPick=(v&&v.insStatus)||'';
   const chips=CATS.map(c=>`<button type="button" class="chip ${ui.catPick===c.id?'on':''}" data-a="pickcat" data-c="${c.id}"><span class="d" style="background:${c.color}"></span>${c.name}</button>`).join('');
@@ -748,7 +822,7 @@ function openVendor(v){
     <div class="lead">${v?'Update their details.':'Add someone who sells at your markets.'}</div>
     ${fld('Business name','name',v?v.name:'','text','e.g. Sunny Acres Farm')}
     ${fld('Contact person','contact',v?v.contact:'','text','Optional')}
-    <div class="fld"><label>What do they sell?</label><div class="chips" id="catchips">${chips}</div></div>
+    <div class="fld"><label>Vendor category</label><div class="chips" id="catchips">${chips}</div></div>
     ${fld('Phone','phone',v?v.phone:'','tel','Optional')}
     ${fld('Email','email',v?v.email:'','email','Optional')}
     ${fld('Website','website',v?v.website:'','text','Optional')}
@@ -852,6 +926,8 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-a]'); if(!el) return;
   const a=el.dataset.a;
   if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; render(); sc(); return; }
+  if(a==='export-data'){ exportData(); return; }
+  if(a==='import-data'){ importData(); return; }
   if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
   if(a==='back'){ ui.view=ui.view==='addv'?'day':(ui.view==='vdetail'?'vendors':'days'); ui.sheet=null; render(); sc(); return; }
   if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; render(); sc(); return; }
@@ -908,7 +984,7 @@ async function tryAdd(vendorId,force){
 async function saveVendor(){
   const name=gf('name'); if(!name){ toast('Please add a name'); return; }
   const data={
-    name, cat:ui.catPick||'produce', contact:gf('contact'),
+    name, cat:normCat(ui.catPick||'farm'), contact:gf('contact'),
     phone:gf('phone'), email:gf('email'), website:gf('website'),
     products:gf('products'), frequency:gf('frequency'), address:gf('address'),
     status:ui.statusPick||'booked', insStatus:ui.insPick||'', insExpiry:gf('insExpiry'),
@@ -959,7 +1035,7 @@ function marketsFromApp(a){
   return out;
 }
 function vendorFromApp(a){
-  const catId=guessCat(a.category)||guessCat(a.products)||'crafts';
+  const catId=guessCat(a.category)||guessCat(a.products)||'handcrafted';
   const v={id:uid('v'),name:a.name,cat:catId,contact:a.contact||'',phone:a.phone||'',email:a.email||'',website:a.website||'',products:a.products||'',frequency:a.frequency||'',address:a.address||'',markets:marketsFromApp(a),status:'applied',insStatus:a.insuranceLink?'on':'',insExpiry:'',fee:'',notes:(a.message||'')+(a.markets?('\nMarkets requested: '+a.markets):'')+(a.submittedAt?('\nApplied via form '+a.submittedAt.slice(0,10)):''),docs:[],payments:[]};
   if(a.insuranceLink) v.docs.push({id:uid('d'),type:'Insurance (COI)',name:'COI (from application)',url:fixUrl(a.insuranceLink),addedAt:iso(new Date())});
   (a.docLinks||[]).forEach((d,i)=>{ if(d) v.docs.push({id:uid('d'),type:'Other',name:'Doc '+(i+1)+' (from application)',url:fixUrl(d),addedAt:iso(new Date())}); });
@@ -1038,7 +1114,7 @@ async function pull(){
   const sig=stateSig(res.state,res.inbox);
   if(sig===lastSig) return;                         // nothing changed on the server - skip re-render
   lastSig=sig;
-  S=res.state; INBOX=res.inbox||[];
+  S=res.state; INBOX=res.inbox||[]; migrateCats(S);
   const added=autoImport();
   if(added>0) save();
   render();
@@ -1073,7 +1149,7 @@ async function enter(passVal,res){
   ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
   S.seasonEnd=S.seasonEnd||'2026-11-01';
   if(!S.music||typeof S.music!=='object') S.music={};
-  const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S);
+  const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S); S=migrateCats(S);
   const added=autoImport();
   ui.view='days'; render();                       // you are IN — never blocked by the network
   if(online && (added>0 || !res.state || JSON.stringify(S)!==before)){ await save(); }

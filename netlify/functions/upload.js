@@ -1,9 +1,14 @@
 // netlify/functions/upload.js — file upload to Blobs (JSON-wrapped base64)
 var STORE_NAME = "marketdayfiles";
 var SITE_ID = "02c25e1d-7279-447c-ac91-9a666f0225c7";
-var PASSCODE = "market26";
 var TMO = 9000;
 var MAX_B64 = 9400000; // ~7MB binary
+// Admin passcode. Set ADMIN_PASSCODE in Netlify env to override; falls back to the shipped default.
+function adminPass() {
+  try { if (typeof Netlify !== "undefined" && Netlify.env) { const v = Netlify.env.get("ADMIN_PASSCODE"); if (v) return v; } } catch (e) {}
+  try { if (typeof process !== "undefined" && process.env && process.env.ADMIN_PASSCODE) return process.env.ADMIN_PASSCODE; } catch (e) {}
+  return "market26";
+}
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 }
@@ -27,7 +32,7 @@ var upload_default = async (req) => {
   if (req.method !== "POST") return json({ ok: false, error: "method" }, 405);
   let body = null;
   try { body = await req.json(); } catch { return json({ ok: false, error: "bad-body" }, 400); }
-  if (!body || body.pass !== PASSCODE) return json({ ok: false, error: "auth" }, 401);
+  if (!body || body.pass !== adminPass()) return json({ ok: false, error: "auth" }, 401);
   const dataB64 = body.dataB64;
   if (!dataB64 || typeof dataB64 !== "string") return json({ ok: false, error: "no-data" }, 400);
   if (dataB64.length > MAX_B64) return json({ ok: false, error: "too-big" }, 413);

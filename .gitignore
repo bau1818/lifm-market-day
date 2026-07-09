@@ -1,0 +1,8 @@
+node_modules/
+.env
+.netlify/
+# local backups and packaged bundles
+market-day-backup-*.json
+lifm-market-day-*.tar.gz
+*.log
+.DS_Store

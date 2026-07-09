@@ -1,8 +1,13 @@
 // netlify/functions/file.js — serve an uploaded file from Blobs
 var STORE_NAME = "marketdayfiles";
 var SITE_ID = "02c25e1d-7279-447c-ac91-9a666f0225c7";
-var PASSCODE = "market26";
 var TMO = 9000;
+// Admin passcode. Set ADMIN_PASSCODE in Netlify env to override; falls back to the shipped default.
+function adminPass() {
+  try { if (typeof Netlify !== "undefined" && Netlify.env) { const v = Netlify.env.get("ADMIN_PASSCODE"); if (v) return v; } } catch (e) {}
+  try { if (typeof process !== "undefined" && process.env && process.env.ADMIN_PASSCODE) return process.env.ADMIN_PASSCODE; } catch (e) {}
+  return "market26";
+}
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 }
@@ -27,7 +32,7 @@ var file_default = async (req) => {
   const url = new URL(req.url);
   const key = url.searchParams.get("key") || "";
   const pass = url.searchParams.get("pass") || "";
-  if (pass !== PASSCODE) return json({ ok: false, error: "auth" }, 401);
+  if (pass !== adminPass()) return json({ ok: false, error: "auth" }, 401);
   if (!key) return json({ ok: false, error: "no-key" }, 400);
   let rec = null, errs = [];
   for (const useToken of [false, true]) {
