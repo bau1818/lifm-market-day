@@ -312,6 +312,14 @@ const CATS=[
 const CAT_ALIAS={produce:'farm',baked:'bakery',coffee:'beverage',flowers:'plants',crafts:'handcrafted'};
 function normCat(id){id=id||'';return CAT_ALIAS[id]||id;}
 function migrateCats(st){ if(st&&Array.isArray(st.vendors)) st.vendors.forEach(v=>{ if(v) v.cat=normCat(v.cat); }); return st; }
+// One-off market fixes that must apply regardless of importVersion (some stored
+// data came from other app versions). Each keyed by its own flag so it runs once
+// and never fights a later manual edit.
+function marketFixes(st){
+  if(!st||!Array.isArray(st.markets)) return st;
+  if(!st.mfix_ronk20){ const rk=st.markets.find(m=>m&&m.id==='ronk'); if(rk) rk.spots=20; st.mfix_ronk20=true; }
+  return st;
+}
 function cat(id){id=normCat(id);return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
 const CAP={farm:8,meat:4,bakery:6,dairy:4,beverage:3,spirits:3,pantry:8,prepared:8,sweets:6,wellness:4,pet:3,handcrafted:8,jewelry:4,beauty:4,foodtruck:1,plants:3};
 
@@ -1162,7 +1170,7 @@ async function pull(){
   const sig=stateSig(res.state,res.inbox);
   if(sig===lastSig) return;                         // nothing changed on the server - skip re-render
   lastSig=sig;
-  S=res.state; INBOX=res.inbox||[]; migrateCats(S);
+  S=res.state; INBOX=res.inbox||[]; migrateCats(S); marketFixes(S);
   const added=autoImport();
   if(added>0) save();
   render();
@@ -1197,7 +1205,7 @@ async function enter(passVal,res){
   ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
   S.seasonEnd=S.seasonEnd||'2026-11-01';
   if(!S.music||typeof S.music!=='object') S.music={};
-  const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S); S=migrateCats(S);
+  const before=JSON.stringify(S); S=applySeed(S); S=applyImports(S); S=migrateCats(S); marketFixes(S);
   const added=autoImport();
   ui.view='days'; render();                       // you are IN — never blocked by the network
   if(online && (added>0 || !res.state || JSON.stringify(S)!==before)){ await save(); }
