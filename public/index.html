@@ -103,6 +103,7 @@ button{font-family:inherit}
 .row .edit.del svg{width:17px;height:17px}
 .row .edit svg{width:18px;height:18px}
 button.pill{border:none;cursor:pointer}
+.slotbadge{display:inline-block;font-family:"Oswald";font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:1px 7px;border-radius:6px;background:var(--oat);color:var(--ink-soft);vertical-align:middle;margin-left:4px}
 .rowflags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .vcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 12px 17px;cursor:pointer;display:flex;flex-direction:column;gap:5px;overflow:hidden;transition:border-color .12s,box-shadow .12s}
@@ -318,6 +319,21 @@ function migrateCats(st){ if(st&&Array.isArray(st.vendors)) st.vendors.forEach(v
 function marketFixes(st){
   if(!st||!Array.isArray(st.markets)) return st;
   if(!st.mfix_ronk20){ const rk=st.markets.find(m=>m&&m.id==='ronk'); if(rk) rk.spots=20; st.mfix_ronk20=true; }
+  if(!st.mfix_ends1){
+    const baby=st.markets.find(m=>m&&m.id==='baby'); if(baby) baby.end='2026-10-25';
+    const ronk=st.markets.find(m=>m&&m.id==='ronk'); if(ronk) ronk.end='2026-09-29';
+    st.mfix_ends1=true;
+  }
+  if(!st.mfix_holiday1){
+    if(!st.markets.some(m=>m&&m.id==='holiday')){
+      st.markets.push({id:'holiday',name:'Holiday Spectacular',full:'Huntington Holiday Spectacular',
+        where:'Huntington Village',weekday:6,time:'',spots:20,color:'#2E7D4F',start:'2026-12-05',end:'2026-12-26',
+        dates:['2026-12-05','2026-12-12','2026-12-19','2026-12-26'],
+        sessions:[{slot:'am',label:'AM',time:'11:00am - 3:00pm'},{slot:'pm',label:'PM',time:'5:00pm - 9:00pm'}],
+        music:''});
+    }
+    st.mfix_holiday1=true;
+  }
   return st;
 }
 function cat(id){id=normCat(id);return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
@@ -442,7 +458,7 @@ function applyImports(st){
 
 let S=null;
 let INBOX=[];
-let ui={view:'days',m:null,date:null,sheet:null,vid:null,q:'',vmkt:'all'};
+let ui={view:'days',m:null,date:null,slot:'',sheet:null,vid:null,q:'',vmkt:'all'};
 function bid(){return 'b'+Math.random().toString(36).slice(2,9);}
 function uid(p){return (p||'x')+Math.random().toString(36).slice(2,9);}
 
@@ -519,32 +535,42 @@ function until(s){return Math.round((parse(s)-t0())/864e5);}
 function nice(s){const d=parse(s);return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate();}
 // Pop-up markets (Estée, LIU, RXR) store an explicit list of dates instead of a
 // weekly day-of-week. `dates` is an array; `venues` is a map of date -> {where,spots}.
+// `sessions` (Holiday market) splits each date into named slots (AM/PM), each a
+// separately-bookable session with its own time.
 function marketDates(m){
   if(m&&Array.isArray(m.dates)&&m.dates.length) return m.dates.slice();
   if(m&&m.venues&&typeof m.venues==='object'){ const k=Object.keys(m.venues); if(k.length) return k; }
   return null;
 }
+function marketEnd(m){ return parse((m&&m.end)||(S&&S.seasonEnd)||'2026-11-01'); }
+function marketSessions(m){ return (m&&Array.isArray(m.sessions)&&m.sessions.length)?m.sessions:null; }
+function sessionOf(m,slot){ const ss=marketSessions(m); return ss?(ss.find(s=>s.slot===slot)||null):null; }
+function dayTime(m,slot){ const s=sessionOf(m,slot); return (s&&s.time)||(m&&m.time)||''; }
+function dayLabel(m,slot){ const s=sessionOf(m,slot); return (s&&s.label)||''; }
 function dayVenue(m,date){ return (m&&m.venues&&m.venues[date])||null; }
 function dayWhere(m,date){ const v=dayVenue(m,date); return (v&&v.where)||(m&&m.where)||''; }
-function daySpots(m,date){ const v=dayVenue(m,date); const s=v&&v.spots; return (s!=null?s:(m&&m.spots))||0; }
+function daySpots(m,date,slot){ const ss=sessionOf(m,slot); if(ss&&ss.spots!=null) return ss.spots; const v=dayVenue(m,date); const s=v&&v.spots; return (s!=null?s:(m&&m.spots))||0; }
+function musicKey(mid,date,slot){ return slot?(mid+'|'+date+'|'+slot):(mid+'|'+date); }
 function nextDates(m,n){
-  const fixed=marketDates(m);
-  if(fixed){ return fixed.slice().sort().filter(d=>parse(d)>=t0()).slice(0,n||20); }
-  const out=[],end=parse(S?S.seasonEnd:'2026-11-01');
+  const fixed=marketDates(m), end=marketEnd(m);
+  if(fixed){ return fixed.slice().sort().filter(d=>parse(d)>=t0()&&parse(d)<=end).slice(0,n||20); }
+  const out=[];
   let d=new Date(Math.max(t0().getTime(),parse(m.start).getTime()));d.setHours(0,0,0,0);
   let g=0;while(d.getDay()!==m.weekday&&g++<8)d.setDate(d.getDate()+1);
   while(d<=end&&out.length<(n||20)){out.push(iso(d));d.setDate(d.getDate()+7);}
   return out;
 }
 function allDays(){
-  let r=[];S.markets.forEach(m=>nextDates(m,60).forEach(date=>r.push({m:m.id,date})));
-  r.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);return r;
+  let r=[];S.markets.forEach(m=>{const ss=marketSessions(m);nextDates(m,60).forEach(date=>{
+    if(ss) ss.forEach(s=>r.push({m:m.id,date,slot:s.slot})); else r.push({m:m.id,date,slot:''});
+  });});
+  r.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:((a.slot||'')<(b.slot||'')?-1:(a.slot||'')>(b.slot||'')?1:0));return r;
 }
 const market=id=>S.markets.find(m=>m.id===id);
 const vendor=id=>S.vendors.find(v=>v.id===id);
-const dayBookings=(mid,date)=>S.bookings.filter(b=>b.m===mid&&b.date===date);
-function spotsLeft(mid,date){const m=market(mid);return daySpots(m,date)-dayBookings(mid,date).length;}
-function catCount(mid,date,c){return dayBookings(mid,date).filter(b=>{const v=vendor(b.v);return v&&v.cat===c;}).length;}
+const dayBookings=(mid,date,slot)=>S.bookings.filter(b=>b.m===mid&&b.date===date&&(b.slot||'')===(slot||''));
+function spotsLeft(mid,date,slot){const m=market(mid);return daySpots(m,date,slot)-dayBookings(mid,date,slot).length;}
+function catCount(mid,date,slot,c){return dayBookings(mid,date,slot).filter(b=>{const v=vendor(b.v);return v&&v.cat===c;}).length;}
 
 /* ---- vendor-hub helpers ---- */
 function money(n){n=Number(n||0);if(!n)return '$0';return '$'+(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,'');}
@@ -602,8 +628,9 @@ function render(){
 function barFor(){
   if(ui.view==='day'||ui.view==='addv'){
     const m=market(ui.m);
+    const dl=dayLabel(m,ui.slot);
     const t=ui.view==='day'?m.name:'Add a vendor';
-    const s=ui.view==='day'?nice(ui.date):(m.name+' - '+nice(ui.date));
+    const s=(ui.view==='day'?nice(ui.date):(m.name+' - '+nice(ui.date)))+(dl?' · '+dl:'');
     return `<div class="appbar"><button class="back" data-a="back" aria-label="Back">${I.back}</button>
       <div class="title"><b>${t}</b><small>${s}</small></div></div>`;
   }
@@ -638,26 +665,28 @@ VIEW.days=function(){
   const shown=rest.filter(r=>until(r.date)<=cutoff);
   const moreCount=rest.length-shown.length;
   let lastMon='';
-  const listHTML=shown.map(r=>{const mk=market(r.m);const l=spotsLeft(r.m,r.date);const d=parse(r.date);
+  const listHTML=shown.map(r=>{const mk=market(r.m);const l=spotsLeft(r.m,r.date,r.slot);const d=parse(r.date);
     const monLabel=MON[d.getMonth()]+' '+d.getFullYear();
     const hdr=monLabel!==lastMon?`<div class="section-title">${monLabel}</div>`:''; lastMon=monLabel;
-    return hdr+`<div class="card tap daycard" data-a="open-day" data-m="${r.m}" data-date="${r.date}">
+    const lbl=dayLabel(mk,r.slot);
+    return hdr+`<div class="card tap daycard" data-a="open-day" data-m="${r.m}" data-date="${r.date}" data-slot="${r.slot||''}">
       <div class="date"><div class="d">${d.getDate()}</div><div class="m">${MON[d.getMonth()]}</div></div>
-      <div class="info"><b>${mk.name}</b><div class="meta">${mk.time}</div></div>
+      <div class="info"><b>${mk.name}${lbl?` <span class="slotbadge">${lbl}</span>`:''}</b><div class="meta">${dayTime(mk,r.slot)}</div></div>
       <div class="right"><div class="spots ${l<=0?'full':''}">${l<=0?'Full':l}</div><small>${l<=0?'':'spots left'}</small></div>
       <span class="chev">${I.chev}</span></div>`;}).join('');
   const m=market(first.m);
-  const booked=dayBookings(first.m,first.date),left=spotsLeft(first.m,first.date);
+  const booked=dayBookings(first.m,first.date,first.slot),left=spotsLeft(first.m,first.date,first.slot);
   const dd=until(first.date);
-  const when=dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' - '+dd+' days away';
-  const cap=Math.min(daySpots(m,first.date),24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
+  const flbl=dayLabel(m,first.slot);
+  const when=(dd===0?'Today':dd===1?'Tomorrow':DOW[parse(first.date).getDay()]+' - '+dd+' days away')+(flbl?' · '+flbl:'');
+  const cap=Math.min(daySpots(m,first.date,first.slot),24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
   const preview=booked.slice(0,4).map(b=>{const v=vendor(b.v);const c=cat(v.cat);
     return `<div class="crow"><span class="dot" style="background:${c.color}"></span><span class="nm">${escapeHtml(v.name)}</span>
       <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('');
   return `
   <div style="height:8px"></div>
-  <div class="card bigday tap" data-a="open-day" data-m="${first.m}" data-date="${first.date}">
-    <div class="hd" style="background:${m.color}"><div class="when">${when}</div><h2>${m.name}</h2><div class="sub">${m.time}</div></div>
+  <div class="card bigday tap" data-a="open-day" data-m="${first.m}" data-date="${first.date}" data-slot="${first.slot||''}">
+    <div class="hd" style="background:${m.color}"><div class="when">${when}</div><h2>${m.name}</h2><div class="sub">${dayTime(m,first.slot)}</div></div>
     <div class="bd">
       <div class="tents">${tents}</div>
       <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} coming</span></div>
@@ -669,18 +698,19 @@ VIEW.days=function(){
   <div style="height:8px"></div>`;
 };
 VIEW.day=function(){
-  const m=market(ui.m),date=ui.date;
-  const booked=dayBookings(ui.m,date).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
-  const left=spotsLeft(ui.m,date);
-  const spots=daySpots(m,date);
+  const m=market(ui.m),date=ui.date,slot=ui.slot||'';
+  const booked=dayBookings(ui.m,date,slot).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
+  const left=spotsLeft(ui.m,date,slot);
+  const spots=daySpots(m,date,slot);
   const cap=Math.min(spots,24);let tents='';for(let i=0;i<cap;i++)tents+=tentSVG(i<booked.length);
   const cin=booked.filter(b=>b.checkedIn).length;
-  const mkey=ui.m+'|'+date; const mus=(S.music&&S.music[mkey])||'';
+  const mkey=musicKey(ui.m,date,slot); const mus=(S.music&&S.music[mkey])||'';
+  const lbl=dayLabel(m,slot), tm=dayTime(m,slot);
   return `
   <div class="card" style="margin-top:6px">
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
       <span style="color:var(--red);margin-top:2px">${I.pin}</span>
-      <div><b style="font-weight:800">${m.full}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${escapeHtml(dayWhere(m,date))}</div></div>
+      <div><b style="font-weight:800">${m.full}${lbl?` <span class="slotbadge">${lbl}</span>`:''}</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${escapeHtml(dayWhere(m,date))}${tm?' · '+tm:''}</div></div>
     </div>
     <div class="tents" style="margin-top:12px">${tents}</div>
     <div class="spotline"><span class="n ${left<=0?'full':''}">${left<=0?'Market is full':left+' spot'+(left===1?'':'s')+' left'}</span><span class="rest">- ${booked.length} of ${spots}${m.truck?' + food truck':''}</span></div>
@@ -704,9 +734,9 @@ VIEW.day=function(){
   <div style="height:10px"></div>`;
 };
 VIEW.addv=function(){
-  const here=new Set(dayBookings(ui.m,ui.date).map(b=>b.v));
+  const here=new Set(dayBookings(ui.m,ui.date,ui.slot).map(b=>b.v));
   const avail=S.vendors.filter(v=>!here.has(v.id)).slice().sort((a,b)=>a.name.localeCompare(b.name));
-  const full=spotsLeft(ui.m,ui.date)<=0;
+  const full=spotsLeft(ui.m,ui.date,ui.slot)<=0;
   return `
   ${full?`<div class="card" style="background:var(--tomato-soft);border:none;color:#8a3322;font-weight:700;margin-top:6px">This market day is full. Remove a vendor first, or raise the spot count in market settings.</div>`:''}
   <div class="section-title" style="margin-top:14px">Tap a vendor to add them</div>
@@ -793,7 +823,7 @@ VIEW.vdetail=function(){
     <div class="card">
       ${bk.length?bk.slice(0,14).map(b=>{const mk=market(b.m);return `<div class="histrow">
         <button class="ci ${b.checkedIn?'on':''}" data-a="toggle-checkin" data-id="${b.id}" aria-label="Checked in">${b.checkedIn?I.tick:''}</button>
-        <div class="hm"><b>${escapeHtml(mk?mk.name:b.m)}</b><small>${nice(b.date)}${until(b.date)>0?' - upcoming':''}</small></div>
+        <div class="hm"><b>${escapeHtml(mk?mk.name:b.m)}${dayLabel(mk,b.slot)?' <span class="slotbadge">'+dayLabel(mk,b.slot)+'</span>':''}</b><small>${nice(b.date)}${until(b.date)>0?' - upcoming':''}</small></div>
         <span class="pill ${b.paid?'paid':'owes'}">${b.paid?'Paid':'Owes'}</span></div>`;}).join('')
         :`<div class="muted">No market days booked yet.</div>`}
       ${bk.length>14?`<div class="muted">+ ${bk.length-14} more</div>`:''}
@@ -985,7 +1015,7 @@ document.addEventListener('click',async e=>{
   if(a==='import-data'){ importData(); return; }
   if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
   if(a==='back'){ ui.view=ui.view==='addv'?'day':(ui.view==='vdetail'?'vendors':'days'); ui.sheet=null; render(); sc(); return; }
-  if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; render(); sc(); return; }
+  if(a==='open-day'){ ui.view='day'; ui.m=el.dataset.m; ui.date=el.dataset.date; ui.slot=el.dataset.slot||''; render(); sc(); return; }
   if(a==='goto-add'){ ui.view='addv'; render(); sc(); return; }
   if(a==='pick-vendor'){ await tryAdd(el.dataset.id,false); return; }
   if(a==='force-add'){ await tryAdd(el.dataset.id,true); return; }
@@ -1022,7 +1052,7 @@ document.addEventListener('click',async e=>{
   if(a==='save-todo'){ await saveTodo(); return; }
   if(a==='edit-music'){ openMusic(); return; }
   if(a==='save-music'){ await saveMusic(); return; }
-  if(a==='clear-music'){ const mkey=ui.m+'|'+ui.date; if(S.music) delete S.music[mkey]; ui.sheet=null; render(); save(); toast('Removed'); return; }
+  if(a==='clear-music'){ const mkey=musicKey(ui.m,ui.date,ui.slot); if(S.music) delete S.music[mkey]; ui.sheet=null; render(); save(); toast('Removed'); return; }
   if(a==='del-todo'){ S.todos=S.todos.filter(x=>x.id!==el.dataset.id); ui.sheet=null; render(); save(); toast('Deleted'); return; }
   if(a==='closesheet'){ ui.sheet=null; render(); return; }
   if(a==='scrim'){ if(!e.target.closest('.sheet')){ ui.sheet=null; render(); } return; }
@@ -1031,10 +1061,10 @@ document.addEventListener('click',async e=>{
 function gf(name){const f=document.querySelector(`[name="${name}"]`);return f?f.value.trim():'';}
 async function tryAdd(vendorId,force){
   const v=vendor(vendorId); if(!v) return;
-  if(spotsLeft(ui.m,ui.date)<=0){ toast('This day is full'); return; }
-  const c=cat(v.cat),n=catCount(ui.m,ui.date,v.cat);
+  if(spotsLeft(ui.m,ui.date,ui.slot)<=0){ toast('This day is full'); return; }
+  const c=cat(v.cat),n=catCount(ui.m,ui.date,ui.slot,v.cat);
   if(n>=(CAP[v.cat]||99)&&!force){ confirmCat(vendorId,c.name,n); return; }
-  S.bookings.push({id:bid(),m:ui.m,date:ui.date,v:vendorId,paid:false});
+  S.bookings.push({id:bid(),m:ui.m,date:ui.date,slot:ui.slot||'',v:vendorId,paid:false});
   ui.sheet=null; ui.view='day'; render(); sc(); save(); toast(v.name+' added');
 }
 async function saveVendor(){
@@ -1142,9 +1172,9 @@ async function saveTodo(){
   ui.sheet=null; render(); save();
 }
 function openMusic(){
-  const mkey=ui.m+'|'+ui.date; const cur=(S.music&&S.music[mkey])||''; const mk=market(ui.m);
+  const mkey=musicKey(ui.m,ui.date,ui.slot); const cur=(S.music&&S.music[mkey])||''; const mk=market(ui.m); const lbl=dayLabel(mk,ui.slot);
   ui.sheet={type:'music',body:`
-    <h3>Live music</h3><div class="lead">${mk?escapeHtml(mk.name):''} - ${nice(ui.date)}</div>
+    <h3>Live music</h3><div class="lead">${mk?escapeHtml(mk.name):''} - ${nice(ui.date)}${lbl?' · '+lbl:''}</div>
     ${fld('Who is playing?','music',cur,'text','e.g. The Smith Brothers - 10am to 12pm')}
     <div class="acts"><button class="btn" data-a="save-music">Save</button>
     ${cur?`<button class="btn danger" data-a="clear-music">Remove</button>`:''}
@@ -1152,7 +1182,7 @@ function openMusic(){
   render();
 }
 async function saveMusic(){
-  const mkey=ui.m+'|'+ui.date; if(!S.music||typeof S.music!=='object') S.music={};
+  const mkey=musicKey(ui.m,ui.date,ui.slot); if(!S.music||typeof S.music!=='object') S.music={};
   const val=gf('music'); if(val) S.music[mkey]=val; else delete S.music[mkey];
   ui.sheet=null; render(); save(); toast('Saved');
 }
