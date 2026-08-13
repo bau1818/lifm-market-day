@@ -28,12 +28,24 @@ async function getBlobsStore(useToken) {
   return getStore(opts);
 }
 var file_default = async (req) => {
-  if (req.method !== "GET") return json({ ok: false, error: "method" }, 405);
+  if (req.method !== "GET" && req.method !== "DELETE") return json({ ok: false, error: "method" }, 405);
   const url = new URL(req.url);
   const key = url.searchParams.get("key") || "";
   const pass = url.searchParams.get("pass") || "";
   if (pass !== adminPass()) return json({ ok: false, error: "auth" }, 401);
   if (!key) return json({ ok: false, error: "no-key" }, 400);
+  // DELETE removes the stored file so nothing is left behind after it is deleted in the app.
+  if (req.method === "DELETE") {
+    let errs = [];
+    for (const useToken of [false, true]) {
+      try {
+        const store = await getBlobsStore(useToken);
+        await withTimeout(store.delete(key), "del");
+        return json({ ok: true });
+      } catch (e) { errs.push((useToken ? "token: " : "auto: ") + String(e && e.message || e)); }
+    }
+    return json({ ok: false, error: "delete", detail: errs.join(" | ") }, 500);
+  }
   let rec = null, errs = [];
   for (const useToken of [false, true]) {
     try {

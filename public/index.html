@@ -526,6 +526,78 @@ async function save(){
   if(!okFlag){ clearTimeout(retryT); retryT=setTimeout(save,4000); }  // keep trying so edits are never lost
 }
 
+/* ---- ZIP writer (stored / no compression - images and PDFs are already compressed) ---- */
+function crc32(buf){
+  let table=crc32._t;
+  if(!table){ table=crc32._t=new Int32Array(256);
+    for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); table[n]=c; } }
+  let crc=-1;
+  for(let i=0;i<buf.length;i++) crc=(crc>>>8)^table[(crc^buf[i])&255];
+  return (crc^-1)>>>0;
+}
+function makeZip(entries){
+  const enc=new TextEncoder(), parts=[], central=[];
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  const d=new Date();
+  const dosTime=((d.getHours()&31)<<11)|((d.getMinutes()&63)<<5)|((d.getSeconds()/2)&31);
+  const dosDate=(((d.getFullYear()-1980)&127)<<9)|(((d.getMonth()+1)&15)<<5)|(d.getDate()&31);
+  let offset=0;
+  for(const e of entries){
+    const nameB=enc.encode(e.name), data=e.data, crc=crc32(data), size=data.length;
+    const local=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),
+      ...u16(dosTime),...u16(dosDate),...u32(crc),...u32(size),...u32(size),...u16(nameB.length),...u16(0)]);
+    parts.push(local,nameB,data);
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),
+      ...u16(dosTime),...u16(dosDate),...u32(crc),...u32(size),...u32(size),
+      ...u16(nameB.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset)]),nameB);
+    offset+=local.length+nameB.length+size;
+  }
+  let cdSize=0; central.forEach(c=>cdSize+=c.length);
+  const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),
+    ...u16(entries.length),...u16(entries.length),...u32(cdSize),...u32(offset),...u16(0)]);
+  return new Blob([...parts,...central,end],{type:'application/zip'});
+}
+// Download EVERYTHING - the data file plus every uploaded file - as one .zip you keep.
+async function downloadArchive(){
+  const stamp=iso(new Date());
+  const jobs=[];
+  const seen={};
+  const safe=s=>String(s||'file').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,'-').slice(0,80);
+  const uniq=p=>{ let out=p,i=1; while(seen[out]) out=p.replace(/(\.[^.]*)?$/,m=>'-'+(i++)+(m||'')); seen[out]=1; return out; };
+  (S.media&&typeof S.media==='object'?Object.keys(S.media):[]).forEach(scope=>{
+    const folder=scope===BRAND_KEY?'brand':('markets/'+safe(((market(scope)||{}).name)||scope));
+    (S.media[scope]||[]).forEach(f=>{ if(f&&f.key) jobs.push({path:uniq(folder+'/'+safe(f.name)),key:f.key}); });
+  });
+  (S.vendors||[]).forEach(v=>{ (v.docs||[]).forEach(d=>{ if(d&&d.key) jobs.push({path:uniq('vendor-documents/'+safe(v.name)+'/'+safe(d.name||d.type)),key:d.key}); }); });
+
+  const entries=[], failed=[];
+  let done=0;
+  for(const j of jobs){
+    toast('Packaging '+(++done)+' of '+jobs.length+'...');
+    try{
+      const r=await fetch(fileURL(j.key));
+      if(!r.ok) throw new Error('http '+r.status);
+      entries.push({name:j.path,data:new Uint8Array(await r.arrayBuffer())});
+    }catch(e){ failed.push(j.path); }
+  }
+  const enc=new TextEncoder();
+  entries.unshift({name:'data.json',data:enc.encode(JSON.stringify({app:'lifm-market-day',exportedAt:new Date().toISOString(),version:SEED_VERSION,state:S,inbox:INBOX},null,2))});
+  entries.push({name:'README.txt',data:enc.encode(
+    'Market Day - full backup\r\nCreated: '+new Date().toString()+'\r\n\r\n'+
+    'data.json ............ everything in the app (markets, vendors, bookings, applications).\r\n'+
+    '                       Restore it with To-Do > Backup & data > Restore from a backup file.\r\n'+
+    'brand/ ............... Brand Hub files (logos, brand assets).\r\n'+
+    'markets/<name>/ ...... marketing files for each market (flyers, social art).\r\n'+
+    'vendor-documents/ .... files attached to vendors (insurance certificates, permits).\r\n\r\n'+
+    'Uploaded files included: '+(jobs.length-failed.length)+' of '+jobs.length+'\r\n'+
+    (failed.length?('Could not be downloaded: '+failed.join(', ')+'\r\n'):'')
+  )});
+  const blob=makeZip(entries);
+  downloadBlob(blob,'market-day-full-backup-'+stamp+'.zip');
+  S.lastBackupAt=new Date().toISOString(); render(); save();
+  toast(failed.length?('Saved - '+failed.length+' file(s) could not be included'):('Backup saved - '+jobs.length+' file'+(jobs.length===1?'':'s')+' included'));
+}
+
 /* ---- backup: export / import the whole dataset ---- */
 function exportData(){
   try{
@@ -536,8 +608,18 @@ function exportData(){
     const aEl=document.createElement('a'); aEl.href=url; aEl.download='market-day-backup-'+stamp+'.json';
     document.body.appendChild(aEl); aEl.click(); aEl.remove();
     setTimeout(()=>URL.revokeObjectURL(url),2000);
+    S.lastBackupAt=new Date().toISOString(); render(); save();
     toast('Backup downloaded');
   }catch(e){ toast('Could not export'); }
+}
+// Save the CURRENT data to disk before a restore overwrites it, so a wrong file is always undoable.
+function safetyCopy(){
+  try{
+    const payload={ app:'lifm-market-day', exportedAt:new Date().toISOString(), note:'automatic copy taken before a restore', state:S, inbox:INBOX };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    downloadBlob(blob,'market-day-BEFORE-restore-'+iso(new Date())+'.json');
+    return true;
+  }catch(e){ return false; }
 }
 function importData(){
   const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
@@ -548,11 +630,14 @@ function importData(){
       let obj=null; try{ obj=JSON.parse(rd.result); }catch(_){ toast('That file is not a valid backup'); return; }
       const st=obj&&obj.state?obj.state:(obj&&obj.markets?obj:null);
       if(!st||!Array.isArray(st.vendors)){ toast('That file is not a Market Day backup'); return; }
-      if(!confirm('Restore this backup? It replaces the current shared data for everyone.')) return;
+      const cur=(S&&Array.isArray(S.vendors))?S.vendors.length:0;
+      if(!confirm('Restore this backup?\n\nIt replaces the current shared data for everyone.\n\nNow: '+cur+' vendors  ->  after restore: '+st.vendors.length+' vendors.\n\nA copy of your CURRENT data will be saved to your downloads first, so this can be undone.')) return;
+      safetyCopy();
       S=st; INBOX=Array.isArray(obj.inbox)?obj.inbox:[];
       ['markets','vendors','bookings','todos'].forEach(k=>{ if(!Array.isArray(S[k])) S[k]=freshState()[k]; });
       S.seasonEnd=S.seasonEnd||'2026-11-01'; if(!S.music||typeof S.music!=='object') S.music={};
-      migrateCats(S);
+      if(!S.media||typeof S.media!=='object') S.media={};
+      migrateCats(S); marketFixes(S);
       ui.view='days'; ui.sheet=null; render(); save(); toast('Backup restored');
     };
     rd.readAsText(f);
@@ -757,9 +842,16 @@ VIEW.media=function(){
   ${chips}
   ${selM?`${grid(sel,'No marketing files for '+escapeHtml(selM.name)+' yet. Upload flyers, social designs, or postcards for this market.')}
   <button class="upzone" data-a="add-media" data-s="${sel}">${I.upload} Upload ${escapeHtml(selM.name)} files</button>`:''}
-  <div class="lead" style="margin:14px 2px 0">Tap any file to share, download, or copy it. Images up to about 6MB - larger photos are optimised automatically.</div>
+  <div class="lead" style="margin:14px 2px 0">Tap any file to share, download, or copy it. Images up to about 6MB - larger photos are optimised automatically.${mediaTotals()}</div>
   <div style="height:14px"></div>`;
 };
+function mediaTotals(){
+  let n=0,bytes=0;
+  const all=(S.media&&typeof S.media==='object')?S.media:{};
+  Object.keys(all).forEach(k=>{ (all[k]||[]).forEach(f=>{ n++; bytes+=Number(f.size||0); }); });
+  if(!n) return '';
+  return ' Stored right now: '+n+' file'+(n===1?'':'s')+(bytes?' ('+prettySize(bytes)+')':'')+'. Grab a full backup from the To-Do tab to keep your own copy.';
+}
 VIEW.day=function(){
   const m=market(ui.m),date=ui.date,slot=ui.slot||'';
   const booked=dayBookings(ui.m,date,slot).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
@@ -948,17 +1040,30 @@ VIEW.todos=function(){
   ${open.length?`<div class="list">${open.map(row).join('')}</div>`:''}
   ${done.length?`<div class="section-title">Done</div><div class="list">${done.map(row).join('')}</div>`:''}
   <div class="section-title">Backup &amp; data</div>
+  ${backupStatus()}
   <div class="card" style="padding:16px">
     <div style="font-weight:800;margin-bottom:4px">Own your data</div>
     <div style="color:var(--ink-soft);font-weight:600;font-size:13.5px;line-height:1.5;margin-bottom:12px">
-      Download a full copy of everything (vendors, markets, bookings, applications) as a file you can keep,
-      email, or hand to a new owner. Restore re-loads a downloaded file back into the app for everyone.</div>
-    <button class="btn-row" data-a="export-data">${I.download||''} Download backup (.json)</button>
+      <b>Full backup (.zip)</b> is the complete one - it includes your data <i>and</i> every uploaded file
+      (logos, flyers, vendor insurance documents). The .json is data only and is quicker for a routine copy.</div>
+    <button class="btn" data-a="download-archive">${I.download||''} Download FULL backup (.zip)</button>
+    <button class="btn-row" data-a="export-data" style="margin-top:8px">${I.download||''} Download data only (.json)</button>
     <button class="btn-row" data-a="import-data" style="margin-top:8px">${I.upload||''} Restore from a backup file</button>
-    <div style="color:var(--ink-soft);font-weight:600;font-size:12px;margin-top:10px">Everything you change is saved to the shared cloud automatically. Backups are also snapshotted daily on the server.</div>
+    <div style="color:var(--ink-soft);font-weight:600;font-size:12px;margin-top:10px">Everything you change is saved to the shared cloud automatically, and the server keeps a daily snapshot. These downloads are your own copy, independent of any account.</div>
   </div>
   <div style="height:10px"></div>`;
 };
+function backupStatus(){
+  const t=S&&S.lastBackupAt?new Date(S.lastBackupAt):null;
+  const days=t?Math.floor((Date.now()-t.getTime())/864e5):null;
+  const stale=(days===null||days>=14);
+  const msg=t?('Last backup downloaded '+(days===0?'today':days===1?'yesterday':days+' days ago')):'You have not downloaded a backup yet';
+  return `<div class="card" style="padding:13px 15px;margin-bottom:10px;${stale?'background:#fbeccd;border-color:#f0d9a8':''}">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="color:${stale?'#9a6a12':'var(--ok)'};display:flex">${stale?I.upload:I.tick}</span>
+      <div style="flex:1;font-weight:700;font-size:13.5px;color:${stale?'#7a5410':'var(--ink)'}">${msg}${stale?' - grab one below to be safe.':''}</div>
+    </div></div>`;
+}
 function emptyState(icon,title,text){return `<div class="empty"><div class="ic">${icon}</div><b>${title}</b><p>${text}</p></div>`;}
 
 /* ---- sheets ---- */
@@ -1091,6 +1196,7 @@ document.addEventListener('click',async e=>{
   if(a==='open-media-tab'){ const f=curMedia(); if(f) window.open(fileURL(f.key),'_blank','noopener'); return; }
   if(a==='del-media'){ delMedia(); return; }
   if(a==='export-data'){ exportData(); return; }
+  if(a==='download-archive'){ downloadArchive(); return; }
   if(a==='import-data'){ importData(); return; }
   if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
   if(a==='back'){ ui.view=ui.view==='addv'?'day':(ui.view==='vdetail'?'vendors':'days'); ui.sheet=null; render(); sc(); return; }
@@ -1113,7 +1219,7 @@ document.addEventListener('click',async e=>{
   if(a==='del-vendor'){ const id=el.dataset.id; S.vendors=S.vendors.filter(x=>x.id!==id); S.bookings=S.bookings.filter(b=>b.v!==id); ui.sheet=null; ui.view='vendors'; render(); save(); toast('Vendor deleted'); return; }
   if(a==='add-doc'){ openDoc(el.dataset.id); return; }
   if(a==='save-doc'){ await saveDoc(el.dataset.id); return; }
-  if(a==='del-doc'){ const v=vendor(el.dataset.id); if(v){v.docs=(v.docs||[]).filter(d=>d.id!==el.dataset.d); render(); save(); toast('Removed');} return; }
+  if(a==='del-doc'){ const v=vendor(el.dataset.id); if(v){const gone=(v.docs||[]).find(d=>d.id===el.dataset.d); if(gone) dropStoredFile(gone.key); v.docs=(v.docs||[]).filter(d=>d.id!==el.dataset.d); render(); save(); toast('Removed');} return; }
   if(a==='open-doc-file'){ openDocFile(el.dataset.id,el.dataset.d); return; }
   if(a==='add-payment'){ openPayment(el.dataset.id); return; }
   if(a==='save-payment'){ await savePayment(el.dataset.id); return; }
@@ -1287,11 +1393,13 @@ async function copyMedia(){
     toast('Image copied - paste it anywhere');
   }catch(e){ toast('Could not copy - use Download instead'); }
 }
+// Best-effort removal of the stored file; the list entry goes either way.
+function dropStoredFile(key){ if(!key) return; try{ fetch(fileURL(key),{method:'DELETE'}).catch(()=>{}); }catch(e){} }
 function delMedia(){
   const s=ui.sheet; if(!s||s.type!=='media') return;
   if(!confirm('Delete this file? It is removed for everyone.')) return;
   const list=mediaList(s.scope); const i=list.findIndex(f=>f.id===s.fid);
-  if(i>=0) list.splice(i,1);
+  if(i>=0){ dropStoredFile(list[i].key); list.splice(i,1); }
   ui.sheet=null; render(); save(); toast('File deleted');
 }
 function openDocFile(vid,did){

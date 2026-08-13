@@ -25,8 +25,15 @@ copy while you use it, so no single phone or laptop is the "master."
 The app already saves everything to the cloud and snapshots a copy **every day** on the server.
 But *you* should also keep copies you personally control. Three ways, easiest first:
 
-1. **In the app** → **To-Do tab → Backup & data → "Download backup (.json)"**.
-   Save that file somewhere safe (Drive, Dropbox, email to yourself). Do this weekly.
+1. **In the app** → **To-Do tab → Backup & data**. Two options:
+   - **"Download FULL backup (.zip)"** — the complete one. Contains `data.json` *plus every
+     uploaded file*: Brand Hub logos, per-market marketing artwork, and vendor documents
+     (insurance certificates, permits), organised into folders. Use this for real off-site
+     backups and for handing the business to someone else.
+   - **"Download data only (.json)"** — data without the files; quicker for a routine copy.
+
+   Save it somewhere safe (Drive, Dropbox, email to yourself). Do this weekly — the app shows
+   how long it has been since your last download and nudges you after two weeks.
 2. **From any computer** (no logins, just the passcode):
    ```bash
    ADMIN_PASSCODE=market26 node scripts/backup.mjs
@@ -39,7 +46,9 @@ But *you* should also keep copies you personally control. Three ways, easiest fi
    ```
    (Both require the `x-passcode` header or `?pass=` — same admin passcode.)
 
-To **restore** a backup file: in the app use **"Restore from a backup file,"** or from a computer:
+To **restore** a backup file: in the app use **"Restore from a backup file"** (it shows how many
+vendors you have now vs. after, and automatically saves a copy of your current data first, so a
+wrong file can always be undone). From a computer:
 ```bash
 ADMIN_PASSCODE=market26 node scripts/restore.mjs market-day-backup-2026-07-09.json
 ```
