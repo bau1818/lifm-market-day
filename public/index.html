@@ -1219,7 +1219,11 @@ document.addEventListener('click',async e=>{
   if(a==='del-vendor'){ const id=el.dataset.id; S.vendors=S.vendors.filter(x=>x.id!==id); S.bookings=S.bookings.filter(b=>b.v!==id); ui.sheet=null; ui.view='vendors'; render(); save(); toast('Vendor deleted'); return; }
   if(a==='add-doc'){ openDoc(el.dataset.id); return; }
   if(a==='save-doc'){ await saveDoc(el.dataset.id); return; }
-  if(a==='del-doc'){ const v=vendor(el.dataset.id); if(v){const gone=(v.docs||[]).find(d=>d.id===el.dataset.d); if(gone) dropStoredFile(gone.key); v.docs=(v.docs||[]).filter(d=>d.id!==el.dataset.d); render(); save(); toast('Removed');} return; }
+  if(a==='del-doc'){ const v=vendor(el.dataset.id); if(!v) return;
+    const gone=(v.docs||[]).find(d=>d.id===el.dataset.d); if(!gone) return;
+    if(!confirm('Delete "'+(gone.name||gone.type||'this document')+'" from '+v.name+'?\n\nThe file is permanently removed for everyone. This cannot be undone.')) return;
+    dropStoredFile(gone.key);
+    v.docs=(v.docs||[]).filter(d=>d.id!==el.dataset.d); render(); save(); toast('Document deleted'); return; }
   if(a==='open-doc-file'){ openDocFile(el.dataset.id,el.dataset.d); return; }
   if(a==='add-payment'){ openPayment(el.dataset.id); return; }
   if(a==='save-payment'){ await savePayment(el.dataset.id); return; }
