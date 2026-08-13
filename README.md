@@ -39,6 +39,7 @@ It's a small, self-contained app with three layers, all hosted on Netlify:
    │   • "bk_YYYY-MM-DD" → automatic daily backup snapshots    │
    │ store "marketdayfiles":                                   │
    │   • uploaded vendor documents (COI, licenses, …)          │
+   │   • brand + marketing files (logos, flyers, social art)   │
    └─────────────────────────────┘
 ```
 

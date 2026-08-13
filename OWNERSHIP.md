@@ -12,7 +12,7 @@ and **exactly how to hand the whole thing to a new owner** — even someone who 
 | **Source code** | The whole app (HTML, functions, scripts) | This Git repository (`bau1818/lifm-market-day`) **and** any `.tar.gz` made with `npm run package` | Give someone the repo *or* the archive. No GitHub account required for the archive. |
 | **Hosting** | Serves the site + runs the API | Netlify project **lifm-market-day** | Transfer the Netlify project, or the new owner creates their own Netlify site and drops the code in. |
 | **Live data** | Vendors, markets, bookings, applications | Netlify **Blobs** store `marketday` (keys `state`, `inbox`, `bk_YYYY-MM-DD`) | Travels with the Netlify project, **or** export/import with the backup file (below). |
-| **Uploaded files** | Vendor documents (COI, licenses) | Netlify **Blobs** store `marketdayfiles` | Travels with the Netlify project. |
+| **Uploaded files** | Vendor documents (COI, licenses) plus Brand Hub and per-market marketing files (logos, flyers, social art) | Netlify **Blobs** store `marketdayfiles` | Travels with the Netlify project. Note: a data backup (`.json`) records the file *list*; the file contents live in this store, so keep the Netlify project (or download the files you care about). |
 | **Web address** | `lifm-market-day.netlify.app` | Netlify subdomain | Renames if the project moves; you can also attach a custom domain you own. |
 
 **Source of truth for data = Netlify Blobs on the server.** The browser only holds a working

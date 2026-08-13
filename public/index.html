@@ -104,6 +104,29 @@ button{font-family:inherit}
 .row .edit svg{width:18px;height:18px}
 button.pill{border:none;cursor:pointer}
 .slotbadge{display:inline-block;font-family:"Oswald";font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:1px 7px;border-radius:6px;background:var(--oat);color:var(--ink-soft);vertical-align:middle;margin-left:4px}
+/* ---- media / brand + marketing hub ---- */
+.hubhead{display:flex;align-items:center;gap:9px;margin:0 2px 10px}
+.hubhead .hi{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--red);color:#fff;flex:none}
+.hubhead .hi svg{width:18px;height:18px}
+.hubhead .ht{flex:1;min-width:0}
+.hubhead .ht b{display:block;font-family:"Anton";font-weight:400;font-size:19px;letter-spacing:.4px;text-transform:uppercase;line-height:1.1}
+.hubhead .ht small{color:var(--ink-soft);font-weight:600;font-size:12.5px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}
+.mfile{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:border-color .12s,box-shadow .12s}
+.mfile:hover{border-color:var(--ink-soft);box-shadow:0 4px 14px rgba(120,80,20,.09)}
+.mfile .thumb{aspect-ratio:1/1;background:var(--oat);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mfile .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.mfile .thumb .ficon{color:var(--ink-soft)}
+.mfile .thumb .ficon svg{width:30px;height:30px}
+.mfile .mf-name{font-weight:700;font-size:12px;line-height:1.25;padding:7px 8px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mfile .mf-meta{color:var(--ink-soft);font-weight:600;font-size:10.5px;padding:2px 8px 8px}
+.upzone{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1.5px dashed var(--line);background:#fff;color:var(--ink);font-weight:800;font-size:14px;padding:13px;border-radius:13px;cursor:pointer;margin-top:10px}
+.upzone svg{width:18px;height:18px}
+.mprev{background:var(--oat);border-radius:14px;overflow:hidden;margin:10px 0 14px;display:flex;align-items:center;justify-content:center;max-height:46vh}
+.mprev img{max-width:100%;max-height:46vh;object-fit:contain;display:block}
+.mprev.doc{padding:34px;color:var(--ink-soft)}
+.mprev.doc svg{width:44px;height:44px}
+.mempty{border:1.5px dashed var(--line);border-radius:13px;padding:18px 14px;text-align:center;color:var(--ink-soft);font-weight:600;font-size:13.5px}
 .rowflags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .vcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 12px 17px;cursor:pointer;display:flex;flex-direction:column;gap:5px;overflow:hidden;transition:border-color .12s,box-shadow .12s}
@@ -281,7 +304,11 @@ const I={
   dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
   download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
   upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
-  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6"/></svg>'
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6"/></svg>',
+  media:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="m21 15-5-5L5 21"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v14"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>'
 };
 function tentSVG(filled){
   const fill=filled?'var(--red)':'none', stroke=filled?'var(--red)':'var(--line)';
@@ -336,6 +363,13 @@ function marketFixes(st){
   }
   return st;
 }
+/* ---- media library: brand hub (_brand) + one collection per market ---- */
+const BRAND_KEY='_brand';
+function mediaList(k){ if(!S.media||typeof S.media!=='object') S.media={}; if(!Array.isArray(S.media[k])) S.media[k]=[]; return S.media[k]; }
+function mediaCount(k){ return (S.media&&Array.isArray(S.media[k]))?S.media[k].length:0; }
+function fileURL(key){ return '/api/file?key='+encodeURIComponent(key)+'&pass='+encodeURIComponent(PASS||''); }
+function isImg(t){ return /^image\//.test(t||''); }
+function prettySize(n){ n=Number(n||0); if(!n) return ''; if(n<1024) return n+' B'; if(n<1048576) return Math.round(n/1024)+' KB'; return (n/1048576).toFixed(1)+' MB'; }
 function cat(id){id=normCat(id);return CATS.find(c=>c.id===id)||{name:'Other',color:'#9aa39b'};}
 const CAP={farm:8,meat:4,bakery:6,dairy:4,beverage:3,spirits:3,pantry:8,prepared:8,sweets:6,wellness:4,pet:3,handcrafted:8,jewelry:4,beauty:4,foodtruck:1,plants:3};
 
@@ -371,6 +405,7 @@ function freshState(){
     vendors:JSON.parse(JSON.stringify(SEED_VENDORS)),
     bookings:JSON.parse(JSON.stringify(SEED_BOOKINGS)),
     music:{},
+    media:{},
     todos:[]
   };
 }
@@ -647,7 +682,7 @@ function tabbar(){
   const root=ui.view==='day'?'days':ui.view;
   const n=newCount();
   const tab=(v,icon,label,badge)=>`<button class="${root===v?'on':''}" data-a="tab" data-v="${v}"><span class="ico">${icon}${badge?`<span class="tbadge">${badge>9?'9+':badge}</span>`:''}</span><span>${label}</span></button>`;
-  return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Days')}${tab('vendors',I.people,'Vendors')}${tab('inbox',I.inbox,'Inbox',n)}${tab('todos',I.check,'To-Do')}</div></div>`;
+  return `<div class="tabs"><div class="inner">${tab('days',I.cal,'Days')}${tab('vendors',I.people,'Vendors')}${tab('media',I.media,'Media')}${tab('inbox',I.inbox,'Inbox',n)}${tab('todos',I.check,'To-Do')}</div></div>`;
 }
 function fab(){
   if(ui.view==='todos') return fabBtn('add-todo');
@@ -697,6 +732,34 @@ VIEW.days=function(){
   ${moreCount>0?`<button class="btn line" data-a="more-days" style="margin-top:12px">View more dates <span style="opacity:.55;font-weight:700">(${moreCount} more)</span></button>`:''}
   <div style="height:8px"></div>`;
 };
+VIEW.media=function(){
+  const mkts=S.markets||[];
+  const sel=(ui.mediaMkt&&mkts.some(m=>m.id===ui.mediaMkt))?ui.mediaMkt:(mkts[0]?mkts[0].id:'');
+  const selM=mkts.find(m=>m.id===sel);
+  const tile=(scope,f)=>`<div class="mfile" data-a="open-media" data-s="${scope}" data-f="${f.id}">
+      <div class="thumb">${isImg(f.type)?`<img loading="lazy" src="${fileURL(f.key)}" alt="${escapeHtml(f.name)}"/>`:`<span class="ficon">${I.doc}</span>`}</div>
+      <div class="mf-name">${escapeHtml(f.name)}</div>
+      <div class="mf-meta">${prettySize(f.size)}</div>
+    </div>`;
+  const grid=(scope,empty)=>{ const list=mediaList(scope);
+    return list.length?`<div class="mgrid">${list.slice().reverse().map(f=>tile(scope,f)).join('')}</div>`:`<div class="mempty">${empty}</div>`; };
+  const chips=`<div class="mchips">${mkts.map(m=>`<button class="mchip${sel===m.id?' on':''}" data-a="media-mkt" data-m="${m.id}">${escapeHtml(m.name)} <span class="mc">${mediaCount(m.id)}</span></button>`).join('')}</div>`;
+  return `
+  <div class="hello"><div class="eye">Files &amp; artwork</div><h1>Media</h1></div>
+
+  <div class="hubhead"><span class="hi">${I.star}</span>
+    <div class="ht"><b>Brand Hub</b><small>Official logos &amp; brand files - used everywhere</small></div></div>
+  ${grid(BRAND_KEY,'No brand files yet. Add your logos, colour sheets, and templates here so they are always one tap away.')}
+  <button class="upzone" data-a="add-media" data-s="${BRAND_KEY}">${I.upload} Upload brand files</button>
+
+  <div class="hubhead" style="margin-top:26px"><span class="hi" style="background:${selM?selM.color:'var(--red)'}">${I.media}</span>
+    <div class="ht"><b>Marketing Hub</b><small>Flyers, social posts &amp; postcards - per market</small></div></div>
+  ${chips}
+  ${selM?`${grid(sel,'No marketing files for '+escapeHtml(selM.name)+' yet. Upload flyers, social designs, or postcards for this market.')}
+  <button class="upzone" data-a="add-media" data-s="${sel}">${I.upload} Upload ${escapeHtml(selM.name)} files</button>`:''}
+  <div class="lead" style="margin:14px 2px 0">Tap any file to share, download, or copy it. Images up to about 6MB - larger photos are optimised automatically.</div>
+  <div style="height:14px"></div>`;
+};
 VIEW.day=function(){
   const m=market(ui.m),date=ui.date,slot=ui.slot||'';
   const booked=dayBookings(ui.m,date,slot).slice().sort((a,b)=>{const va=vendor(a.v),vb=vendor(b.v);return (va?va.name:'').localeCompare(vb?vb.name:'');});
@@ -720,6 +783,13 @@ VIEW.day=function(){
       <span style="color:var(--red);font-size:20px;line-height:1">&#9834;</span>
       <div style="flex:1"><b style="font-weight:800">Live music</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${mus?escapeHtml(mus):'No act entered for this day'}</div></div>
       <button class="mini" data-a="edit-music">${mus?'Edit':'Add'}</button>
+    </div>
+  </div>
+  <div class="card tap" style="margin-top:10px" data-a="goto-media" data-m="${ui.m}">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="color:var(--red);display:flex">${I.media}</span>
+      <div style="flex:1"><b style="font-weight:800">Marketing Hub</b><div style="color:var(--ink-soft);font-weight:600;font-size:14px">${mediaCount(ui.m)?mediaCount(ui.m)+' file'+(mediaCount(ui.m)===1?'':'s')+' for '+escapeHtml(m.name):'Add flyers &amp; social designs for '+escapeHtml(m.name)}</div></div>
+      <span class="chev">${I.chev}</span>
     </div>
   </div>
   <button class="btn" data-a="goto-add" style="margin:14px 0 18px">${I.plus} Add a vendor to this day</button>
@@ -1011,6 +1081,15 @@ document.addEventListener('click',async e=>{
   const a=el.dataset.a;
   if(a==='tab'){ ui.view=el.dataset.v; ui.sheet=null; if(el.dataset.v==='days') ui.dayWindows=1; render(); sc(); return; }
   if(a==='more-days'){ ui.dayWindows=(ui.dayWindows||1)+1; render(); return; }
+  if(a==='media-mkt'){ ui.mediaMkt=el.dataset.m; render(); return; }
+  if(a==='goto-media'){ ui.view='media'; ui.mediaMkt=el.dataset.m; ui.sheet=null; render(); sc(); return; }
+  if(a==='add-media'){ addMedia(el.dataset.s); return; }
+  if(a==='open-media'){ openMediaFile(el.dataset.s,el.dataset.f); return; }
+  if(a==='share-media'){ shareMedia(); return; }
+  if(a==='dl-media'){ dlMedia(); return; }
+  if(a==='copy-media'){ copyMedia(); return; }
+  if(a==='open-media-tab'){ const f=curMedia(); if(f) window.open(fileURL(f.key),'_blank','noopener'); return; }
+  if(a==='del-media'){ delMedia(); return; }
   if(a==='export-data'){ exportData(); return; }
   if(a==='import-data'){ importData(); return; }
   if(a==='vmkt'){ ui.vmkt=el.dataset.m; render(); return; }
@@ -1098,6 +1177,122 @@ async function saveDoc(vid){
     if(type==='Insurance (COI)'&&!v.insStatus) v.insStatus='on';
     ui.sheet=null; render(); save(); toast('File attached');
   }catch(e){ toast('Upload failed - check connection'); }
+}
+/* ---- media library: upload, preview, share / download / copy ---- */
+const MEDIA_MAX=6.5*1024*1024;   // server accepts ~7MB binary; stay under it
+function curMedia(){ const s=ui.sheet; if(!s||s.type!=='media') return null; return mediaList(s.scope).find(f=>f.id===s.fid)||null; }
+async function mediaBlob(f){ const r=await fetch(fileURL(f.key)); if(!r.ok) throw new Error('http '+r.status); return await r.blob(); }
+function downloadBlob(blob,name){
+  const u=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=u; a.download=name||'file'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+async function toPngBlob(blob){
+  if(blob.type==='image/png') return blob;
+  const bmp=await createImageBitmap(blob);
+  const c=document.createElement('canvas'); c.width=bmp.width; c.height=bmp.height;
+  c.getContext('2d').drawImage(bmp,0,0);
+  return await new Promise(res=>c.toBlob(res,'image/png'));
+}
+// Shrink an oversized image so it fits the upload limit (only used when needed).
+async function shrinkImage(file,maxBytes){
+  try{
+    const bmp=await createImageBitmap(file);
+    let w=bmp.width,h=bmp.height;
+    const MAXD=2400; if(Math.max(w,h)>MAXD){ const s=MAXD/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+    for(let q=0.85;q>=0.5;q-=0.15){
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(bmp,0,0,w,h);
+      const b=await new Promise(res=>c.toBlob(res,'image/jpeg',q));
+      if(b&&b.size<=maxBytes) return new File([b],String(file.name||'image').replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'});
+      w=Math.round(w*0.8); h=Math.round(h*0.8);
+    }
+  }catch(e){}
+  return null;
+}
+function addMedia(scope){
+  if(!scope) return;
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*,application/pdf'; inp.multiple=true;
+  inp.addEventListener('change',async()=>{
+    const files=[].slice.call(inp.files||[]); if(!files.length) return;
+    let ok=0;
+    for(const f of files){ if(await uploadMediaFile(scope,f)) ok++; }
+    if(ok){ render(); save(); toast(ok+' file'+(ok>1?'s':'')+' added'); }
+  });
+  inp.click();
+}
+async function uploadMediaFile(scope,f){
+  try{
+    let file=f;
+    if(file.size>MEDIA_MAX){
+      if(isImg(file.type)){ toast('Optimising '+f.name+'...'); file=await shrinkImage(f,MEDIA_MAX); }
+      if(!file||file.size>MEDIA_MAX){ toast(f.name+' is too large (max about 6MB)'); return false; }
+    }
+    toast('Uploading '+f.name+'...');
+    const dataB64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const s=String(r.result||''); res(s.slice(s.indexOf(',')+1)); }; r.onerror=()=>rej(new Error('read')); r.readAsDataURL(file); });
+    const resp=await fetch('/api/upload',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pass:PASS,name:f.name,type:file.type||'application/octet-stream',dataB64})});
+    const j=await resp.json().catch(()=>null);
+    if(!j||!j.ok||!j.key){ toast(j&&j.error==='too-big'?(f.name+' is too large'):'Upload failed'); return false; }
+    mediaList(scope).push({id:uid('mf'),name:f.name,key:j.key,type:file.type||'application/octet-stream',size:file.size,addedAt:iso(new Date())});
+    return true;
+  }catch(e){ toast('Upload failed - check connection'); return false; }
+}
+function openMediaFile(scope,fid){
+  const f=mediaList(scope).find(x=>x.id===fid); if(!f){ toast('File not found'); return; }
+  const where=scope===BRAND_KEY?'Brand Hub':((market(scope)||{}).name||'Market');
+  ui.sheet={type:'media',scope,fid,body:`
+    <h3>${escapeHtml(f.name)}</h3>
+    <div class="lead">${where}${f.size?' - '+prettySize(f.size):''}${f.addedAt?' - added '+nice(f.addedAt):''}</div>
+    ${isImg(f.type)?`<div class="mprev"><img src="${fileURL(f.key)}" alt="${escapeHtml(f.name)}"/></div>`:`<div class="mprev doc">${I.doc}</div>`}
+    <div class="acts">
+      <button class="btn" data-a="share-media">${I.share} Share</button>
+      <button class="btn line" data-a="dl-media">${I.download} Download</button>
+      ${isImg(f.type)?`<button class="btn line" data-a="copy-media">${I.copy} Copy image</button>`:''}
+      <button class="btn line" data-a="open-media-tab">Open in new tab</button>
+      <button class="btn danger" data-a="del-media">${I.trash} Delete</button>
+    </div>`};
+  render();
+}
+async function shareMedia(){
+  const f=curMedia(); if(!f) return;
+  toast('Preparing...');
+  try{
+    const blob=await mediaBlob(f);
+    const file=new File([blob],f.name,{type:f.type||blob.type||'application/octet-stream'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:f.name});
+      return;
+    }
+    downloadBlob(blob,f.name);
+    toast('Sharing is not supported here - downloaded instead');
+  }catch(e){
+    if(e&&(e.name==='AbortError'||e.name==='NotAllowedError')) return;   // user cancelled the share sheet
+    toast('Could not share that file');
+  }
+}
+async function dlMedia(){
+  const f=curMedia(); if(!f) return;
+  toast('Downloading...');
+  try{ downloadBlob(await mediaBlob(f),f.name); toast('Downloaded'); }
+  catch(e){ toast('Could not download'); }
+}
+async function copyMedia(){
+  const f=curMedia(); if(!f) return;
+  if(!navigator.clipboard||!window.ClipboardItem){ toast('Copy is not supported here - use Download'); return; }
+  try{
+    // Pass a promise so Safari keeps the write inside the user gesture.
+    const item=new ClipboardItem({'image/png':(async()=>toPngBlob(await mediaBlob(f)))()});
+    await navigator.clipboard.write([item]);
+    toast('Image copied - paste it anywhere');
+  }catch(e){ toast('Could not copy - use Download instead'); }
+}
+function delMedia(){
+  const s=ui.sheet; if(!s||s.type!=='media') return;
+  if(!confirm('Delete this file? It is removed for everyone.')) return;
+  const list=mediaList(s.scope); const i=list.findIndex(f=>f.id===s.fid);
+  if(i>=0) list.splice(i,1);
+  ui.sheet=null; render(); save(); toast('File deleted');
 }
 function openDocFile(vid,did){
   const v=vendor(vid); if(!v) return; const d=(v.docs||[]).find(x=>x.id===did); if(!d){ toast('Not found'); return; }
